@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EmotionType, emotionColors, emotionEmojis } from "@/utils/emotionData";
+import { EmotionType } from "@/types/emotion";
+import { emotionColors, emotionEmojis } from "@/utils/emotionData";
 
 interface CurrentMoodProps {
   emotion: EmotionType;
