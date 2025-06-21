@@ -1,10 +1,11 @@
-
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain, Mail, Lock, User } from "lucide-react";
+import { toast } from "sonner";
 
 interface SignupFormProps {
   onToggleMode: () => void;
@@ -15,16 +16,29 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Mock signup - replace with Supabase auth later
-    setTimeout(() => {
+    try {
+      // Mock signup success - replace with Supabase auth later
       console.log("Signup attempt:", { name, email, password });
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success("Account created successfully! Welcome to MoodLens!");
+      
+      // Redirect to dashboard after successful signup
+      navigate('/dashboard');
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.error("Failed to create account. Please try again.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (

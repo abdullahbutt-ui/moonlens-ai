@@ -1,10 +1,12 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain, Mail, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 interface LoginFormProps {
   onToggleMode: () => void;
@@ -14,16 +16,29 @@ const LoginForm = ({ onToggleMode }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Mock login - replace with Supabase auth later
-    setTimeout(() => {
+    try {
+      // Mock login success - replace with Supabase auth later
       console.log("Login attempt:", { email, password });
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success("Welcome back to MoodLens!");
+      
+      // Redirect to dashboard after successful login
+      navigate('/dashboard');
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Invalid credentials. Please try again.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -39,7 +54,7 @@ const LoginForm = ({ onToggleMode }: LoginFormProps) => {
           <CardHeader>
             <CardTitle className="text-white">Welcome back</CardTitle>
             <CardDescription className="text-purple-200">
-              Sign in to your MoodLens account
+              Sign in to continue tracking your emotions
             </CardDescription>
           </CardHeader>
           <CardContent>
