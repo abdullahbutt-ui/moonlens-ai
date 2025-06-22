@@ -33,7 +33,6 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
         setCounter(counter - 1);
       }, 1000);
     } else if (isActive && counter === 0) {
-      // Move to next phase
       if (phase === 'inhale') {
         setPhase('hold');
         setCounter(currentExercise.hold);
@@ -42,7 +41,7 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
         setCounter(currentExercise.exhale);
       } else if (phase === 'exhale') {
         setCycle(cycle + 1);
-        if (cycle >= 3) { // Complete after 4 cycles
+        if (cycle >= 3) {
           setIsActive(false);
           onComplete?.();
         } else {
@@ -100,32 +99,31 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="bg-blue-600/20 border-blue-500/50 hover:bg-blue-600/30">
+        <Button variant="outline" className="bg-blue-100 dark:bg-blue-600/20 border-blue-300 dark:border-blue-500/50 hover:bg-blue-200 dark:hover:bg-blue-600/30 text-blue-800 dark:text-blue-200 shadow-sm">
           <Wind className="w-4 h-4 mr-2" />
           Breathing
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl bg-black/95 border-gray-800">
+      <DialogContent className="max-w-2xl bg-white dark:bg-black/95 border-gray-200 dark:border-gray-800">
         <DialogHeader>
-          <DialogTitle className="text-blue-400 flex items-center">
+          <DialogTitle className="text-blue-600 dark:text-blue-400 flex items-center">
             <Wind className="w-5 h-5 mr-2" />
             Mindful Breathing
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-gray-600 dark:text-gray-400">
             Take a moment to center yourself with guided breathing exercises
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Exercise Selection */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {Object.entries(exercises).map(([key, exercise]) => (
               <Card 
                 key={key}
                 className={`cursor-pointer transition-all ${
                   selectedExercise === key 
-                    ? 'bg-blue-900/30 border-blue-500' 
-                    : 'bg-gray-900/30 border-gray-700 hover:border-gray-600'
+                    ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-500' 
+                    : 'bg-gray-50 dark:bg-gray-900/30 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
                 onClick={() => {
                   setSelectedExercise(key);
@@ -133,11 +131,11 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
                 }}
               >
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-white">{exercise.name}</CardTitle>
-                  <CardDescription className="text-xs">{exercise.description}</CardDescription>
+                  <CardTitle className="text-sm text-gray-900 dark:text-white">{exercise.name}</CardTitle>
+                  <CardDescription className="text-xs text-gray-600 dark:text-gray-400">{exercise.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
                     {exercise.inhale}-{exercise.hold}-{exercise.exhale} pattern
                   </div>
                 </CardContent>
@@ -145,7 +143,6 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
             ))}
           </div>
 
-          {/* Breathing Animation */}
           <div className="flex flex-col items-center space-y-6">
             <div className="relative w-48 h-48 flex items-center justify-center">
               <div 
@@ -156,12 +153,11 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
                   <div className="text-2xl font-bold">{counter}</div>
                 </div>
               </div>
-              <div className="absolute bottom-0 text-center text-gray-400">
+              <div className="absolute bottom-0 text-center text-gray-600 dark:text-gray-400">
                 <div className="text-sm">Cycle {cycle + 1} of 4</div>
               </div>
             </div>
 
-            {/* Controls */}
             <div className="flex gap-3">
               <Button onClick={startExercise} disabled={isActive}>
                 <Play className="w-4 h-4 mr-2" />
@@ -177,10 +173,9 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
               </Button>
             </div>
 
-            {/* Instruction */}
-            <div className="text-center text-gray-300 max-w-md">
+            <div className="text-center text-gray-700 dark:text-gray-300 max-w-md">
               <p className="text-lg font-medium capitalize">{phase} for {counter} seconds</p>
-              <p className="text-sm text-gray-400 mt-2 italic">"{randomQuote}"</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 italic">"{randomQuote}"</p>
             </div>
           </div>
         </div>

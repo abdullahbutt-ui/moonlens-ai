@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from "react";
 import Navbar from "@/components/layout/Navbar";
 import CurrentMood from "@/components/dashboard/CurrentMood";
@@ -57,9 +58,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black relative">
-      {/* Background sparkles effect */}
-      <div className="absolute inset-0 w-full h-full">
+    <div className="min-h-screen bg-gray-50 dark:bg-black relative">
+      {/* Background sparkles effect - only in dark mode */}
+      <div className="absolute inset-0 w-full h-full dark:block hidden">
         <SparklesCore
           id="dashboard-sparkles"
           background="transparent"
@@ -77,16 +78,16 @@ const Dashboard = () => {
         <Navbar />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8 flex justify-between items-center">
+          <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
                 MoodLens Dashboard ✨
               </h1>
-              <p className="text-gray-300 text-lg">
+              <p className="text-gray-600 dark:text-gray-300 text-lg">
                 Real-time AI emotion detection powered by your webcam and microphone
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <AIMoodCoach 
                 currentMood={currentEmotion}
                 recentMoods={[currentEmotion]}
@@ -95,7 +96,7 @@ const Dashboard = () => {
               <BreathingExercise />
               <Button
                 onClick={() => navigate('/mood-trends')}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-purple-600 hover:bg-purple-700 text-white"
               >
                 <TrendingUp className="w-4 h-4 mr-2" />
                 View Trends
@@ -131,22 +132,22 @@ const Dashboard = () => {
               recentEntries={journalEntries}
             />
             
-            <div className="bg-black/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-500/20">
-              <h3 className="text-lg font-semibold mb-4 flex items-center text-white">
+            <div className="bg-white dark:bg-black/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-purple-500/20">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-900 dark:text-white">
                 📈 Quick Stats
               </h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Journal Entries Today</span>
-                  <span className="text-purple-400 font-semibold">{journalEntries.length}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Journal Entries Today</span>
+                  <span className="text-purple-600 dark:text-purple-400 font-semibold">{journalEntries.length}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Current Streak</span>
-                  <span className="text-emerald-400 font-semibold">7 days</span>
+                  <span className="text-gray-600 dark:text-gray-400">Current Streak</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">7 days</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Challenge Status</span>
-                  <span className={`font-semibold ${todaysChallenge?.completed ? 'text-emerald-400' : 'text-yellow-400'}`}>
+                  <span className="text-gray-600 dark:text-gray-400">Challenge Status</span>
+                  <span className={`font-semibold ${todaysChallenge?.completed ? 'text-emerald-600 dark:text-emerald-400' : 'text-yellow-600 dark:text-yellow-400'}`}>
                     {todaysChallenge?.completed ? 'Completed ✓' : 'Pending'}
                   </span>
                 </div>

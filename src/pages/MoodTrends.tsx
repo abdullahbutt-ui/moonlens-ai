@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { generateMockEmotionData } from "@/utils/emotionData";
 import { EmotionData, EmotionStats } from "@/types/emotion";
 import {
@@ -19,24 +18,19 @@ import {
   Cell,
 } from "recharts";
 import { generateMoodInsight } from "@/utils/challenges";
-import { useTheme } from "@/contexts/ThemeContext";
 
 const MoodTrends = () => {
-  const { theme, toggleTheme } = useTheme();
   const [emotionData, setEmotionData] = useState<EmotionData[]>([]);
   const [dailySummary, setDailySummary] = useState<any[]>([]);
   const [moodInsight, setMoodInsight] = useState<string>("");
 
   useEffect(() => {
-    // Mock data for now
     const mockData = generateMockEmotionData(100);
     setEmotionData(mockData);
 
-    // Process data to get daily summaries
     const dailyData = processDailyData(mockData);
     setDailySummary(dailyData);
 
-    // Generate mood insight
     const trends = dailyData.map(day => ({
       date: day.date,
       dominantMood: day.dominantEmotion,
@@ -114,64 +108,47 @@ const MoodTrends = () => {
   };
 
   const emotionStats = calculateEmotionStats(emotionData);
-
   const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#a4de6c', '#d0ed57', '#ff7300', '#336699'];
 
   return (
-    <div className="min-h-screen bg-background relative">
-      {/* Background sparkles effect */}
-      <div className="absolute inset-0 w-full h-full">
-        {/* You can use a Sparkles component here if you have one */}
-        {/* Example: <SparklesCore ... /> */}
-      </div>
-      
+    <div className="min-h-screen bg-gray-50 dark:bg-black relative">
       <div className="relative z-10">
         <Navbar />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8 flex justify-between items-center">
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                Mood Trends & Insights 📊
-              </h1>
-              <p className="text-muted-foreground text-lg">
-                Discover patterns in your emotional journey with AI-powered analytics
-              </p>
-            </div>
-            <Button
-              onClick={toggleTheme}
-              variant="outline"
-              className="bg-background/50"
-            >
-              {theme === 'dark' ? '☀️' : '🌙'} Toggle Theme
-            </Button>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+              Mood Trends & Insights 📊
+            </h1>
+            <p className="text-gray-600 dark:text-gray-300 text-lg">
+              Discover patterns in your emotional journey with AI-powered analytics
+            </p>
           </div>
 
-          {/* AI Insights Card */}
-          <Card className="mb-8 bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30">
+          <Card className="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border-purple-200 dark:border-purple-500/30">
             <CardHeader>
-              <CardTitle className="text-purple-400 flex items-center">
+              <CardTitle className="text-purple-700 dark:text-purple-400 flex items-center">
                 <Brain className="w-5 h-5 mr-2" />
                 <strong>AI Insights</strong>
               </CardTitle>
-              <CardDescription className="text-gray-300">
+              <CardDescription className="text-gray-700 dark:text-gray-300">
                 <strong>Personalized observations from your mood patterns</strong>
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="p-4 bg-purple-900/20 rounded-lg border border-purple-500/20">
-                  <p className="text-purple-200">
+                <div className="p-4 bg-purple-100 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-500/20">
+                  <p className="text-purple-800 dark:text-purple-200">
                     <strong>📈 Weekly Pattern:</strong> You tend to feel most positive on weekends and Wednesday afternoons.
                   </p>
                 </div>
-                <div className="p-4 bg-blue-900/20 rounded-lg border border-blue-500/20">
-                  <p className="text-blue-200">
+                <div className="p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-500/20">
+                  <p className="text-blue-800 dark:text-blue-200">
                     <strong>🎯 Stress Triggers:</strong> Your anxiety levels peak around 8 PM - consider earlier wind-down routines.
                   </p>
                 </div>
-                <div className="p-4 bg-emerald-900/20 rounded-lg border border-emerald-500/20">
-                  <p className="text-emerald-200">
+                <div className="p-4 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-500/20">
+                  <p className="text-emerald-800 dark:text-emerald-200">
                     <strong>💡 Recommendation:</strong> Your journal entries show improved mood after breathing exercises. Keep it up!
                   </p>
                 </div>
@@ -180,13 +157,12 @@ const MoodTrends = () => {
           </Card>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Emotion Stats Pie Chart */}
-            <Card className="bg-black/50 backdrop-blur-sm border border-gray-800">
+            <Card className="bg-white dark:bg-black/50 border-gray-200 dark:border-gray-800">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-white">
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
                   Emotion Distribution
                 </CardTitle>
-                <CardDescription className="text-sm text-gray-400">
+                <CardDescription className="text-sm text-gray-600 dark:text-gray-400">
                   Breakdown of your detected emotions
                 </CardDescription>
               </CardHeader>
@@ -214,13 +190,12 @@ const MoodTrends = () => {
               </CardContent>
             </Card>
 
-            {/* Daily Emotion Summary Bar Chart */}
-            <Card className="bg-black/50 backdrop-blur-sm border border-gray-800">
+            <Card className="bg-white dark:bg-black/50 border-gray-200 dark:border-gray-800">
               <CardHeader>
-                <CardTitle className="text-lg font-semibold text-white">
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
                   Daily Emotion Summary
                 </CardTitle>
-                <CardDescription className="text-sm text-gray-400">
+                <CardDescription className="text-sm text-gray-600 dark:text-gray-400">
                   Dominant emotions over the past few days
                 </CardDescription>
               </CardHeader>

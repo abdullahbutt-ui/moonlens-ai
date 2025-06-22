@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Bot, Send } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 
 interface CoachMessage {
@@ -72,18 +71,18 @@ const AIMoodCoach = ({ currentMood, recentMoods }: AIMoodCoachProps) => {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" className="bg-purple-600/20 border-purple-500/50 hover:bg-purple-600/30">
+        <Button variant="outline" className="bg-purple-100 dark:bg-purple-600/20 border-purple-300 dark:border-purple-500/50 hover:bg-purple-200 dark:hover:bg-purple-600/30 text-purple-800 dark:text-purple-200 shadow-sm">
           <Bot className="w-4 h-4 mr-2" />
           AI Coach
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-96 bg-black/95 border-purple-500/20">
+      <SheetContent className="w-96 bg-white dark:bg-black/95 border-gray-200 dark:border-purple-500/20">
         <SheetHeader>
-          <SheetTitle className="text-purple-400 flex items-center">
+          <SheetTitle className="text-purple-600 dark:text-purple-400 flex items-center">
             <Bot className="w-5 h-5 mr-2" />
             AI Mood Coach
           </SheetTitle>
-          <SheetDescription className="text-gray-400">
+          <SheetDescription className="text-gray-600 dark:text-gray-400">
             Your personal emotional wellness companion
           </SheetDescription>
         </SheetHeader>
@@ -98,8 +97,8 @@ const AIMoodCoach = ({ currentMood, recentMoods }: AIMoodCoachProps) => {
                 <div
                   className={`max-w-[80%] p-3 rounded-lg ${
                     message.isAI
-                      ? 'bg-purple-900/30 text-purple-100 border border-purple-500/20'
-                      : 'bg-blue-900/30 text-blue-100 border border-blue-500/20'
+                      ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-100 border border-purple-200 dark:border-purple-500/20'
+                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-100 border border-blue-200 dark:border-blue-500/20'
                   }`}
                 >
                   <p className="text-sm">{message.content}</p>
@@ -116,7 +115,7 @@ const AIMoodCoach = ({ currentMood, recentMoods }: AIMoodCoachProps) => {
               placeholder="Share what's on your mind..."
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              className="flex-1 min-h-[80px] bg-gray-900/50 border-gray-700"
+              className="flex-1 min-h-[80px] bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700"
               onKeyPress={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -126,7 +125,7 @@ const AIMoodCoach = ({ currentMood, recentMoods }: AIMoodCoachProps) => {
             />
             <Button 
               onClick={handleSendMessage}
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-purple-600 hover:bg-purple-700 text-white"
               disabled={!inputMessage.trim()}
             >
               <Send className="w-4 h-4" />
