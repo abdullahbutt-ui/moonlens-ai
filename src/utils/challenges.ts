@@ -1,3 +1,4 @@
+import { MoodTrend } from "@/types/journal";
 
 export const dailyChallenges = [
   "Name one thing that made you smile today.",
