@@ -1,30 +1,32 @@
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Login from "./Login";
-import Dashboard from "./Dashboard";
+import { SparklesPreviewColorful } from "@/components/ui/demo";
 
 const Index = () => {
-  // Mock auth state - replace with real auth later
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already authenticated (mock check)
-    const mockAuthCheck = localStorage.getItem('mockAuth');
-    if (mockAuthCheck === 'true') {
-      setIsAuthenticated(true);
+    // Check if user is already authenticated (mock auth)
+    const isAuthenticated = localStorage.getItem('mockAuth') === 'true';
+    
+    if (isAuthenticated) {
       navigate('/dashboard');
     } else {
-      navigate('/login');
+      // Add a delay and then navigate to login
+      const timer = setTimeout(() => {
+        navigate('/login');
+      }, 3000);
+      
+      return () => clearTimeout(timer);
     }
   }, [navigate]);
 
-  if (!isAuthenticated) {
-    return <Login />;
-  }
-
-  return <Dashboard />;
+  return (
+    <div className="min-h-screen">
+      <SparklesPreviewColorful />
+    </div>
+  );
 };
 
 export default Index;
