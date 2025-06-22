@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import Navbar from "@/components/layout/Navbar";
 import CurrentMood from "@/components/dashboard/CurrentMood";
@@ -11,6 +10,9 @@ import { SparklesCore } from "@/components/ui/sparkles";
 import { Button } from "@/components/ui/button";
 import { TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import AIMoodCoach from "@/components/dashboard/AIMoodCoach";
+import SoundCenter from "@/components/dashboard/SoundCenter";
+import BreathingExercise from "@/components/dashboard/BreathingExercise";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -84,13 +86,21 @@ const Dashboard = () => {
                 Real-time AI emotion detection powered by your webcam and microphone
               </p>
             </div>
-            <Button
-              onClick={() => navigate('/mood-trends')}
-              className="bg-purple-600 hover:bg-purple-700"
-            >
-              <TrendingUp className="w-4 h-4 mr-2" />
-              View Trends
-            </Button>
+            <div className="flex gap-3">
+              <AIMoodCoach 
+                currentMood={currentEmotion}
+                recentMoods={[currentEmotion]}
+              />
+              <SoundCenter currentMood={currentEmotion} />
+              <BreathingExercise />
+              <Button
+                onClick={() => navigate('/mood-trends')}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                <TrendingUp className="w-4 h-4 mr-2" />
+                View Trends
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">

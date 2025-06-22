@@ -1,254 +1,243 @@
-
-import { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, Calendar, Lightbulb, Brain } from 'lucide-react';
-import { generateMockEmotionData } from '@/utils/emotionData';
-import { generateMoodInsight } from '@/utils/challenges';
-import { MoodTrend } from '@/types/journal';
-import Navbar from '@/components/layout/Navbar';
-import { SparklesCore } from '@/components/ui/sparkles';
+import { useState, useEffect } from "react";
+import Navbar from "@/components/layout/Navbar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Brain } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { generateMockEmotionData } from "@/utils/emotionData";
+import { EmotionData, EmotionStats } from "@/types/emotion";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import { generateMoodInsight } from "@/utils/challenges";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const MoodTrends = () => {
-  // Mock data - replace with real data from Supabase
-  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('week');
-  
-  const mockTrends: MoodTrend[] = useMemo(() => {
-    const trends = [];
-    const today = new Date();
-    
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      
-      const moods = ['happy', 'calm', 'anxious', 'excited', 'sad', 'grateful'];
-      const dominantMood = moods[Math.floor(Math.random() * moods.length)];
-      
-      trends.push({
-        date: date.toISOString().split('T')[0],
-        dominantMood,
-        moodCounts: {
-          [dominantMood]: Math.floor(Math.random() * 10) + 5,
-          happy: Math.floor(Math.random() * 8),
-          calm: Math.floor(Math.random() * 6),
-          anxious: Math.floor(Math.random() * 4)
-        },
-        averageConfidence: Math.random() * 0.3 + 0.7,
-        journalEntries: Math.floor(Math.random() * 5) + 1,
-        challengeCompleted: Math.random() > 0.3
-      });
-    }
-    
-    return trends;
+  const { theme, toggleTheme } = useTheme();
+  const [emotionData, setEmotionData] = useState<EmotionData[]>([]);
+  const [dailySummary, setDailySummary] = useState<any[]>([]);
+  const [moodInsight, setMoodInsight] = useState<string>("");
+
+  useEffect(() => {
+    // Mock data for now
+    const mockData = generateMockEmotionData(100);
+    setEmotionData(mockData);
+
+    // Process data to get daily summaries
+    const dailyData = processDailyData(mockData);
+    setDailySummary(dailyData);
+
+    // Generate mood insight
+    const trends = dailyData.map(day => ({
+      date: day.date,
+      dominantMood: day.dominantEmotion,
+      moodCounts: day.emotionCounts,
+      averageConfidence: day.averageConfidence,
+      journalEntries: Math.floor(Math.random() * 5),
+      challengeCompleted: Math.random() > 0.5
+    }));
+    setMoodInsight(generateMoodInsight(trends));
   }, []);
 
-  const chartData = mockTrends.map(trend => ({
-    date: new Date(trend.date).toLocaleDateString('en', { weekday: 'short' }),
-    confidence: Math.round(trend.averageConfidence * 100),
-    entries: trend.journalEntries,
-    mood: trend.dominantMood
-  }));
+  const processDailyData = (data: EmotionData[]) => {
+    const dailyData: { [key: string]: EmotionData[] } = {};
 
-  const moodDistribution = useMemo(() => {
-    const distribution: Record<string, number> = {};
-    mockTrends.forEach(trend => {
-      Object.entries(trend.moodCounts).forEach(([mood, count]) => {
-        distribution[mood] = (distribution[mood] || 0) + count;
-      });
+    data.forEach(item => {
+      const date = item.timestamp.toISOString().split('T')[0];
+      if (!dailyData[date]) {
+        dailyData[date] = [];
+      }
+      dailyData[date].push(item);
     });
-    
-    return Object.entries(distribution).map(([mood, count]) => ({
-      name: mood,
-      value: count,
-      color: {
-        happy: '#10B981',
-        sad: '#3B82F6',
-        anxious: '#8B5CF6',
-        excited: '#F59E0B',
-        calm: '#6B7280',
-        grateful: '#84CC16'
-      }[mood] || '#6B7280'
-    }));
-  }, [mockTrends]);
 
-  const aiInsight = generateMoodInsight(mockTrends);
+    return Object.entries(dailyData).map(([date, emotions]) => {
+      const emotionCounts: { [key: string]: number } = {};
+      let totalConfidence = 0;
+
+      emotions.forEach(emotion => {
+        emotionCounts[emotion.emotion] = (emotionCounts[emotion.emotion] || 0) + 1;
+        totalConfidence += emotion.confidence;
+      });
+
+      const totalEmotions = emotions.length;
+      const averageConfidence = totalConfidence / totalEmotions;
+
+      let dominantEmotion = 'neutral';
+      let maxCount = 0;
+      Object.entries(emotionCounts).forEach(([emotion, count]) => {
+        if (count > maxCount) {
+          maxCount = count;
+          dominantEmotion = emotion;
+        }
+      });
+
+      return {
+        date,
+        dominantEmotion,
+        emotionCounts,
+        averageConfidence,
+        totalDetections: totalEmotions
+      };
+    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  };
+
+  const calculateEmotionStats = (data: EmotionData[]): EmotionStats[] => {
+    const emotionCounts: { [key: string]: number } = {};
+    let totalConfidence: { [key: string]: number } = {};
+    let emotionList: string[] = [];
+
+    data.forEach(item => {
+      emotionCounts[item.emotion] = (emotionCounts[item.emotion] || 0) + 1;
+      totalConfidence[item.emotion] = (totalConfidence[item.emotion] || 0) + item.confidence;
+      if (!emotionList.includes(item.emotion)) {
+        emotionList.push(item.emotion);
+      }
+    });
+
+    const totalEmotions = data.length;
+
+    return emotionList.map(emotion => ({
+      emotion: emotion as any,
+      count: emotionCounts[emotion] || 0,
+      percentage: ((emotionCounts[emotion] || 0) / totalEmotions) * 100,
+      averageConfidence: (totalConfidence[emotion] || 0) / (emotionCounts[emotion] || 1)
+    }));
+  };
+
+  const emotionStats = calculateEmotionStats(emotionData);
+
+  const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#a4de6c', '#d0ed57', '#ff7300', '#336699'];
 
   return (
-    <div className="min-h-screen bg-black relative">
-      {/* Background sparkles */}
+    <div className="min-h-screen bg-background relative">
+      {/* Background sparkles effect */}
       <div className="absolute inset-0 w-full h-full">
-        <SparklesCore
-          id="trends-sparkles"
-          background="transparent"
-          minSize={0.3}
-          maxSize={0.6}
-          particleDensity={60}
-          className="w-full h-full"
-          particleColor="#8b5cf6"
-          speed={0.2}
-        />
+        {/* You can use a Sparkles component here if you have one */}
+        {/* Example: <SparklesCore ... /> */}
       </div>
-
+      
       <div className="relative z-10">
         <Navbar />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-              Mood Trends & Insights 📊
-            </h1>
-            <p className="text-gray-300">Discover patterns in your emotional journey</p>
+          <div className="mb-8 flex justify-between items-center">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                Mood Trends & Insights 📊
+              </h1>
+              <p className="text-muted-foreground text-lg">
+                Discover patterns in your emotional journey with AI-powered analytics
+              </p>
+            </div>
+            <Button
+              onClick={toggleTheme}
+              variant="outline"
+              className="bg-background/50"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'} Toggle Theme
+            </Button>
           </div>
 
-          {/* AI Insight Card */}
-          <Card className="mb-8 bg-gradient-to-r from-purple-900/50 to-blue-900/50 backdrop-blur-sm border-purple-500/20">
+          {/* AI Insights Card */}
+          <Card className="mb-8 bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-purple-300">
-                <Brain className="w-5 h-5" />
-                AI Insight
+              <CardTitle className="text-purple-400 flex items-center">
+                <Brain className="w-5 h-5 mr-2" />
+                <strong>AI Insights</strong>
               </CardTitle>
+              <CardDescription className="text-gray-300">
+                <strong>Personalized observations from your mood patterns</strong>
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-3 p-4 bg-black/30 rounded-lg">
-                <Lightbulb className="w-6 h-6 text-yellow-400 flex-shrink-0" />
-                <p className="text-gray-200">{aiInsight}</p>
+              <div className="space-y-3">
+                <div className="p-4 bg-purple-900/20 rounded-lg border border-purple-500/20">
+                  <p className="text-purple-200">
+                    <strong>📈 Weekly Pattern:</strong> You tend to feel most positive on weekends and Wednesday afternoons.
+                  </p>
+                </div>
+                <div className="p-4 bg-blue-900/20 rounded-lg border border-blue-500/20">
+                  <p className="text-blue-200">
+                    <strong>🎯 Stress Triggers:</strong> Your anxiety levels peak around 8 PM - consider earlier wind-down routines.
+                  </p>
+                </div>
+                <div className="p-4 bg-emerald-900/20 rounded-lg border border-emerald-500/20">
+                  <p className="text-emerald-200">
+                    <strong>💡 Recommendation:</strong> Your journal entries show improved mood after breathing exercises. Keep it up!
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="bg-black/50 backdrop-blur-sm border border-purple-500/20">
-              <TabsTrigger value="overview" className="text-gray-300 data-[state=active]:text-white">Overview</TabsTrigger>
-              <TabsTrigger value="detailed" className="text-gray-300 data-[state=active]:text-white">Detailed Analysis</TabsTrigger>
-              <TabsTrigger value="patterns" className="text-gray-300 data-[state=active]:text-white">Patterns</TabsTrigger>
-            </TabsList>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Emotion Stats Pie Chart */}
+            <Card className="bg-black/50 backdrop-blur-sm border border-gray-800">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-white">
+                  Emotion Distribution
+                </CardTitle>
+                <CardDescription className="text-sm text-gray-400">
+                  Breakdown of your detected emotions
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={emotionStats}
+                      dataKey="count"
+                      nameKey="emotion"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={120}
+                      fill="#8884d8"
+                      label
+                    >
+                      {emotionStats.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
 
-            <TabsContent value="overview" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="bg-black/50 backdrop-blur-sm border-purple-500/20">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5" />
-                      Confidence Levels
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <LineChart data={chartData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                        <XAxis dataKey="date" stroke="#9CA3AF" />
-                        <YAxis stroke="#9CA3AF" />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#1F2937', 
-                            border: '1px solid #6B46C1',
-                            borderRadius: '8px'
-                          }}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="confidence" 
-                          stroke="#8B5CF6" 
-                          strokeWidth={3}
-                          dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-black/50 backdrop-blur-sm border-purple-500/20">
-                  <CardHeader>
-                    <CardTitle className="text-white">Mood Distribution</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <PieChart>
-                        <Pie
-                          data={moodDistribution}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={80}
-                          dataKey="value"
-                        >
-                          {moodDistribution.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#1F2937', 
-                            border: '1px solid #6B46C1',
-                            borderRadius: '8px'
-                          }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="detailed" className="space-y-6">
-              <Card className="bg-black/50 backdrop-blur-sm border-purple-500/20">
-                <CardHeader>
-                  <CardTitle className="text-white">Journal Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="date" stroke="#9CA3AF" />
-                      <YAxis stroke="#9CA3AF" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#1F2937', 
-                          border: '1px solid #6B46C1',
-                          borderRadius: '8px'
-                        }}
-                      />
-                      <Bar dataKey="entries" fill="#10B981" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="patterns" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="bg-black/50 backdrop-blur-sm border-purple-500/20">
-                  <CardHeader>
-                    <CardTitle className="text-white text-lg">Most Active Day</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold text-purple-400">Tuesday</p>
-                    <p className="text-gray-400 text-sm">You journal most on Tuesdays</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-black/50 backdrop-blur-sm border-purple-500/20">
-                  <CardHeader>
-                    <CardTitle className="text-white text-lg">Streak</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold text-emerald-400">7 days</p>
-                    <p className="text-gray-400 text-sm">Current logging streak</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-black/50 backdrop-blur-sm border-purple-500/20">
-                  <CardHeader>
-                    <CardTitle className="text-white text-lg">Challenges</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold text-yellow-400">5/7</p>
-                    <p className="text-gray-400 text-sm">Completed this week</p>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-          </Tabs>
+            {/* Daily Emotion Summary Bar Chart */}
+            <Card className="bg-black/50 backdrop-blur-sm border border-gray-800">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-white">
+                  Daily Emotion Summary
+                </CardTitle>
+                <CardDescription className="text-sm text-gray-400">
+                  Dominant emotions over the past few days
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dailySummary}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="totalDetections" fill="#8884d8" name="Total Detections" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
         </main>
       </div>
     </div>
