@@ -20,7 +20,7 @@ const Dashboard = () => {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [todaysChallenge, setTodaysChallenge] = useState<DailyChallengeType>();
 
-  const handleEmotionDetected = useCallback((emotion: Emot⚠️ionType, conf: number) => {
+  const handleEmotionDetected = useCallback((emotion: EmotionType, conf: number) => {
     console.log(`🎭 Detected emotion: ${emotion} (${Math.round(conf * 100)}% confidence)`);
     setCurrentEmotion(emotion);
     setConfidence(conf);
