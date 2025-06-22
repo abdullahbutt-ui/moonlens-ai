@@ -3,15 +3,24 @@ import { useState, useCallback } from "react";
 import Navbar from "@/components/layout/Navbar";
 import CurrentMood from "@/components/dashboard/CurrentMood";
 import WebcamEmotionDetector from "@/components/dashboard/WebcamEmotionDetector";
+import MoodJournal from "@/components/dashboard/MoodJournal";
+import DailyChallenge from "@/components/dashboard/DailyChallenge";
 import { EmotionType } from "@/types/emotion";
+import { JournalEntry, DailyChallenge as DailyChallengeType } from "@/types/journal";
 import { SparklesCore } from "@/components/ui/sparkles";
+import { Button } from "@/components/ui/button";
+import { TrendingUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>('neutral');
   const [confidence, setConfidence] = useState(0.8);
   const [isDetecting, setIsDetecting] = useState(false);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [todaysChallenge, setTodaysChallenge] = useState<DailyChallengeType>();
 
-  const handleEmotionDetected = useCallback((emotion: EmotionType, conf: number) => {
+  const handleEmotionDetected = useCallback((emotion: Emot⚠️ionType, conf: number) => {
     console.log(`🎭 Detected emotion: ${emotion} (${Math.round(conf * 100)}% confidence)`);
     setCurrentEmotion(emotion);
     setConfidence(conf);
@@ -19,6 +28,30 @@ const Dashboard = () => {
 
   const toggleDetection = () => {
     setIsDetecting(!isDetecting);
+  };
+
+  const handleAddJournalEntry = (entry: Omit<JournalEntry, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => {
+    const newEntry: JournalEntry = {
+      ...entry,
+      id: `journal-${Date.now()}`,
+      userId: 'current-user',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    setJournalEntries(prev => [newEntry, ...prev]);
+  };
+
+  const handleCompleteChallenge = (response: string) => {
+    const challenge: DailyChallengeType = {
+      id: `challenge-${Date.now()}`,
+      userId: 'current-user',
+      challengeText: "Name one thing that made you smile today.",
+      response,
+      completed: true,
+      completedAt: new Date(),
+      date: new Date().toISOString().split('T')[0]
+    };
+    setTodaysChallenge(challenge);
   };
 
   return (
@@ -42,21 +75,34 @@ const Dashboard = () => {
         <Navbar />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-              MoodLens Dashboard ✨
-            </h1>
-            <p className="text-gray-300 text-lg">
-              Real-time AI emotion detection powered by your webcam and microphone
-            </p>
+          <div className="mb-8 flex justify-between items-center">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                MoodLens Dashboard ✨
+              </h1>
+              <p className="text-gray-300 text-lg">
+                Real-time AI emotion detection powered by your webcam and microphone
+              </p>
+            </div>
+            <Button
+              onClick={() => navigate('/mood-trends')}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <TrendingUp className="w-4 h-4 mr-2" />
+              View Trends
+            </Button>
           </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-            <div className="xl:col-span-1">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
+            <div className="xl:col-span-1 space-y-6">
               <CurrentMood 
                 emotion={currentEmotion}
                 confidence={confidence}
                 isDetecting={isDetecting}
+              />
+              <DailyChallenge
+                todaysChallenge={todaysChallenge}
+                onCompleteChallenge={handleCompleteChallenge}
               />
             </div>
             
@@ -69,19 +115,32 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-black/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-500/20">
-              <h3 className="text-lg font-semibold mb-4 flex items-center text-white">
-                📊 Recent Emotions
-              </h3>
-              <p className="text-gray-400">Emotion history will appear here once connected to Supabase</p>
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <MoodJournal
+              onAddEntry={handleAddJournalEntry}
+              recentEntries={journalEntries}
+            />
             
             <div className="bg-black/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-500/20">
               <h3 className="text-lg font-semibold mb-4 flex items-center text-white">
-                📈 Emotion Trends
+                📈 Quick Stats
               </h3>
-              <p className="text-gray-400">AI-powered insights and analytics coming soon</p>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Journal Entries Today</span>
+                  <span className="text-purple-400 font-semibold">{journalEntries.length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Current Streak</span>
+                  <span className="text-emerald-400 font-semibold">7 days</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Challenge Status</span>
+                  <span className={`font-semibold ${todaysChallenge?.completed ? 'text-emerald-400' : 'text-yellow-400'}`}>
+                    {todaysChallenge?.completed ? 'Completed ✓' : 'Pending'}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </main>

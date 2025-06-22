@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Brain, User, Settings, LogOut } from "lucide-react";
+import { Brain, User, Settings, LogOut, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -26,6 +26,14 @@ const Navbar = () => {
           </div>
           
           <div className="flex items-center space-x-4">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate('/mood-trends')}
+            >
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Trends
+            </Button>
             <Button 
               variant="ghost" 
               size="sm"
