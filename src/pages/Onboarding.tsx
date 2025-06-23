@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Camera, Shield, TrendingUp, ArrowRight, Skip } from "lucide-react";
+import { Camera, Shield, TrendingUp, ArrowRight, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Onboarding = () => {
@@ -143,7 +143,7 @@ const Onboarding = () => {
             variant="ghost"
             className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
           >
-            <Skip className="h-4 w-4 mr-2" />
+            <ChevronRight className="h-4 w-4 mr-2" />
             Skip
           </Button>
 
