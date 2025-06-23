@@ -25,7 +25,7 @@ const Landing = () => {
   };
 
   const handleGetStarted = () => {
-    navigate('/onboarding');
+    navigate('/mood-splash');
   };
 
   const handleLogin = () => {
