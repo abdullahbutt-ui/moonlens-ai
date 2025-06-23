@@ -1,7 +1,6 @@
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SparklesPreviewColorful } from "@/components/ui/demo";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -13,18 +12,14 @@ const Index = () => {
     if (isAuthenticated) {
       navigate('/dashboard');
     } else {
-      // Add a delay and then navigate to login
-      const timer = setTimeout(() => {
-        navigate('/login');
-      }, 3000);
-      
-      return () => clearTimeout(timer);
+      // Navigate to landing page instead of direct login
+      navigate('/landing');
     }
   }, [navigate]);
 
   return (
-    <div className="min-h-screen">
-      <SparklesPreviewColorful />
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600"></div>
     </div>
   );
 };
