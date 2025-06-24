@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Heart, Zap, Volume2 } from 'lucide-react';
@@ -16,7 +15,7 @@ const AIFeedbackCard = ({ feedback, currentMood, suggestions = [], onSuggestionC
     switch (currentMood) {
       case 'happy': return <Heart className="w-4 h-4 text-emerald-500" />;
       case 'sad': return <Volume2 className="w-4 h-4 text-blue-500" />;
-      case 'anxious': return <Zap className="w-4 h-4 text-purple-500" />;
+      case 'fearful': return <Zap className="w-4 h-4 text-purple-500" />;
       default: return <Sparkles className="w-4 h-4 text-indigo-500" />;
     }
   };
@@ -25,7 +24,7 @@ const AIFeedbackCard = ({ feedback, currentMood, suggestions = [], onSuggestionC
     switch (currentMood) {
       case 'happy': return 'from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20';
       case 'sad': return 'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20';
-      case 'anxious': return 'from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20';
+      case 'fearful': return 'from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20';
       default: return 'from-gray-50 to-slate-50 dark:from-gray-900/20 dark:to-slate-900/20';
     }
   };
