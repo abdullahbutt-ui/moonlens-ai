@@ -29,8 +29,8 @@ const Navbar = () => {
   return (
     <nav className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center py-3 sm:py-0 sm:h-16 gap-4 sm:gap-0">
+          <div className="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-start">
             {isSubPage && (
               <Button
                 variant="ghost"
@@ -49,15 +49,15 @@ const Navbar = () => {
               </span>
             </div>
             {isSubPage && (
-              <span className="text-lg font-medium text-muted-foreground">
+              <span className="text-lg font-medium text-muted-foreground hidden sm:block">
                 {getPageTitle()}
               </span>
             )}
           </div>
           
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-4 w-full sm:w-auto">
             {/* Theme Toggle */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 order-last sm:order-none">
               <Sun className="h-4 w-4" />
               <Switch
                 checked={theme === 'dark'}
@@ -71,41 +71,46 @@ const Navbar = () => {
               variant="ghost" 
               size="sm"
               onClick={() => navigate('/mood-trends')}
+              className="flex items-center space-x-1"
             >
-              <TrendingUp className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Trends</span>
+              <TrendingUp className="h-4 w-4" />
+              <span className="text-xs sm:text-sm">Trends</span>
             </Button>
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => navigate('/mood-wall')}
+              className="flex items-center space-x-1"
             >
-              <Users className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Community</span>
+              <Users className="h-4 w-4" />
+              <span className="text-xs sm:text-sm">Community</span>
             </Button>
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => navigate('/settings')}
+              className="flex items-center space-x-1"
             >
-              <Settings className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Settings</span>
+              <Settings className="h-4 w-4" />
+              <span className="text-xs sm:text-sm">Settings</span>
             </Button>
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => navigate('/profile')}
+              className="flex items-center space-x-1"
             >
-              <User className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Profile</span>
+              <User className="h-4 w-4" />
+              <span className="text-xs sm:text-sm">Profile</span>
             </Button>
             <Button 
               variant="outline" 
               size="sm"
               onClick={handleSignOut}
+              className="flex items-center space-x-1"
             >
-              <LogOut className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Sign Out</span>
+              <LogOut className="h-4 w-4" />
+              <span className="text-xs sm:text-sm">Sign Out</span>
             </Button>
           </div>
         </div>
