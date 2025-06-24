@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Brain, ArrowLeft, Sun, Moon } from "lucide-react";
+import { ArrowLeft, Sun, Moon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useEffect, useState } from "react";
@@ -39,38 +39,40 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
+    <nav className={`border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300 ${
+      isScrolled && !isSubPage ? 'md:bg-background/95' : ''
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row justify-between items-center py-3 sm:py-0 sm:h-16 gap-4 sm:gap-0">
-          <div className="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-start">
+        <div className="flex justify-between items-center h-16">
+          {/* Left side - Back button and title */}
+          <div className="flex items-center space-x-4">
             {isSubPage && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/dashboard')}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 p-2"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-5 w-5" />
                 <span className="hidden sm:inline">Back</span>
               </Button>
             )}
-            <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
-              <Brain className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                MoodLens
-              </span>
-            </div>
+            {!isSubPage && (
+              <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
+                <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  MoodLens
+                </span>
+              </div>
+            )}
             {isSubPage && (
-              <span className="text-lg font-medium text-muted-foreground hidden sm:block">
+              <span className="text-lg font-medium text-muted-foreground">
                 {getPageTitle()}
               </span>
             )}
           </div>
           
-          {/* Show full navigation only on desktop or when not scrolled on mobile */}
-          <div className={`flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-4 w-full sm:w-auto transition-opacity duration-300 ${
-            isScrolled && !isSubPage ? 'opacity-0 pointer-events-none sm:opacity-100 sm:pointer-events-auto' : 'opacity-100'
-          }`}>
+          {/* Right side - Theme toggle and desktop navigation */}
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* Theme Toggle - always visible */}
             <div className="flex items-center space-x-2">
               <Sun className="h-4 w-4" />
@@ -82,50 +84,45 @@ const Navbar = () => {
               <Moon className="h-4 w-4" />
             </div>
             
-            {/* Navigation buttons - hidden on mobile when scrolled and not on sub-pages */}
-            {!isSubPage && (
-              <>
+            {/* Desktop navigation - only show on dashboard and when not scrolled */}
+            {!isSubPage && !isScrolled && (
+              <div className="hidden md:flex items-center gap-2">
                 <Button 
                   variant="ghost" 
                   size="sm"
                   onClick={() => navigate('/daily-challenge')}
-                  className="flex items-center space-x-1"
                 >
-                  <span className="text-xs sm:text-sm">💭 Daily Challenge</span>
+                  💭 Daily Challenge
                 </Button>
                 <Button 
                   variant="ghost" 
                   size="sm"
                   onClick={() => navigate('/mood-trends')}
-                  className="flex items-center space-x-1"
                 >
-                  <span className="text-xs sm:text-sm">📊 Trends</span>
+                  📊 Trends
                 </Button>
                 <Button 
                   variant="ghost" 
                   size="sm"
                   onClick={() => navigate('/mood-wall')}
-                  className="flex items-center space-x-1"
                 >
-                  <span className="text-xs sm:text-sm">👥 Community</span>
+                  👥 Community
                 </Button>
                 <Button 
                   variant="ghost" 
                   size="sm"
                   onClick={() => navigate('/settings')}
-                  className="flex items-center space-x-1"
                 >
-                  <span className="text-xs sm:text-sm">⚙️ Settings</span>
+                  ⚙️ Settings
                 </Button>
                 <Button 
                   variant="ghost" 
                   size="sm"
                   onClick={() => navigate('/profile')}
-                  className="flex items-center space-x-1"
                 >
-                  <span className="text-xs sm:text-sm">👤 Profile</span>
+                  👤 Profile
                 </Button>
-              </>
+              </div>
             )}
           </div>
         </div>

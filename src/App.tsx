@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import MoodTrends from "./pages/MoodTrends";
 import MoodWall from "./pages/MoodWall";
 import DailyChallenge from "./pages/DailyChallenge";
+import FutureSelfLetter from "./pages/FutureSelfLetter";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 

@@ -171,8 +171,8 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black relative">
-      {/* Background sparkles effect - only in dark mode */}
-      <div className="absolute inset-0 w-full h-full dark:block hidden">
+      {/* Background sparkles effect - only in dark mode on desktop */}
+      <div className="absolute inset-0 w-full h-full dark:block hidden md:block">
         <SparklesCore
           id="dashboard-sparkles"
           background="transparent"
@@ -206,12 +206,18 @@ const Dashboard = () => {
                 className="hidden sm:block"
               />
             </div>
-            <div className="flex flex-wrap gap-3">
+            
+            {/* Desktop buttons - hidden on mobile */}
+            <div className="hidden md:flex flex-wrap gap-3">
               <EmotionalArchetypeQuiz />
-              <FutureSelfLetter 
-                currentMood={currentEmotion}
-                onSaveLetter={handleSaveFutureLetter}
-              />
+              <Button
+                onClick={() => navigate('/future-self-letter')}
+                variant="outline"
+                className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-500/30 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-800/30 dark:hover:to-pink-800/30 text-purple-700 dark:text-purple-300"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Letter to Future Self
+              </Button>
               <AIMoodCoach 
                 currentMood={currentEmotion}
                 recentMoods={[currentEmotion]}
