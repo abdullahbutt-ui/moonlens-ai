@@ -28,7 +28,7 @@ const DailyChallenge = ({ todaysChallenge, onCompleteChallenge }: DailyChallenge
   };
 
   return (
-    <Card className="bg-gradient-to-br from-emerald-50/80 to-teal-50/80 border-emerald-200/50 backdrop-blur-sm relative overflow-hidden">
+    <Card className="bg-gradient-to-br from-emerald-50/80 to-teal-50/80 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200/50 dark:border-emerald-500/30 backdrop-blur-sm relative overflow-hidden">
       {showConfetti && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
           <div className="text-6xl animate-bounce">🎉</div>
@@ -36,19 +36,19 @@ const DailyChallenge = ({ todaysChallenge, onCompleteChallenge }: DailyChallenge
       )}
       
       <CardHeader>
-        <CardTitle className="flex items-center justify-between text-emerald-800">
+        <CardTitle className="flex items-center justify-between text-emerald-800 dark:text-emerald-200">
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5" />
             Daily Challenge
           </div>
-          {isCompleted && <CheckCircle className="w-5 h-5 text-emerald-600" />}
+          {isCompleted && <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />}
         </CardTitle>
       </CardHeader>
       
       <CardContent className="space-y-4">
-        <div className="p-4 bg-white/70 rounded-lg border border-emerald-200/50">
-          <p className="text-emerald-700 font-medium mb-2">Today's Reflection:</p>
-          <p className="text-emerald-600 text-lg">{challengeText}</p>
+        <div className="p-4 bg-white/70 dark:bg-black/30 rounded-lg border border-emerald-200/50 dark:border-emerald-500/30">
+          <p className="text-emerald-700 dark:text-emerald-300 font-medium mb-2">Today's Reflection:</p>
+          <p className="text-emerald-600 dark:text-emerald-200 text-lg">{challengeText}</p>
         </div>
 
         {!isCompleted ? (
@@ -57,7 +57,7 @@ const DailyChallenge = ({ todaysChallenge, onCompleteChallenge }: DailyChallenge
               placeholder="Share your thoughts..."
               value={response}
               onChange={(e) => setResponse(e.target.value)}
-              className="bg-white/70 border-emerald-200 focus:border-emerald-400 transition-colors"
+              className="bg-white/70 dark:bg-black/30 border-emerald-200 dark:border-emerald-500/50 focus:border-emerald-400 dark:focus:border-emerald-400 transition-colors text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
             />
             
             <Button
@@ -70,15 +70,15 @@ const DailyChallenge = ({ todaysChallenge, onCompleteChallenge }: DailyChallenge
             </Button>
           </div>
         ) : (
-          <div className="p-4 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-lg border border-emerald-200">
+          <div className="p-4 bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-lg border border-emerald-200 dark:border-emerald-500/30">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="w-5 h-5 text-emerald-600" />
-              <p className="font-medium text-emerald-800">Challenge Completed!</p>
+              <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <p className="font-medium text-emerald-800 dark:text-emerald-200">Challenge Completed!</p>
             </div>
-            <p className="text-emerald-700 text-sm">
+            <p className="text-emerald-700 dark:text-emerald-300 text-sm">
               {todaysChallenge?.response || "Great job reflecting today!"}
             </p>
-            <p className="text-xs text-emerald-600 mt-2">
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2">
               Come back tomorrow for a new challenge ✨
             </p>
           </div>

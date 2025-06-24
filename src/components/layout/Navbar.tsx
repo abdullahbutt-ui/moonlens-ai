@@ -1,14 +1,25 @@
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Brain, User, Settings, LogOut, TrendingUp, Users, ArrowLeft, Sun, Moon } from "lucide-react";
+import { Brain, ArrowLeft, Sun, Moon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleSignOut = () => {
     localStorage.removeItem('mockAuth');
@@ -22,6 +33,7 @@ const Navbar = () => {
       case '/mood-wall': return 'Community Wall';
       case '/settings': return 'Settings';
       case '/profile': return 'Profile';
+      case '/daily-challenge': return 'Daily Challenge';
       default: return '';
     }
   };
@@ -55,9 +67,12 @@ const Navbar = () => {
             )}
           </div>
           
-          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-4 w-full sm:w-auto">
-            {/* Theme Toggle */}
-            <div className="flex items-center space-x-2 order-last sm:order-none">
+          {/* Show full navigation only on desktop or when not scrolled on mobile */}
+          <div className={`flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-4 w-full sm:w-auto transition-opacity duration-300 ${
+            isScrolled && !isSubPage ? 'opacity-0 pointer-events-none sm:opacity-100 sm:pointer-events-auto' : 'opacity-100'
+          }`}>
+            {/* Theme Toggle - always visible */}
+            <div className="flex items-center space-x-2">
               <Sun className="h-4 w-4" />
               <Switch
                 checked={theme === 'dark'}
@@ -67,51 +82,51 @@ const Navbar = () => {
               <Moon className="h-4 w-4" />
             </div>
             
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate('/mood-trends')}
-              className="flex items-center space-x-1"
-            >
-              <TrendingUp className="h-4 w-4" />
-              <span className="text-xs sm:text-sm">Trends</span>
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate('/mood-wall')}
-              className="flex items-center space-x-1"
-            >
-              <Users className="h-4 w-4" />
-              <span className="text-xs sm:text-sm">Community</span>
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate('/settings')}
-              className="flex items-center space-x-1"
-            >
-              <Settings className="h-4 w-4" />
-              <span className="text-xs sm:text-sm">Settings</span>
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate('/profile')}
-              className="flex items-center space-x-1"
-            >
-              <User className="h-4 w-4" />
-              <span className="text-xs sm:text-sm">Profile</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleSignOut}
-              className="flex items-center space-x-1"
-            >
-              <LogOut className="h-4 w-4" />
-              <span className="text-xs sm:text-sm">Sign Out</span>
-            </Button>
+            {/* Navigation buttons - hidden on mobile when scrolled and not on sub-pages */}
+            {!isSubPage && (
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/daily-challenge')}
+                  className="flex items-center space-x-1"
+                >
+                  <span className="text-xs sm:text-sm">💭 Daily Challenge</span>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/mood-trends')}
+                  className="flex items-center space-x-1"
+                >
+                  <span className="text-xs sm:text-sm">📊 Trends</span>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/mood-wall')}
+                  className="flex items-center space-x-1"
+                >
+                  <span className="text-xs sm:text-sm">👥 Community</span>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/settings')}
+                  className="flex items-center space-x-1"
+                >
+                  <span className="text-xs sm:text-sm">⚙️ Settings</span>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/profile')}
+                  className="flex items-center space-x-1"
+                >
+                  <span className="text-xs sm:text-sm">👤 Profile</span>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -28,7 +28,6 @@ const Dashboard = () => {
   const [confidence, setConfidence] = useState(0.8);
   const [isDetecting, setIsDetecting] = useState(false);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
-  const [todaysChallenge, setTodaysChallenge] = useState<DailyChallengeType>();
   const [checkInStreak, setCheckInStreak] = useState(7);
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
   const [timelineEntries, setTimelineEntries] = useState([
@@ -104,19 +103,6 @@ const Dashboard = () => {
       updatedAt: new Date()
     };
     setJournalEntries(prev => [newEntry, ...prev]);
-  };
-
-  const handleCompleteDailyChallenge = (response: string) => {
-    const challenge: DailyChallengeType = {
-      id: `challenge-${Date.now()}`,
-      userId: 'current-user',
-      challengeText: "Name one thing that made you smile today.",
-      response,
-      completed: true,
-      completedAt: new Date(),
-      date: new Date().toISOString().split('T')[0]
-    };
-    setTodaysChallenge(challenge);
   };
 
   const handleSaveFutureLetter = (letter: {
@@ -303,35 +289,28 @@ const Dashboard = () => {
               recentEntries={journalEntries}
             />
             
-            <div className="space-y-6">
-              <DailyChallenge
-                todaysChallenge={todaysChallenge}
-                onCompleteChallenge={handleCompleteDailyChallenge}
-              />
-              
-              <div className="bg-white dark:bg-black/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-purple-500/20">
-                <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-900 dark:text-white">
-                  📈 Quick Stats
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Current Streak</span>
-                    <span className="text-orange-600 dark:text-orange-400 font-semibold">{checkInStreak} days</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Weekly Challenges</span>
-                    <span className="text-teal-600 dark:text-teal-400 font-semibold">
-                      {weeklyChallenges.filter(c => c.completed).length}/{weeklyChallenges.length}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Journal Entries Today</span>
-                    <span className="text-purple-600 dark:text-purple-400 font-semibold">{journalEntries.length}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Audio Sessions</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{audioSessions.length}</span>
-                  </div>
+            <div className="bg-white dark:bg-black/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-purple-500/20">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-900 dark:text-white">
+                📈 Quick Stats
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 dark:text-gray-400">Current Streak</span>
+                  <span className="text-orange-600 dark:text-orange-400 font-semibold">{checkInStreak} days</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 dark:text-gray-400">Weekly Challenges</span>
+                  <span className="text-teal-600 dark:text-teal-400 font-semibold">
+                    {weeklyChallenges.filter(c => c.completed).length}/{weeklyChallenges.length}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 dark:text-gray-400">Journal Entries Today</span>
+                  <span className="text-purple-600 dark:text-purple-400 font-semibold">{journalEntries.length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 dark:text-gray-400">Audio Sessions</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{audioSessions.length}</span>
                 </div>
               </div>
             </div>

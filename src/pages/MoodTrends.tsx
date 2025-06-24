@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { generateMockEmotionData } from "@/utils/emotionData";
 import { EmotionData, EmotionStats } from "@/types/emotion";
 import {
@@ -117,8 +117,9 @@ const MoodTrends = () => {
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-              Mood Trends & Insights 📊
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2 flex items-center gap-3">
+              Mood Trends & Insights 
+              <TrendingUp className="w-8 h-8 text-purple-500" />
             </h1>
             <p className="text-gray-600 dark:text-gray-300 text-lg">
               Discover patterns in your emotional journey with AI-powered analytics
