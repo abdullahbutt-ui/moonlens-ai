@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { PenTool, Mic, Send, Sparkles } from 'lucide-react';
 import { analyzeEmotionFromText, generateAIFeedback } from '@/utils/nlpSimulator';
 import { JournalEntry } from '@/types/journal';
 import { emotionColors } from '@/utils/emotionData';
+import AIFeedbackCard from './AIFeedbackCard';
 
 interface MoodJournalProps {
   onAddEntry: (entry: Omit<JournalEntry, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => void;
@@ -21,17 +21,54 @@ const MoodJournal = ({ onAddEntry, recentEntries }: MoodJournalProps) => {
   const [emotionTags, setEmotionTags] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+  const generateEnhancedAIResponse = (userMessage: string, emotions: string[]): { feedback: string; suggestions: string[] } => {
+    const lowerMessage = userMessage.toLowerCase();
+    const primaryEmotion = emotions[0] || 'neutral';
+    
+    let feedback = '';
+    let suggestions: string[] = [];
+    
+    if (lowerMessage.includes('anxious') || lowerMessage.includes('stress') || primaryEmotion === 'anxious') {
+      feedback = "I sense some tension in your words. Remember, anxiety often comes from our mind wandering to future 'what-ifs'. You're safe in this moment. 🌸";
+      suggestions = ['Try 4-7-8 breathing', 'Listen to forest sounds', 'Write 3 gratitudes'];
+    } else if (lowerMessage.includes('sad') || lowerMessage.includes('down') || primaryEmotion === 'sad') {
+      feedback = "Your feelings are completely valid. Sometimes sadness is our heart's way of processing change or loss. Be gentle with yourself today. 💙";
+      suggestions = ['Journal more', 'Listen to rain sounds', 'Take a warm bath'];
+    } else if (lowerMessage.includes('happy') || lowerMessage.includes('joy') || primaryEmotion === 'happy') {
+      feedback = "Your joy is beautiful and contagious! These moments of happiness are precious gifts - let yourself fully experience this lightness. ✨";
+      suggestions = ['Share with a friend', 'Take a nature walk', 'Dance to music'];
+    } else if (lowerMessage.includes('tired') || lowerMessage.includes('exhausted')) {
+      feedback = "Rest isn't a luxury, it's a necessity. Your body and mind are asking for care. Listen to what you need right now. 🍃";
+      suggestions = ['Try meditation', 'Listen to sleep sounds', 'Early bedtime tonight'];
+    } else {
+      feedback = "Thank you for sharing your inner world with me. Every feeling you have matters, and I'm here to support your emotional journey. 🤍";
+      suggestions = ['Continue journaling', 'Try breathing exercise', 'Listen to calming sounds'];
+    }
+    
+    return { feedback, suggestions };
+  };
+
   const handleAnalyze = () => {
     if (!content.trim()) return;
     
     setIsAnalyzing(true);
     setTimeout(() => {
       const tags = analyzeEmotionFromText(content);
-      const feedback = generateAIFeedback(tags, content);
+      const { feedback, suggestions } = generateEnhancedAIResponse(content, tags);
       setEmotionTags(tags);
       setAIFeedback(feedback);
       setIsAnalyzing(false);
     }, 1500);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    console.log('User clicked suggestion:', suggestion);
+    // Here you could trigger specific actions based on the suggestion
+    if (suggestion.includes('breathing')) {
+      // Could open breathing exercise
+    } else if (suggestion.includes('sounds')) {
+      // Could open sound center
+    }
   };
 
   const handleSubmit = () => {
@@ -100,7 +137,7 @@ const MoodJournal = ({ onAddEntry, recentEntries }: MoodJournalProps) => {
           </div>
 
           {emotionTags.length > 0 && (
-            <div className="space-y-3 p-4 bg-white/60 rounded-lg border border-purple-200/50">
+            <div className="space-y-3">
               <div className="flex flex-wrap gap-2">
                 {emotionTags.map((tag, index) => (
                   <Badge
@@ -113,10 +150,12 @@ const MoodJournal = ({ onAddEntry, recentEntries }: MoodJournalProps) => {
               </div>
               
               {aiFeedback && (
-                <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-l-4 border-purple-400">
-                  <p className="text-sm text-purple-700 font-medium">AI Insight:</p>
-                  <p className="text-purple-600 mt-1">{aiFeedback}</p>
-                </div>
+                <AIFeedbackCard
+                  feedback={aiFeedback}
+                  currentMood={emotionTags[0] as any}
+                  suggestions={['Try 4-7-8 breathing', 'Listen to forest sounds', 'Write 3 gratitudes']}
+                  onSuggestionClick={handleSuggestionClick}
+                />
               )}
             </div>
           )}

@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import Navbar from "@/components/layout/Navbar";
 import CurrentMood from "@/components/dashboard/CurrentMood";
@@ -14,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 import AIMoodCoach from "@/components/dashboard/AIMoodCoach";
 import SoundCenter from "@/components/dashboard/SoundCenter";
 import BreathingExercise from "@/components/dashboard/BreathingExercise";
+import EmotionalAvatar from "@/components/dashboard/EmotionalAvatar";
+import FutureSelfLetter from "@/components/dashboard/FutureSelfLetter";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -57,6 +58,17 @@ const Dashboard = () => {
     setTodaysChallenge(challenge);
   };
 
+  const handleSaveFutureLetter = (letter: {
+    content: string;
+    deliveryDate: string;
+    currentMood: EmotionType;
+  }) => {
+    console.log('📬 Future letter saved:', letter);
+    // In a real app, this would save to the database
+    // For now, we'll just show a success message
+    alert('Your letter has been sealed and will be delivered on time! ✨');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black relative">
       {/* Background sparkles effect - only in dark mode */}
@@ -79,15 +91,26 @@ const Dashboard = () => {
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
-                MoodLens Dashboard ✨
-              </h1>
-              <p className="text-gray-600 dark:text-gray-300 text-lg">
-                Real-time AI emotion detection powered by your webcam and microphone
-              </p>
+            <div className="flex items-center gap-6">
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                  MoodLens Dashboard ✨
+                </h1>
+                <p className="text-gray-600 dark:text-gray-300 text-lg">
+                  Real-time AI emotion detection powered by your webcam and microphone
+                </p>
+              </div>
+              <EmotionalAvatar 
+                currentEmotion={currentEmotion}
+                confidence={confidence}
+                className="hidden sm:block"
+              />
             </div>
             <div className="flex flex-wrap gap-3">
+              <FutureSelfLetter 
+                currentMood={currentEmotion}
+                onSaveLetter={handleSaveFutureLetter}
+              />
               <AIMoodCoach 
                 currentMood={currentEmotion}
                 recentMoods={[currentEmotion]}
@@ -115,6 +138,13 @@ const Dashboard = () => {
                 todaysChallenge={todaysChallenge}
                 onCompleteChallenge={handleCompleteChallenge}
               />
+              {/* Show avatar on mobile */}
+              <div className="sm:hidden flex justify-center">
+                <EmotionalAvatar 
+                  currentEmotion={currentEmotion}
+                  confidence={confidence}
+                />
+              </div>
             </div>
             
             <div className="xl:col-span-2">
