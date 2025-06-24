@@ -106,7 +106,7 @@ const Dashboard = () => {
     setJournalEntries(prev => [newEntry, ...prev]);
   };
 
-  const handleCompleteChallenge = (response: string) => {
+  const handleCompleteDailyChallenge = (response: string) => {
     const challenge: DailyChallengeType = {
       id: `challenge-${Date.now()}`,
       userId: 'current-user',
@@ -142,7 +142,7 @@ const Dashboard = () => {
     ]);
   };
 
-  const handleCompleteChallenge = (challengeId: string) => {
+  const handleCompleteWeeklyChallenge = (challengeId: string) => {
     setWeeklyChallenges(prev => 
       prev.map(challenge => 
         challenge.id === challengeId 
@@ -166,6 +166,8 @@ const Dashboard = () => {
       soundName: soundId.replace('-', ' '),
       duration: 0,
       startMood: currentEmotion,
+      endMood: 'neutral' as EmotionType,
+      rating: 0,
       timestamp: new Date()
     };
     setAudioSessions(prev => [newSession, ...prev]);
@@ -276,7 +278,7 @@ const Dashboard = () => {
             <EmotionTimeline entries={timelineEntries} />
             <WeeklyChallenges
               challenges={weeklyChallenges}
-              onCompleteChallenge={handleCompleteChallenge}
+              onCompleteChallenge={handleCompleteWeeklyChallenge}
             />
           </div>
 
@@ -304,7 +306,7 @@ const Dashboard = () => {
             <div className="space-y-6">
               <DailyChallenge
                 todaysChallenge={todaysChallenge}
-                onCompleteChallenge={handleCompleteChallenge}
+                onCompleteChallenge={handleCompleteDailyChallenge}
               />
               
               <div className="bg-white dark:bg-black/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-purple-500/20">
