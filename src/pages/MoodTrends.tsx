@@ -1,7 +1,8 @@
+
 import { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Brain } from "lucide-react";
 import { generateMockEmotionData } from "@/utils/emotionData";
 import { EmotionData, EmotionStats } from "@/types/emotion";
 import {
