@@ -34,14 +34,15 @@ const Navbar = () => {
       case '/settings': return 'Settings';
       case '/profile': return 'Profile';
       case '/daily-challenge': return 'Daily Challenge';
+      case '/live-emotion-detection': return 'Live Emotion Detection';
+      case '/mood-journal': return 'Mood Journal';
+      case '/future-self-letter': return 'Letter to Future Self';
       default: return '';
     }
   };
 
   return (
-    <nav className={`border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300 ${
-      isScrolled && !isSubPage ? 'md:bg-background/95' : ''
-    }`}>
+    <nav className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Left side - Back button and title */}
@@ -84,8 +85,8 @@ const Navbar = () => {
               <Moon className="h-4 w-4" />
             </div>
             
-            {/* Desktop navigation - only show on dashboard and when not scrolled */}
-            {!isSubPage && !isScrolled && (
+            {/* Desktop navigation - only show on dashboard */}
+            {!isSubPage && (
               <div className="hidden md:flex items-center gap-2">
                 <Button 
                   variant="ghost" 

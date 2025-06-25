@@ -16,6 +16,8 @@ import MoodTrends from "./pages/MoodTrends";
 import MoodWall from "./pages/MoodWall";
 import DailyChallenge from "./pages/DailyChallenge";
 import FutureSelfLetter from "./pages/FutureSelfLetter";
+import LiveEmotionDetection from "./pages/LiveEmotionDetection";
+import MoodJournalPage from "./pages/MoodJournalPage";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
@@ -35,6 +37,8 @@ const App = () => (
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/live-emotion-detection" element={<LiveEmotionDetection />} />
+            <Route path="/mood-journal" element={<MoodJournalPage />} />
             <Route path="/mood-trends" element={<MoodTrends />} />
             <Route path="/mood-wall" element={<MoodWall />} />
             <Route path="/daily-challenge" element={<DailyChallenge />} />
