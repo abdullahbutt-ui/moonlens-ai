@@ -40,44 +40,47 @@ const DailyCheckIn = ({ onCheckIn, currentStreak, hasCheckedInToday }: DailyChec
   const badge = getStreakBadge();
 
   return (
-    <Card className="bg-gradient-to-br from-indigo-50/80 to-purple-50/80 border-indigo-200/50 backdrop-blur-sm relative">
+    <Card className="bg-gradient-to-br from-indigo-50/80 to-purple-50/80 dark:from-indigo-900/20 dark:to-purple-900/20 border-indigo-200/50 dark:border-indigo-500/30 backdrop-blur-sm relative">
       {showReward && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-          <div className="text-6xl animate-bounce">🏆</div>
+          <div className="text-4xl sm:text-6xl animate-bounce">🏆</div>
         </div>
       )}
       
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between text-indigo-800">
+      <CardHeader className="pb-3 sm:pb-4">
+        <CardTitle className="flex items-center justify-between text-indigo-800 dark:text-indigo-200 text-lg sm:text-xl">
           <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5" />
-            Daily Check-In
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base">Daily Check-In</span>
           </div>
           <div className="flex items-center gap-2">
             <Flame className="w-4 h-4 text-orange-500" />
-            <span className="text-lg font-bold">{currentStreak}</span>
+            <span className="text-base sm:text-lg font-bold">{currentStreak}</span>
           </div>
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4">
         {!hasCheckedInToday ? (
           <>
-            <p className="text-indigo-700 text-center font-medium">How are you feeling today?</p>
+            <p className="text-indigo-700 dark:text-indigo-300 text-center font-medium text-sm sm:text-base">
+              How are you feeling today?
+            </p>
             
-            <div className="grid grid-cols-4 gap-2">
+            {/* Responsive mood grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
               {moods.map((mood) => (
                 <Button
                   key={mood}
                   variant={selectedMood === mood ? "default" : "outline"}
-                  className={`h-12 flex flex-col items-center justify-center text-xs ${
-                    selectedMood === mood ? 'ring-2 ring-indigo-400' : ''
+                  className={`h-16 sm:h-20 flex flex-col items-center justify-center text-xs sm:text-sm p-2 ${
+                    selectedMood === mood ? 'ring-2 ring-indigo-400 dark:ring-indigo-500' : ''
                   }`}
                   onClick={() => setSelectedMood(mood)}
                   style={selectedMood === mood ? { backgroundColor: emotionColors[mood] } : {}}
                 >
-                  <span className="text-lg">{emotionEmojis[mood]}</span>
-                  <span className="capitalize">{mood}</span>
+                  <span className="text-lg sm:text-xl mb-1">{emotionEmojis[mood]}</span>
+                  <span className="capitalize leading-tight">{mood}</span>
                 </Button>
               ))}
             </div>
@@ -85,23 +88,27 @@ const DailyCheckIn = ({ onCheckIn, currentStreak, hasCheckedInToday }: DailyChec
             <Button
               onClick={handleCheckIn}
               disabled={!selectedMood}
-              className="w-full bg-indigo-600 hover:bg-indigo-700"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-sm sm:text-base py-2 sm:py-3"
             >
               Complete Check-In
             </Button>
           </>
         ) : (
-          <div className="text-center space-y-3">
-            <div className="text-4xl">✅</div>
-            <p className="text-indigo-700 font-medium">You've checked in today!</p>
-            <p className="text-sm text-indigo-600">Come back tomorrow to continue your streak</p>
+          <div className="text-center space-y-3 py-2">
+            <div className="text-3xl sm:text-4xl">✅</div>
+            <p className="text-indigo-700 dark:text-indigo-300 font-medium text-sm sm:text-base">
+              You've checked in today!
+            </p>
+            <p className="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400">
+              Come back tomorrow to continue your streak
+            </p>
           </div>
         )}
 
         {badge && (
-          <div className="flex items-center justify-center gap-2 mt-4">
+          <div className="flex items-center justify-center gap-2 mt-3 sm:mt-4">
             <Award className="w-4 h-4 text-yellow-600" />
-            <Badge className={`${badge.color} text-white px-3 py-1`}>
+            <Badge className={`${badge.color} text-white px-2 sm:px-3 py-1 text-xs sm:text-sm`}>
               {badge.text}
             </Badge>
           </div>

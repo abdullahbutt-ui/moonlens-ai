@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Sun, Moon } from "lucide-react";
+import { ArrowLeft, Sun, Moon, Menu, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useEffect, useState } from "react";
@@ -11,10 +11,11 @@ const Navbar = () => {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
+      setIsScrolled(window.scrollY > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -41,12 +42,22 @@ const Navbar = () => {
     }
   };
 
+  const navItems = [
+    { label: 'Daily Challenge', path: '/daily-challenge', emoji: '💭' },
+    { label: 'Trends', path: '/mood-trends', emoji: '📊' },
+    { label: 'Community', path: '/mood-wall', emoji: '👥' },
+    { label: 'Settings', path: '/settings', emoji: '⚙️' },
+    { label: 'Profile', path: '/profile', emoji: '👤' },
+  ];
+
   return (
-    <nav className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
+    <nav className={`border-b bg-background/95 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300 ${
+      isScrolled ? 'shadow-sm' : ''
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-14 sm:h-16">
           {/* Left side - Back button and title */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3 sm:space-x-4 flex-1">
             {isSubPage && (
               <Button
                 variant="ghost"
@@ -54,25 +65,25 @@ const Navbar = () => {
                 onClick={() => navigate('/dashboard')}
                 className="flex items-center space-x-2 p-2"
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span className="hidden sm:inline">Back</span>
               </Button>
             )}
             {!isSubPage && (
               <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   MoodLens
                 </span>
               </div>
             )}
             {isSubPage && (
-              <span className="text-lg font-medium text-muted-foreground">
+              <span className="text-base sm:text-lg font-medium text-muted-foreground truncate">
                 {getPageTitle()}
               </span>
             )}
           </div>
           
-          {/* Right side - Theme toggle and desktop navigation */}
+          {/* Right side - Theme toggle and navigation */}
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Theme Toggle - always visible */}
             <div className="flex items-center space-x-2">
@@ -87,46 +98,58 @@ const Navbar = () => {
             
             {/* Desktop navigation - only show on dashboard */}
             {!isSubPage && (
-              <div className="hidden md:flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/daily-challenge')}
-                >
-                  💭 Daily Challenge
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/mood-trends')}
-                >
-                  📊 Trends
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/mood-wall')}
-                >
-                  👥 Community
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/settings')}
-                >
-                  ⚙️ Settings
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/profile')}
-                >
-                  👤 Profile
-                </Button>
-              </div>
+              <>
+                <div className="hidden lg:flex items-center gap-2">
+                  {navItems.map((item) => (
+                    <Button 
+                      key={item.path}
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => navigate(item.path)}
+                      className="hidden xl:flex items-center gap-1"
+                    >
+                      {item.emoji} {item.label}
+                    </Button>
+                  ))}
+                </div>
+                
+                {/* Hamburger menu for medium screens */}
+                <div className="lg:hidden">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="p-2"
+                  >
+                    {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                  </Button>
+                </div>
+              </>
             )}
           </div>
         </div>
+
+        {/* Mobile dropdown menu */}
+        {isMobileMenuOpen && !isSubPage && (
+          <div className="lg:hidden border-t bg-background/95 backdrop-blur-sm">
+            <div className="py-2 space-y-1">
+              {navItems.map((item) => (
+                <Button
+                  key={item.path}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    navigate(item.path);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full justify-start gap-2 px-4 py-2"
+                >
+                  {item.emoji} {item.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
