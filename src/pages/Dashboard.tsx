@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import Navbar from "@/components/layout/Navbar";
 import CurrentMood from "@/components/dashboard/CurrentMood";
@@ -15,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import AIMoodCoach from "@/components/dashboard/AIMoodCoach";
 import SoundCenter from "@/components/dashboard/SoundCenter";
 import BreathingExercise from "@/components/dashboard/BreathingExercise";
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>('neutral');
@@ -64,7 +62,6 @@ const Dashboard = () => {
     rating: 4,
     timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
   }]);
-
   const handleDailyCheckIn = (mood: EmotionType) => {
     setCurrentEmotion(mood);
     setHasCheckedInToday(true);
@@ -75,14 +72,12 @@ const Dashboard = () => {
       emotion: mood
     }, ...prev.filter(entry => entry.date !== today)]);
   };
-
   const handleCompleteWeeklyChallenge = (challengeId: string) => {
     setWeeklyChallenges(prev => prev.map(challenge => challenge.id === challengeId ? {
       ...challenge,
       completed: true
     } : challenge));
   };
-
   const handleStartAudio = (soundId: string) => {
     const newSession = {
       id: `session-${Date.now()}`,
@@ -95,7 +90,6 @@ const Dashboard = () => {
     };
     setAudioSessions(prev => [newSession, ...prev]);
   };
-
   const handleRateSession = (sessionId: string, rating: number, endMood: EmotionType) => {
     setAudioSessions(prev => prev.map(session => session.id === sessionId ? {
       ...session,
@@ -103,21 +97,10 @@ const Dashboard = () => {
       endMood
     } : session));
   };
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black relative">
+  return <div className="min-h-screen bg-gray-50 dark:bg-black relative">
       {/* Background sparkles effect - only in dark mode on desktop */}
       <div className="absolute inset-0 w-full h-full dark:block hidden md:block">
-        <SparklesCore 
-          id="dashboard-sparkles" 
-          background="transparent" 
-          minSize={0.4} 
-          maxSize={0.8} 
-          particleDensity={80} 
-          className="w-full h-full" 
-          particleColor="#8b5cf6" 
-          speed={0.3} 
-        />
+        <SparklesCore id="dashboard-sparkles" background="transparent" minSize={0.4} maxSize={0.8} particleDensity={80} className="w-full h-full" particleColor="#8b5cf6" speed={0.3} />
       </div>
       
       {/* Content overlay */}
@@ -127,9 +110,7 @@ const Dashboard = () => {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2 flex items-center gap-3">
-                🧘‍♀️ Dashboard ✨
-              </h1>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2 flex items-center gap-3"> Dashboard </h1>
               <p className="text-gray-600 dark:text-gray-300 text-lg">
                 Your personal mindfulness and emotion tracking hub
               </p>
@@ -162,27 +143,19 @@ const Dashboard = () => {
           {/* Main content grid */}
           <div className="space-y-8">
             {/* Daily Check-in - only show if not completed */}
-            {!hasCheckedInToday && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {!hasCheckedInToday && <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1">
-                  <DailyCheckIn 
-                    onCheckIn={handleDailyCheckIn} 
-                    currentStreak={checkInStreak} 
-                    hasCheckedInToday={hasCheckedInToday} 
-                  />
+                  <DailyCheckIn onCheckIn={handleDailyCheckIn} currentStreak={checkInStreak} hasCheckedInToday={hasCheckedInToday} />
                 </div>
                 <div className="lg:col-span-2">
                   <CurrentMood emotion={currentEmotion} confidence={0.8} isDetecting={false} />
                 </div>
-              </div>
-            )}
+              </div>}
 
             {/* If checked in, just show current mood */}
-            {hasCheckedInToday && (
-              <div className="max-w-md mx-auto">
+            {hasCheckedInToday && <div className="max-w-md mx-auto">
                 <CurrentMood emotion={currentEmotion} confidence={0.8} isDetecting={false} />
-              </div>
-            )}
+              </div>}
 
             {/* Timeline and Challenges */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -192,12 +165,7 @@ const Dashboard = () => {
 
             {/* Audio Suggestions and Stats */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <SmartAudioSuggestions 
-                currentMood={currentEmotion} 
-                recentSessions={audioSessions} 
-                onStartAudio={handleStartAudio} 
-                onRateSession={handleRateSession} 
-              />
+              <SmartAudioSuggestions currentMood={currentEmotion} recentSessions={audioSessions} onStartAudio={handleStartAudio} onRateSession={handleRateSession} />
               
               <div className="bg-white dark:bg-black/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-purple-500/20">
                 <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-900 dark:text-white">
@@ -227,8 +195,6 @@ const Dashboard = () => {
         {/* Mobile floating feature buttons */}
         <ScrollFadeFeatures currentMood={currentEmotion} />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard;
