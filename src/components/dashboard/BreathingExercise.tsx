@@ -3,13 +3,15 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wind, Play, Pause, RotateCcw } from "lucide-react";
+import { Wind, Play, Pause, RotateCcw, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface BreathingExerciseProps {
   onComplete?: () => void;
 }
 
 const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [phase, setPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
@@ -106,10 +108,21 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
       </DialogTrigger>
       <DialogContent className="max-w-2xl bg-white dark:bg-black/95 border-gray-200 dark:border-gray-800">
         <DialogHeader>
-          <DialogTitle className="text-blue-600 dark:text-blue-400 flex items-center">
-            <Wind className="w-5 h-5 mr-2" />
-            Mindful Breathing
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-blue-600 dark:text-blue-400 flex items-center">
+              <Wind className="w-5 h-5 mr-2" />
+              Mindful Breathing
+            </DialogTitle>
+            {/* Mobile back button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsOpen(false)}
+              className="md:hidden"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </div>
           <DialogDescription className="text-gray-600 dark:text-gray-400">
             Take a moment to center yourself with guided breathing exercises
           </DialogDescription>
