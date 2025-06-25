@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import Navbar from "@/components/layout/Navbar";
 import CurrentMood from "@/components/dashboard/CurrentMood";
@@ -15,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import AIMoodCoach from "@/components/dashboard/AIMoodCoach";
 import SoundCenter from "@/components/dashboard/SoundCenter";
 import BreathingExercise from "@/components/dashboard/BreathingExercise";
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>('neutral');
@@ -64,7 +62,6 @@ const Dashboard = () => {
     rating: 4,
     timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
   }]);
-
   const handleDailyCheckIn = (mood: EmotionType) => {
     setCurrentEmotion(mood);
     setHasCheckedInToday(true);
@@ -75,13 +72,12 @@ const Dashboard = () => {
       emotion: mood
     }, ...prev.filter(entry => entry.date !== today)]);
   };
-
   const handleCompleteWeeklyChallenge = (challengeId: string) => {
-    setWeeklyChallenges(prev => prev.map(challenge => 
-      challenge.id === challengeId ? { ...challenge, completed: true } : challenge
-    ));
+    setWeeklyChallenges(prev => prev.map(challenge => challenge.id === challengeId ? {
+      ...challenge,
+      completed: true
+    } : challenge));
   };
-
   const handleStartAudio = (soundId: string) => {
     const newSession = {
       id: `session-${Date.now()}`,
@@ -94,27 +90,17 @@ const Dashboard = () => {
     };
     setAudioSessions(prev => [newSession, ...prev]);
   };
-
   const handleRateSession = (sessionId: string, rating: number, endMood: EmotionType) => {
-    setAudioSessions(prev => prev.map(session => 
-      session.id === sessionId ? { ...session, rating, endMood } : session
-    ));
+    setAudioSessions(prev => prev.map(session => session.id === sessionId ? {
+      ...session,
+      rating,
+      endMood
+    } : session));
   };
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black relative">
+  return <div className="min-h-screen bg-gray-50 dark:bg-black relative">
       {/* Background sparkles effect - only in dark mode on desktop */}
       <div className="absolute inset-0 w-full h-full dark:block hidden md:block">
-        <SparklesCore 
-          id="dashboard-sparkles" 
-          background="transparent" 
-          minSize={0.4} 
-          maxSize={0.8} 
-          particleDensity={80} 
-          className="w-full h-full" 
-          particleColor="#8b5cf6" 
-          speed={0.3} 
-        />
+        <SparklesCore id="dashboard-sparkles" background="transparent" minSize={0.4} maxSize={0.8} particleDensity={80} className="w-full h-full" particleColor="#8b5cf6" speed={0.3} />
       </div>
       
       {/* Content overlay */}
@@ -124,9 +110,7 @@ const Dashboard = () => {
         <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-20 md:pb-8">
           <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="text-center sm:text-left w-full sm:w-auto">
-              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2 flex items-center justify-center sm:justify-start gap-3">
-                🧘‍♀️ Dashboard
-              </h1>
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2 flex items-center justify-center sm:justify-start gap-3"> Dashboard</h1>
               <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg">
                 Your personal mindfulness and emotion tracking hub
               </p>
@@ -134,37 +118,22 @@ const Dashboard = () => {
             
             {/* Desktop buttons - hidden on mobile */}
             <div className="hidden lg:flex flex-wrap gap-3">
-              <Button 
-                onClick={() => navigate('/live-emotion-detection')} 
-                variant="outline" 
-                className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-500/30"
-              >
+              <Button onClick={() => navigate('/live-emotion-detection')} variant="outline" className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-500/30">
                 <Zap className="w-4 h-4 mr-2" />
                 Live Detection
               </Button>
-              <Button 
-                onClick={() => navigate('/mood-journal')} 
-                variant="outline" 
-                className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 border-green-200 dark:border-green-500/30"
-              >
+              <Button onClick={() => navigate('/mood-journal')} variant="outline" className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 border-green-200 dark:border-green-500/30">
                 <Brain className="w-4 h-4 mr-2" />
                 Mood Journal
               </Button>
-              <Button 
-                onClick={() => navigate('/future-self-letter')} 
-                variant="outline" 
-                className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-500/30"
-              >
+              <Button onClick={() => navigate('/future-self-letter')} variant="outline" className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-500/30">
                 <Mail className="w-4 h-4 mr-2" />
                 Letter to Future Self
               </Button>
               <AIMoodCoach currentMood={currentEmotion} recentMoods={[currentEmotion]} />
               <SoundCenter currentMood={currentEmotion} />
               <BreathingExercise />
-              <Button 
-                onClick={() => navigate('/mood-trends')} 
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
+              <Button onClick={() => navigate('/mood-trends')} className="bg-purple-600 hover:bg-purple-700 text-white">
                 <TrendingUp className="w-4 h-4 mr-2" />
                 View Trends
               </Button>
@@ -174,45 +143,29 @@ const Dashboard = () => {
           {/* Main content - improved mobile spacing */}
           <div className="space-y-6 sm:space-y-8">
             {/* Daily Check-in - only show if not completed */}
-            {!hasCheckedInToday && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+            {!hasCheckedInToday && <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
                 <div className="lg:col-span-1">
-                  <DailyCheckIn 
-                    onCheckIn={handleDailyCheckIn} 
-                    currentStreak={checkInStreak} 
-                    hasCheckedInToday={hasCheckedInToday} 
-                  />
+                  <DailyCheckIn onCheckIn={handleDailyCheckIn} currentStreak={checkInStreak} hasCheckedInToday={hasCheckedInToday} />
                 </div>
                 <div className="lg:col-span-2">
                   <CurrentMood emotion={currentEmotion} confidence={0.8} isDetecting={false} />
                 </div>
-              </div>
-            )}
+              </div>}
 
             {/* If checked in, just show current mood */}
-            {hasCheckedInToday && (
-              <div className="max-w-md mx-auto">
+            {hasCheckedInToday && <div className="max-w-md mx-auto">
                 <CurrentMood emotion={currentEmotion} confidence={0.8} isDetecting={false} />
-              </div>
-            )}
+              </div>}
 
             {/* Timeline and Challenges - improved mobile layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
               <EmotionTimeline entries={timelineEntries} />
-              <WeeklyChallenges 
-                challenges={weeklyChallenges} 
-                onCompleteChallenge={handleCompleteWeeklyChallenge} 
-              />
+              <WeeklyChallenges challenges={weeklyChallenges} onCompleteChallenge={handleCompleteWeeklyChallenge} />
             </div>
 
             {/* Audio Suggestions and Stats - improved mobile layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
-              <SmartAudioSuggestions 
-                currentMood={currentEmotion} 
-                recentSessions={audioSessions} 
-                onStartAudio={handleStartAudio} 
-                onRateSession={handleRateSession} 
-              />
+              <SmartAudioSuggestions currentMood={currentEmotion} recentSessions={audioSessions} onStartAudio={handleStartAudio} onRateSession={handleRateSession} />
               
               <div className="bg-white/80 dark:bg-black/50 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 dark:border-purple-500/20">
                 <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-900 dark:text-white">
@@ -242,8 +195,6 @@ const Dashboard = () => {
         {/* Mobile Bottom Navigation */}
         <MobileBottomNav currentMood={currentEmotion} />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard;
