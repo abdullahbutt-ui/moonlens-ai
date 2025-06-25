@@ -19,7 +19,6 @@ import WeeklyChallenges from "@/components/dashboard/WeeklyChallenges";
 import MoodTriggerInsights from "@/components/dashboard/MoodTriggerInsights";
 import EmotionalArchetypeQuiz from "@/components/dashboard/EmotionalArchetypeQuiz";
 import SmartAudioSuggestions from "@/components/dashboard/SmartAudioSuggestions";
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>('neutral');
@@ -28,70 +27,66 @@ const Dashboard = () => {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [checkInStreak, setCheckInStreak] = useState(7);
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
-  const [timelineEntries, setTimelineEntries] = useState([
-    { date: '2024-01-15', emotion: 'happy' as EmotionType, note: 'Great morning meditation' },
-    { date: '2024-01-14', emotion: 'sad' as EmotionType, note: 'Tough day at work' },
-    { date: '2024-01-13', emotion: 'neutral' as EmotionType },
-  ]);
-  const [weeklyChallenges, setWeeklyChallenges] = useState([
-    {
-      id: '1',
-      title: 'Morning Breathing',
-      description: 'Practice 5 minutes of deep breathing when you wake up',
-      category: 'breathing' as const,
-      completed: false,
-      difficulty: 'easy' as const
-    },
-    {
-      id: '2', 
-      title: 'Nature Sounds Session',
-      description: 'Listen to forest sounds for 15 minutes during your break',
-      category: 'audio' as const,
-      completed: true,
-      difficulty: 'medium' as const
-    },
-    {
-      id: '3',
-      title: 'Gratitude Moment',
-      description: 'Write down three things you\'re grateful for today',
-      category: 'mindfulness' as const,
-      completed: false,
-      difficulty: 'easy' as const
-    }
-  ]);
-  const [triggerPatterns, setTriggerPatterns] = useState([
-    {
-      id: '1',
-      pattern: 'You often feel anxious on Monday evenings',
-      frequency: 4,
-      timeOfDay: 'evening',
-      dayOfWeek: 'Monday',
-      suggestion: 'Try a 10-minute forest rain session before dinner on Mondays',
-      severity: 'medium' as const
-    }
-  ]);
-  const [audioSessions, setAudioSessions] = useState([
-    {
-      id: '1',
-      soundName: 'Forest Rain',
-      duration: 15,
-      startMood: 'sad' as EmotionType,
-      endMood: 'neutral' as EmotionType,
-      rating: 4,
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
-    }
-  ]);
-
+  const [timelineEntries, setTimelineEntries] = useState([{
+    date: '2024-01-15',
+    emotion: 'happy' as EmotionType,
+    note: 'Great morning meditation'
+  }, {
+    date: '2024-01-14',
+    emotion: 'sad' as EmotionType,
+    note: 'Tough day at work'
+  }, {
+    date: '2024-01-13',
+    emotion: 'neutral' as EmotionType
+  }]);
+  const [weeklyChallenges, setWeeklyChallenges] = useState([{
+    id: '1',
+    title: 'Morning Breathing',
+    description: 'Practice 5 minutes of deep breathing when you wake up',
+    category: 'breathing' as const,
+    completed: false,
+    difficulty: 'easy' as const
+  }, {
+    id: '2',
+    title: 'Nature Sounds Session',
+    description: 'Listen to forest sounds for 15 minutes during your break',
+    category: 'audio' as const,
+    completed: true,
+    difficulty: 'medium' as const
+  }, {
+    id: '3',
+    title: 'Gratitude Moment',
+    description: 'Write down three things you\'re grateful for today',
+    category: 'mindfulness' as const,
+    completed: false,
+    difficulty: 'easy' as const
+  }]);
+  const [triggerPatterns, setTriggerPatterns] = useState([{
+    id: '1',
+    pattern: 'You often feel anxious on Monday evenings',
+    frequency: 4,
+    timeOfDay: 'evening',
+    dayOfWeek: 'Monday',
+    suggestion: 'Try a 10-minute forest rain session before dinner on Mondays',
+    severity: 'medium' as const
+  }]);
+  const [audioSessions, setAudioSessions] = useState([{
+    id: '1',
+    soundName: 'Forest Rain',
+    duration: 15,
+    startMood: 'sad' as EmotionType,
+    endMood: 'neutral' as EmotionType,
+    rating: 4,
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
+  }]);
   const handleEmotionDetected = useCallback((emotion: EmotionType, conf: number) => {
     console.log(`🎭 Detected emotion: ${emotion} (${Math.round(conf * 100)}% confidence)`);
     setCurrentEmotion(emotion);
     setConfidence(conf);
   }, []);
-
   const toggleDetection = () => {
     setIsDetecting(!isDetecting);
   };
-
   const handleAddJournalEntry = (entry: Omit<JournalEntry, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => {
     const newEntry: JournalEntry = {
       ...entry,
@@ -102,7 +97,6 @@ const Dashboard = () => {
     };
     setJournalEntries(prev => [newEntry, ...prev]);
   };
-
   const handleSaveFutureLetter = (letter: {
     content: string;
     deliveryDate: string;
@@ -113,29 +107,22 @@ const Dashboard = () => {
     // For now, we'll just show a success message
     alert('Your letter has been sealed and will be delivered on time! ✨');
   };
-
   const handleDailyCheckIn = (mood: EmotionType) => {
     setCurrentEmotion(mood);
     setHasCheckedInToday(true);
     setCheckInStreak(prev => prev + 1);
-    
     const today = new Date().toISOString().split('T')[0];
-    setTimelineEntries(prev => [
-      { date: today, emotion: mood },
-      ...prev.filter(entry => entry.date !== today)
-    ]);
+    setTimelineEntries(prev => [{
+      date: today,
+      emotion: mood
+    }, ...prev.filter(entry => entry.date !== today)]);
   };
-
   const handleCompleteWeeklyChallenge = (challengeId: string) => {
-    setWeeklyChallenges(prev => 
-      prev.map(challenge => 
-        challenge.id === challengeId 
-          ? { ...challenge, completed: true }
-          : challenge
-      )
-    );
+    setWeeklyChallenges(prev => prev.map(challenge => challenge.id === challengeId ? {
+      ...challenge,
+      completed: true
+    } : challenge));
   };
-
   const handleApplySuggestion = (patternId: string) => {
     const pattern = triggerPatterns.find(p => p.id === patternId);
     if (pattern && pattern.suggestion.includes('forest rain')) {
@@ -143,7 +130,6 @@ const Dashboard = () => {
       console.log('Opening forest rain sounds');
     }
   };
-
   const handleStartAudio = (soundId: string) => {
     const newSession = {
       id: `session-${Date.now()}`,
@@ -156,31 +142,17 @@ const Dashboard = () => {
     };
     setAudioSessions(prev => [newSession, ...prev]);
   };
-
   const handleRateSession = (sessionId: string, rating: number, endMood: EmotionType) => {
-    setAudioSessions(prev =>
-      prev.map(session =>
-        session.id === sessionId
-          ? { ...session, rating, endMood }
-          : session
-      )
-    );
+    setAudioSessions(prev => prev.map(session => session.id === sessionId ? {
+      ...session,
+      rating,
+      endMood
+    } : session));
   };
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black relative">
+  return <div className="min-h-screen bg-gray-50 dark:bg-black relative">
       {/* Background sparkles effect - only in dark mode on desktop */}
       <div className="absolute inset-0 w-full h-full dark:block hidden md:block">
-        <SparklesCore
-          id="dashboard-sparkles"
-          background="transparent"
-          minSize={0.4}
-          maxSize={0.8}
-          particleDensity={80}
-          className="w-full h-full"
-          particleColor="#8b5cf6"
-          speed={0.3}
-        />
+        <SparklesCore id="dashboard-sparkles" background="transparent" minSize={0.4} maxSize={0.8} particleDensity={80} className="w-full h-full" particleColor="#8b5cf6" speed={0.3} />
       </div>
       
       {/* Content overlay */}
@@ -191,41 +163,25 @@ const Dashboard = () => {
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center gap-6">
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
-                  MoodLens Dashboard ✨
-                </h1>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2"> Dashboard ✨</h1>
                 <p className="text-gray-600 dark:text-gray-300 text-lg">
                   Real-time AI emotion detection powered by your webcam and microphone
                 </p>
               </div>
-              <EmotionalAvatar 
-                currentEmotion={currentEmotion}
-                confidence={confidence}
-                className="hidden sm:block"
-              />
+              <EmotionalAvatar currentEmotion={currentEmotion} confidence={confidence} className="hidden sm:block" />
             </div>
             
             {/* Desktop buttons - hidden on mobile */}
             <div className="hidden md:flex flex-wrap gap-3">
               <EmotionalArchetypeQuiz />
-              <Button
-                onClick={() => navigate('/future-self-letter')}
-                variant="outline"
-                className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-500/30 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-800/30 dark:hover:to-pink-800/30 text-purple-700 dark:text-purple-300"
-              >
+              <Button onClick={() => navigate('/future-self-letter')} variant="outline" className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-500/30 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-800/30 dark:hover:to-pink-800/30 text-purple-700 dark:text-purple-300">
                 <Mail className="w-4 h-4 mr-2" />
                 Letter to Future Self
               </Button>
-              <AIMoodCoach 
-                currentMood={currentEmotion}
-                recentMoods={[currentEmotion]}
-              />
+              <AIMoodCoach currentMood={currentEmotion} recentMoods={[currentEmotion]} />
               <SoundCenter currentMood={currentEmotion} />
               <BreathingExercise />
-              <Button
-                onClick={() => navigate('/mood-trends')}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
+              <Button onClick={() => navigate('/mood-trends')} className="bg-purple-600 hover:bg-purple-700 text-white">
                 <TrendingUp className="w-4 h-4 mr-2" />
                 View Trends
               </Button>
@@ -235,63 +191,34 @@ const Dashboard = () => {
           {/* First row: Daily Check-in and Core Detection */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
             <div className="xl:col-span-1 space-y-6">
-              <DailyCheckIn
-                onCheckIn={handleDailyCheckIn}
-                currentStreak={checkInStreak}
-                hasCheckedInToday={hasCheckedInToday}
-              />
-              <CurrentMood 
-                emotion={currentEmotion}
-                confidence={confidence}
-                isDetecting={isDetecting}
-              />
+              <DailyCheckIn onCheckIn={handleDailyCheckIn} currentStreak={checkInStreak} hasCheckedInToday={hasCheckedInToday} />
+              <CurrentMood emotion={currentEmotion} confidence={confidence} isDetecting={isDetecting} />
               {/* Show avatar on mobile */}
               <div className="sm:hidden flex justify-center">
-                <EmotionalAvatar 
-                  currentEmotion={currentEmotion}
-                  confidence={confidence}
-                />
+                <EmotionalAvatar currentEmotion={currentEmotion} confidence={confidence} />
               </div>
             </div>
             
             <div className="xl:col-span-2">
-              <WebcamEmotionDetector
-                onEmotionDetected={handleEmotionDetected}
-                isActive={isDetecting}
-                onToggle={toggleDetection}
-              />
+              <WebcamEmotionDetector onEmotionDetected={handleEmotionDetected} isActive={isDetecting} onToggle={toggleDetection} />
             </div>
           </div>
 
           {/* Second row: Timeline and Challenges */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <EmotionTimeline entries={timelineEntries} />
-            <WeeklyChallenges
-              challenges={weeklyChallenges}
-              onCompleteChallenge={handleCompleteWeeklyChallenge}
-            />
+            <WeeklyChallenges challenges={weeklyChallenges} onCompleteChallenge={handleCompleteWeeklyChallenge} />
           </div>
 
           {/* Third row: Insights and Audio */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <MoodTriggerInsights
-              patterns={triggerPatterns}
-              onApplySuggestion={handleApplySuggestion}
-            />
-            <SmartAudioSuggestions
-              currentMood={currentEmotion}
-              recentSessions={audioSessions}
-              onStartAudio={handleStartAudio}
-              onRateSession={handleRateSession}
-            />
+            <MoodTriggerInsights patterns={triggerPatterns} onApplySuggestion={handleApplySuggestion} />
+            <SmartAudioSuggestions currentMood={currentEmotion} recentSessions={audioSessions} onStartAudio={handleStartAudio} onRateSession={handleRateSession} />
           </div>
 
           {/* Fourth row: Journal and Stats */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <MoodJournal
-              onAddEntry={handleAddJournalEntry}
-              recentEntries={journalEntries}
-            />
+            <MoodJournal onAddEntry={handleAddJournalEntry} recentEntries={journalEntries} />
             
             <div className="bg-white dark:bg-black/50 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-purple-500/20">
               <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-900 dark:text-white">
@@ -321,8 +248,6 @@ const Dashboard = () => {
           </div>
         </main>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard;
