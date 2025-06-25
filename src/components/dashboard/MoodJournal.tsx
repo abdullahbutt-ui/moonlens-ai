@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -89,9 +90,9 @@ const MoodJournal = ({ onAddEntry, recentEntries }: MoodJournalProps) => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-gradient-to-br from-purple-50/80 to-blue-50/80 border-purple-200/50 backdrop-blur-sm">
+      <Card className="bg-gradient-to-br from-purple-50/80 to-blue-50/80 dark:from-purple-900/20 dark:to-blue-900/20 border-purple-200/50 dark:border-purple-500/30 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-purple-800">
+          <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-200">
             <PenTool className="w-5 h-5" />
             Mood Journal
           </CardTitle>
@@ -102,12 +103,12 @@ const MoodJournal = ({ onAddEntry, recentEntries }: MoodJournalProps) => {
               placeholder="How are you feeling? Share your thoughts, emotions, or experiences..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="min-h-[120px] bg-white/70 border-purple-200 focus:border-purple-400 transition-colors"
+              className="min-h-[120px] bg-white/70 dark:bg-gray-800/70 border-purple-200 dark:border-purple-500/30 focus:border-purple-400 dark:focus:border-purple-400 transition-colors text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
             />
             <Button
               variant="ghost"
               size="sm"
-              className="absolute bottom-2 right-2 text-purple-600"
+              className="absolute bottom-2 right-2 text-purple-600 dark:text-purple-400"
               onClick={() => setIsRecording(!isRecording)}
             >
               <Mic className={`w-4 h-4 ${isRecording ? 'text-red-500 animate-pulse' : ''}`} />
@@ -118,7 +119,7 @@ const MoodJournal = ({ onAddEntry, recentEntries }: MoodJournalProps) => {
             <Button
               onClick={handleAnalyze}
               disabled={!content.trim() || isAnalyzing}
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-purple-600 hover:bg-purple-700 text-white"
             >
               <Sparkles className="w-4 h-4 mr-2" />
               {isAnalyzing ? 'Analyzing...' : 'AI Analysis'}
@@ -128,7 +129,7 @@ const MoodJournal = ({ onAddEntry, recentEntries }: MoodJournalProps) => {
               <Button
                 onClick={handleSubmit}
                 variant="outline"
-                className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                className="border-purple-300 dark:border-purple-500/30 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
               >
                 <Send className="w-4 h-4 mr-2" />
                 Save Entry
@@ -142,7 +143,7 @@ const MoodJournal = ({ onAddEntry, recentEntries }: MoodJournalProps) => {
                 {emotionTags.map((tag, index) => (
                   <Badge
                     key={index}
-                    className="bg-purple-100 text-purple-800 hover:bg-purple-200 transition-colors"
+                    className="bg-purple-100 dark:bg-purple-800/50 text-purple-800 dark:text-purple-200 hover:bg-purple-200 dark:hover:bg-purple-700/50 transition-colors"
                   >
                     {tag}
                   </Badge>
@@ -163,15 +164,15 @@ const MoodJournal = ({ onAddEntry, recentEntries }: MoodJournalProps) => {
       </Card>
 
       {recentEntries.length > 0 && (
-        <Card className="bg-white/50 backdrop-blur-sm">
+        <Card className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border-gray-200 dark:border-gray-700">
           <CardHeader>
-            <CardTitle className="text-lg text-gray-700">Recent Entries</CardTitle>
+            <CardTitle className="text-lg text-gray-700 dark:text-gray-200">Recent Entries</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {recentEntries.slice(0, 3).map((entry) => (
-                <div key={entry.id} className="p-3 bg-gray-50/70 rounded-lg">
-                  <p className="text-sm text-gray-700 mb-2">{entry.content}</p>
+                <div key={entry.id} className="p-3 bg-gray-50/70 dark:bg-gray-800/70 rounded-lg">
+                  <p className="text-sm text-gray-700 dark:text-gray-200 mb-2">{entry.content}</p>
                   <div className="flex flex-wrap gap-1">
                     {entry.emotionTags.map((tag, index) => (
                       <Badge key={index} variant="secondary" className="text-xs">
@@ -179,7 +180,7 @@ const MoodJournal = ({ onAddEntry, recentEntries }: MoodJournalProps) => {
                       </Badge>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                     {new Date(entry.createdAt).toLocaleDateString()}
                   </p>
                 </div>

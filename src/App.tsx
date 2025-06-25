@@ -38,9 +38,9 @@ const App = () => (
             <Route path="/mood-trends" element={<MoodTrends />} />
             <Route path="/mood-wall" element={<MoodWall />} />
             <Route path="/daily-challenge" element={<DailyChallenge />} />
+            <Route path="/future-self-letter" element={<FutureSelfLetter />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

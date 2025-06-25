@@ -3,15 +3,16 @@ import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play, Pause, Volume2, Heart, VolumeX } from "lucide-react";
+import { Play, Pause, Volume2, Heart, VolumeX, Upload, Waves } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Sound {
   id: string;
   name: string;
   description: string;
-  category: 'nature' | 'lofi' | 'ambient';
+  category: 'calm' | 'focus' | 'relax' | 'sleep';
   recommendedFor: string[];
   duration: string;
   audioUrl: string;
@@ -26,7 +27,10 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [volume, setVolume] = useState(0.7);
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [uploadedSounds, setUploadedSounds] = useState<Sound[]>([]);
+  const [showVisualizer, setShowVisualizer] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { toast } = useToast();
 
   const sounds: Sound[] = [
@@ -34,7 +38,7 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: '1',
       name: 'Forest Rain',
       description: 'Gentle raindrops on leaves',
-      category: 'nature',
+      category: 'calm',
       recommendedFor: ['anxious', 'stressed'],
       duration: '60 min',
       audioUrl: 'https://www.soundjay.com/misc/sounds/rain-01.mp3'
@@ -43,16 +47,16 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: '2',
       name: 'Ocean Waves',
       description: 'Rhythmic waves on shore',
-      category: 'nature',
+      category: 'relax',
       recommendedFor: ['sad', 'overwhelmed'],
       duration: '45 min',
       audioUrl: 'https://www.soundjay.com/misc/sounds/ocean-wave-1.mp3'
     },
     {
       id: '3',
-      name: 'Lo-fi Study',
-      description: 'Chill beats for focus',
-      category: 'lofi',
+      name: 'Focus Flow',
+      description: 'Chill beats for concentration',
+      category: 'focus',
       recommendedFor: ['neutral', 'focused'],
       duration: '30 min',
       audioUrl: 'https://www.chosic.com/wp-content/uploads/2021/07/Lofi-Study-112.mp3'
@@ -61,52 +65,96 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: '4',
       name: 'Mountain Wind',
       description: 'Peaceful mountain breeze',
-      category: 'nature',
+      category: 'calm',
       recommendedFor: ['angry', 'frustrated'],
       duration: '40 min',
       audioUrl: 'https://www.soundjay.com/misc/sounds/wind-chimes-1.mp3'
     },
     {
       id: '5',
-      name: 'Ambient Space',
-      description: 'Ethereal cosmic sounds',
-      category: 'ambient',
-      recommendedFor: ['contemplative', 'curious'],
-      duration: '35 min',
+      name: 'Deep Sleep',
+      description: 'Ethereal tones for rest',
+      category: 'sleep',
+      recommendedFor: ['tired', 'restless'],
+      duration: '8 hours',
       audioUrl: 'https://www.chosic.com/wp-content/uploads/2021/07/Ambient-1.mp3'
+    },
+    {
+      id: '6',
+      name: 'Productivity Boost',
+      description: 'Energizing background music',
+      category: 'focus',
+      recommendedFor: ['neutral', 'motivated'],
+      duration: '25 min',
+      audioUrl: 'https://www.chosic.com/wp-content/uploads/2021/07/Lofi-Study-112.mp3'
     }
   ];
 
+  const allSounds = [...sounds, ...uploadedSounds];
+
   const getRecommendedSounds = () => {
-    return sounds.filter(sound => 
+    return allSounds.filter(sound => 
       sound.recommendedFor.includes(currentMood.toLowerCase())
     );
   };
 
+  const getSoundsByCategory = (category: string) => {
+    return allSounds.filter(sound => sound.category === category);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('audio/')) {
+      toast({
+        title: "Invalid File",
+        description: "Please upload an audio file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    const newSound: Sound = {
+      id: `uploaded-${Date.now()}`,
+      name: file.name.replace(/\.[^/.]+$/, ""),
+      description: 'Your uploaded track',
+      category: 'calm',
+      recommendedFor: [currentMood.toLowerCase()],
+      duration: 'Custom',
+      audioUrl: url
+    };
+
+    setUploadedSounds(prev => [...prev, newSound]);
+    toast({
+      title: "Upload Successful",
+      description: `${newSound.name} has been added to your library.`,
+    });
+  };
+
   const initializeAudio = async (soundId: string) => {
-    const sound = sounds.find(s => s.id === soundId);
+    const sound = allSounds.find(s => s.id === soundId);
     if (!sound) return false;
 
     try {
       setIsLoading(soundId);
       
-      // Stop current audio if playing
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
 
-      // Create new audio element
       const audio = new Audio();
       audio.crossOrigin = "anonymous";
       audio.preload = "auto";
       audio.loop = true;
       audio.volume = volume;
       
-      // Set up event listeners
       audio.addEventListener('loadeddata', () => {
         console.log(`Audio loaded: ${sound.name}`);
         setIsLoading(null);
+        setShowVisualizer(true);
       });
       
       audio.addEventListener('error', (e) => {
@@ -114,97 +162,41 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
         setIsLoading(null);
         toast({
           title: "Audio Error",
-          description: `Could not load ${sound.name}. Trying alternative source...`,
+          description: `Could not load ${sound.name}. The file may be corrupted or unsupported.`,
           variant: "destructive",
         });
-        
-        // Fallback to a simple tone generation
-        playFallbackTone(sound.category);
       });
 
       audio.addEventListener('ended', () => {
         setCurrentlyPlaying(null);
+        setShowVisualizer(false);
       });
 
-      // Use fallback URLs for better compatibility
-      const fallbackUrls = {
-        nature: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhCj2Y2+/EeSsFJYDJ8tqLOAga',
-        lofi: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhCj2Y2+/EeSsFJYDJ8tqLOAga',
-        ambient: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhCj2Y2+/EeSsFJYDJ8tqLOAga'
-      };
-
-      // Try original URL first, then fallback
       audio.src = sound.audioUrl;
-      
       audioRef.current = audio;
       return true;
     } catch (error) {
       console.error(`Failed to initialize audio for ${sound.name}:`, error);
       setIsLoading(null);
-      toast({
-        title: "Audio Unavailable",
-        description: `${sound.name} is temporarily unavailable. Please try another sound.`,
-        variant: "destructive",
-      });
       return false;
     }
   };
 
-  const playFallbackTone = (category: string) => {
-    // Create a simple Web Audio API tone as fallback
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      // Different frequencies for different categories
-      const frequencies = {
-        nature: 220, // A3
-        lofi: 174,   // F3
-        ambient: 528 // C5
-      };
-      
-      oscillator.frequency.setValueAtTime(frequencies[category as keyof typeof frequencies] || 220, audioContext.currentTime);
-      oscillator.type = 'sine';
-      gainNode.gain.setValueAtTime(volume * 0.1, audioContext.currentTime);
-      
-      oscillator.start();
-      
-      // Stop after a short time to indicate it's working
-      setTimeout(() => {
-        oscillator.stop();
-        audioContext.close();
-      }, 1000);
-      
-      toast({
-        title: "Audio Test",
-        description: "Playing test tone - audio system is working!",
-      });
-    } catch (error) {
-      console.error('Web Audio API not available:', error);
-    }
-  };
-
   const handlePlayPause = async (soundId: string) => {
-    const sound = sounds.find(s => s.id === soundId);
+    const sound = allSounds.find(s => s.id === soundId);
     if (!sound) return;
 
-    // If clicking the same sound that's playing, pause it
     if (currentlyPlaying === soundId && audioRef.current) {
       audioRef.current.pause();
       setCurrentlyPlaying(null);
+      setShowVisualizer(false);
       console.log(`Paused: ${sound.name}`);
       return;
     }
 
-    // Initialize and play new sound
     const initialized = await initializeAudio(soundId);
     if (initialized && audioRef.current) {
       try {
-        // For mobile compatibility, we need user interaction
         const playPromise = audioRef.current.play();
         
         if (playPromise !== undefined) {
@@ -224,12 +216,10 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
                 description: "Please ensure audio permissions are enabled and try again.",
                 variant: "destructive",
               });
-              playFallbackTone(sound.category);
             });
         }
       } catch (error) {
         console.error('Audio play error:', error);
-        playFallbackTone(sound.category);
       }
     }
   };
@@ -241,7 +231,6 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
     }
   };
 
-  // Cleanup audio on unmount
   useEffect(() => {
     return () => {
       if (audioRef.current) {
@@ -253,12 +242,72 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'nature': return 'bg-green-900/30 text-green-400 border-green-500/50';
-      case 'lofi': return 'bg-blue-900/30 text-blue-400 border-blue-500/50';
-      case 'ambient': return 'bg-purple-900/30 text-purple-400 border-purple-500/50';
+      case 'calm': return 'bg-green-900/30 text-green-400 border-green-500/50';
+      case 'focus': return 'bg-blue-900/30 text-blue-400 border-blue-500/50';
+      case 'relax': return 'bg-purple-900/30 text-purple-400 border-purple-500/50';
+      case 'sleep': return 'bg-indigo-900/30 text-indigo-400 border-indigo-500/50';
       default: return 'bg-gray-900/30 text-gray-400 border-gray-500/50';
     }
   };
+
+  const SoundCard = ({ sound }: { sound: Sound }) => (
+    <Card 
+      className={`bg-gray-900/50 border-gray-700 transition-all duration-300 ${
+        currentlyPlaying === sound.id ? 'ring-2 ring-emerald-500/50 bg-emerald-900/20' : ''
+      }`}
+    >
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-white text-sm">{sound.name}</CardTitle>
+          <Badge className={getCategoryColor(sound.category)}>
+            {sound.category}
+          </Badge>
+        </div>
+        <CardDescription className="text-gray-400 text-xs">
+          {sound.description} • {sound.duration}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-gray-500">{sound.duration}</span>
+          {currentlyPlaying === sound.id && showVisualizer && (
+            <div className="flex items-center gap-1">
+              <Waves className="w-3 h-3 text-emerald-400 animate-pulse" />
+              <div className="flex gap-0.5">
+                {[1,2,3].map(i => (
+                  <div key={i} className="w-0.5 h-4 bg-emerald-400 animate-pulse" style={{animationDelay: `${i * 0.2}s`}} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        <Button
+          onClick={() => handlePlayPause(sound.id)}
+          variant={currentlyPlaying === sound.id ? "default" : "outline"}
+          size="sm"
+          className={`w-full ${currentlyPlaying === sound.id ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
+          disabled={isLoading === sound.id}
+        >
+          {isLoading === sound.id ? (
+            <>
+              <div className="w-3 h-3 mr-1 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              Loading
+            </>
+          ) : currentlyPlaying === sound.id ? (
+            <>
+              <Pause className="w-3 h-3 mr-1" />
+              Pause
+            </>
+          ) : (
+            <>
+              <Play className="w-3 h-3 mr-1" />
+              Play
+            </>
+          )}
+        </Button>
+      </CardContent>
+    </Card>
+  );
 
   const recommendedSounds = getRecommendedSounds();
 
@@ -297,6 +346,25 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
           <span className="text-sm text-gray-400 min-w-[3ch]">{Math.round(volume * 100)}%</span>
         </div>
 
+        {/* Upload Button */}
+        <div className="mb-4">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="audio/*"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+          <Button
+            onClick={() => fileInputRef.current?.click()}
+            variant="outline"
+            className="bg-blue-600/20 border-blue-500/50 hover:bg-blue-600/30 text-blue-300"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            Upload Your Audio
+          </Button>
+        </div>
+
         {recommendedSounds.length > 0 && (
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
@@ -305,108 +373,30 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {recommendedSounds.map((sound) => (
-                <Card 
-                  key={sound.id} 
-                  className={`bg-gray-900/50 border-gray-700 transition-all duration-300 ${
-                    currentlyPlaying === sound.id ? 'ring-2 ring-emerald-500/50 bg-emerald-900/20' : ''
-                  }`}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-white text-base">{sound.name}</CardTitle>
-                      <Badge className={getCategoryColor(sound.category)}>
-                        {sound.category}
-                      </Badge>
-                    </div>
-                    <CardDescription className="text-gray-400 text-sm">
-                      {sound.description} • {sound.duration}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <Button
-                      onClick={() => handlePlayPause(sound.id)}
-                      variant={currentlyPlaying === sound.id ? "default" : "outline"}
-                      className={`w-full ${currentlyPlaying === sound.id ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
-                      disabled={isLoading === sound.id}
-                    >
-                      {isLoading === sound.id ? (
-                        <>
-                          <div className="w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                          Loading...
-                        </>
-                      ) : currentlyPlaying === sound.id ? (
-                        <>
-                          <Pause className="w-4 h-4 mr-2" />
-                          Pause
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-4 h-4 mr-2" />
-                          Play
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
+                <SoundCard key={sound.id} sound={sound} />
               ))}
             </div>
           </div>
         )}
 
-        <div>
-          <h3 className="text-lg font-semibold text-white mb-3">All Soundscapes</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sounds.map((sound) => (
-              <Card 
-                key={sound.id} 
-                className={`bg-gray-900/50 border-gray-700 transition-all duration-300 ${
-                  currentlyPlaying === sound.id ? 'ring-2 ring-emerald-500/50 bg-emerald-900/20' : ''
-                }`}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-white text-sm">{sound.name}</CardTitle>
-                    <Badge className={getCategoryColor(sound.category)}>
-                      {sound.category}
-                    </Badge>
-                  </div>
-                  <CardDescription className="text-gray-400 text-xs">
-                    {sound.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-gray-500">{sound.duration}</span>
-                  </div>
-                  <Button
-                    onClick={() => handlePlayPause(sound.id)}
-                    variant={currentlyPlaying === sound.id ? "default" : "outline"}
-                    size="sm"
-                    className={`w-full ${currentlyPlaying === sound.id ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
-                    disabled={isLoading === sound.id}
-                  >
-                    {isLoading === sound.id ? (
-                      <>
-                        <div className="w-3 h-3 mr-1 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        Loading
-                      </>
-                    ) : currentlyPlaying === sound.id ? (
-                      <>
-                        <Pause className="w-3 h-3 mr-1" />
-                        Pause
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-3 h-3 mr-1" />
-                        Play
-                      </>
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+        <Tabs defaultValue="calm" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 bg-gray-900/50">
+            <TabsTrigger value="calm" className="data-[state=active]:bg-green-600/20">Calm</TabsTrigger>
+            <TabsTrigger value="focus" className="data-[state=active]:bg-blue-600/20">Focus</TabsTrigger>
+            <TabsTrigger value="relax" className="data-[state=active]:bg-purple-600/20">Relax</TabsTrigger>
+            <TabsTrigger value="sleep" className="data-[state=active]:bg-indigo-600/20">Sleep</TabsTrigger>
+          </TabsList>
+          
+          {['calm', 'focus', 'relax', 'sleep'].map(category => (
+            <TabsContent key={category} value={category} className="mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {getSoundsByCategory(category).map((sound) => (
+                  <SoundCard key={sound.id} sound={sound} />
+                ))}
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
