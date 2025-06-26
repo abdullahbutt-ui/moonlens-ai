@@ -61,7 +61,7 @@ const FutureSelfLetter = () => {
       
       <main className="max-w-2xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">Letter to Future Self </h1>
+          <h1 className="font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2 text-2xl">Letter to Future Self </h1>
           <p className="text-gray-600 dark:text-gray-300">
             Write a message to your future self and receive it when you need it most
           </p>
