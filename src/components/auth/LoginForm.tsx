@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Brain, Mail, Lock, Eye, EyeOff, Check } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LoginFormProps {
   onToggleMode: () => void;
@@ -21,6 +21,7 @@ const LoginForm = ({ onToggleMode, onForgotPassword }: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   // Simple validation states
   const isEmailValid = email.includes("@") && email.includes(".");
@@ -31,15 +32,22 @@ const LoginForm = ({ onToggleMode, onForgotPassword }: LoginFormProps) => {
     setIsLoading(true);
     
     try {
-      console.log("Login attempt:", { email, password });
+      const { error } = await signIn(email, password);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success("Welcome back! We're glad you're here.");
-      
-      // Redirect to dashboard after successful login
-      navigate('/dashboard');
+      if (error) {
+        console.error("Login error:", error);
+        
+        if (error.message.includes('Invalid login credentials')) {
+          toast.error("Invalid email or password. Please try again.");
+        } else if (error.message.includes('Email not confirmed')) {
+          toast.error("Please verify your email before signing in. Check your inbox for a confirmation link.");
+        } else {
+          toast.error("Unable to sign in. Please try again.");
+        }
+      } else {
+        toast.success("Welcome back! We're glad you're here.");
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error("Login error:", error);
       toast.error("We couldn't log you in. Let's try that again.");
@@ -142,6 +150,7 @@ const LoginForm = ({ onToggleMode, onForgotPassword }: LoginFormProps) => {
                         focusedField === "email" ? "ring-2 ring-indigo-400/50 scale-[1.02]" : ""
                       }`}
                       required
+                      disabled={isLoading}
                     />
                     {isEmailValid && (
                       <motion.div
@@ -179,11 +188,13 @@ const LoginForm = ({ onToggleMode, onForgotPassword }: LoginFormProps) => {
                         focusedField === "password" ? "ring-2 ring-indigo-400/50 scale-[1.02]" : ""
                       }`}
                       required
+                      disabled={isLoading}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                      disabled={isLoading}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -215,7 +226,7 @@ const LoginForm = ({ onToggleMode, onForgotPassword }: LoginFormProps) => {
                       animate={isLoading ? { scale: [1, 1.05, 1] } : {}}
                       transition={{ duration: 1, repeat: isLoading ? Infinity : 0 }}
                     >
-                      {isLoading ? "Welcoming you back..." : "Log In to MoodLens"}
+                      {isLoading ? "Signing you in..." : "Log In to MoodLens"}
                     </motion.span>
                   </Button>
                   <p className="text-xs text-center text-gray-500 dark:text-gray-400">

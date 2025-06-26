@@ -1,27 +1,31 @@
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    // Check if user is already authenticated (mock auth)
-    const isAuthenticated = localStorage.getItem('mockAuth') === 'true';
-    
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    } else {
-      // Navigate to landing page instead of direct login
-      navigate('/landing');
+    if (!loading) {
+      if (user) {
+        navigate('/dashboard');
+      } else {
+        navigate('/landing');
+      }
     }
-  }, [navigate]);
+  }, [user, loading, navigate]);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600"></div>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default Index;

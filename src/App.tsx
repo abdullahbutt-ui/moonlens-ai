@@ -20,36 +20,39 @@ import LiveEmotionDetection from "./pages/LiveEmotionDetection";
 import MoodJournalPage from "./pages/MoodJournalPage";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/landing" element={<Landing />} />
-            <Route path="/mood-splash" element={<MoodSplash />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/live-emotion-detection" element={<LiveEmotionDetection />} />
-            <Route path="/mood-journal" element={<MoodJournalPage />} />
-            <Route path="/mood-trends" element={<MoodTrends />} />
-            <Route path="/mood-wall" element={<MoodWall />} />
-            <Route path="/daily-challenge" element={<DailyChallenge />} />
-            <Route path="/future-self-letter" element={<FutureSelfLetter />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/landing" element={<Landing />} />
+              <Route path="/mood-splash" element={<MoodSplash />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/live-emotion-detection" element={<LiveEmotionDetection />} />
+              <Route path="/mood-journal" element={<MoodJournalPage />} />
+              <Route path="/mood-trends" element={<MoodTrends />} />
+              <Route path="/mood-wall" element={<MoodWall />} />
+              <Route path="/daily-challenge" element={<DailyChallenge />} />
+              <Route path="/future-self-letter" element={<FutureSelfLetter />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

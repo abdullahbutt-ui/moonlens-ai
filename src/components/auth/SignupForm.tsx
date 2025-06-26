@@ -1,13 +1,13 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Mail, Lock, User, Check, HelpCircle } from "lucide-react";
+import { Brain, Mail, Lock, User, Check, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SignupFormProps {
   onToggleMode: () => void;
@@ -18,10 +18,11 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [greeting, setGreeting] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
   const navigate = useNavigate();
+  const { signUp, resendConfirmation } = useAuth();
 
   // Validation states
   const isNameValid = name.length > 0;
@@ -34,15 +35,22 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
     setIsLoading(true);
     
     try {
-      console.log("Signup attempt:", { name, email, password, greeting });
+      const { error } = await signUp(email, password, name);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      toast.success("Your emotional space has been created! Welcome to MoodLens!");
-      
-      // Redirect to dashboard after successful signup
-      navigate('/dashboard');
+      if (error) {
+        console.error("Signup error:", error);
+        
+        if (error.message.includes('User already registered')) {
+          toast.error("An account with this email already exists. Try signing in instead.");
+        } else if (error.message.includes('Password should be at least 6 characters')) {
+          toast.error("Password should be at least 6 characters long.");
+        } else {
+          toast.error("Unable to create account. Please try again.");
+        }
+      } else {
+        toast.success("Account created! Please check your email to verify your account.");
+        setShowEmailVerification(true);
+      }
     } catch (error) {
       console.error("Signup error:", error);
       toast.error("Something went wrong. Please try again.");
@@ -50,6 +58,100 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
       setIsLoading(false);
     }
   };
+
+  const handleResendEmail = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await resendConfirmation(email);
+      
+      if (error) {
+        toast.error("Failed to resend confirmation email. Please try again.");
+      } else {
+        toast.success("Confirmation email sent! Please check your inbox.");
+      }
+    } catch (error) {
+      toast.error("Failed to resend confirmation email. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (showEmailVerification) {
+    return (
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute inset-0">
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-br from-purple-200/60 via-blue-200/40 to-teal-200/60 dark:from-purple-900/60 dark:via-blue-900/40 dark:to-teal-900/60"
+            animate={{
+              background: [
+                "linear-gradient(45deg, rgba(147, 51, 234, 0.6), rgba(59, 130, 246, 0.4), rgba(20, 184, 166, 0.6))",
+                "linear-gradient(45deg, rgba(59, 130, 246, 0.6), rgba(20, 184, 166, 0.4), rgba(147, 51, 234, 0.6))",
+                "linear-gradient(45deg, rgba(20, 184, 166, 0.6), rgba(147, 51, 234, 0.4), rgba(59, 130, 246, 0.6))"
+              ]
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          />
+        </div>
+
+        <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-full max-w-md"
+          >
+            <Card className="bg-white/20 dark:bg-gray-900/20 backdrop-blur-md border-white/30 dark:border-gray-700/30 shadow-2xl">
+              <CardHeader className="text-center pb-4">
+                <motion.div
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Mail className="h-16 w-16 text-purple-600 dark:text-purple-400 mx-auto mb-4" />
+                </motion.div>
+                <CardTitle className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
+                  Check your email
+                </CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-300 text-base">
+                  We've sent a verification link to <strong>{email}</strong>
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                  <div className="flex items-start space-x-3">
+                    <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-blue-700 dark:text-blue-300">
+                      <p className="font-medium mb-1">Almost there!</p>
+                      <p>Click the verification link in your email to complete your account setup and start using MoodLens.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <Button 
+                    onClick={handleResendEmail}
+                    variant="outline"
+                    className="w-full"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Sending..." : "Resend verification email"}
+                  </Button>
+                  
+                  <Button 
+                    onClick={onToggleMode}
+                    variant="ghost"
+                    className="w-full"
+                  >
+                    Back to sign in
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -138,7 +240,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                     <Input
                       id="name"
                       type="text"
-                      placeholder="Your first name"
+                      placeholder="Your full name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       onFocus={() => setFocusedField("name")}
@@ -147,6 +249,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                         focusedField === "name" ? "ring-2 ring-purple-400/50 scale-[1.02]" : ""
                       }`}
                       required
+                      disabled={isLoading}
                     />
                     {isNameValid && (
                       <motion.div
@@ -184,6 +287,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                         focusedField === "email" ? "ring-2 ring-purple-400/50 scale-[1.02]" : ""
                       }`}
                       required
+                      disabled={isLoading}
                     />
                     {isEmailValid && (
                       <motion.div
@@ -196,7 +300,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                     )}
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-                    We'll only use this to keep your account secure
+                    We'll send you a verification email
                   </p>
                 </motion.div>
 
@@ -215,7 +319,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                     <Input
                       id="password"
                       type="password"
-                      placeholder="••••••••"
+                      placeholder="At least 6 characters"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       onFocus={() => setFocusedField("password")}
@@ -224,6 +328,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                         focusedField === "password" ? "ring-2 ring-purple-400/50 scale-[1.02]" : ""
                       }`}
                       required
+                      disabled={isLoading}
                     />
                     {isPasswordValid && (
                       <motion.div
@@ -235,9 +340,6 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                       </motion.div>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-                    We'll keep this safe. Promise.
-                  </p>
                 </motion.div>
 
                 {/* Confirm Password Field */}
@@ -255,7 +357,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                     <Input
                       id="confirmPassword"
                       type="password"
-                      placeholder="••••••••"
+                      placeholder="Confirm password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       onFocus={() => setFocusedField("confirmPassword")}
@@ -264,6 +366,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                         focusedField === "confirmPassword" ? "ring-2 ring-purple-400/50 scale-[1.02]" : ""
                       }`}
                       required
+                      disabled={isLoading}
                     />
                     {isConfirmPasswordValid && (
                       <motion.div
@@ -277,79 +380,43 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                   </div>
                 </motion.div>
 
-                {/* Optional Greeting Field */}
-                <motion.div
-                  className="space-y-2"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.8 }}
-                >
-                  <Label htmlFor="greeting" className="text-gray-700 dark:text-gray-200 font-medium">
-                    How would you like MoodLens to greet you? (optional)
-                  </Label>
-                  <Input
-                    id="greeting"
-                    type="text"
-                    placeholder="e.g., Good morning sunshine!"
-                    value={greeting}
-                    onChange={(e) => setGreeting(e.target.value)}
-                    onFocus={() => setFocusedField("greeting")}
-                    onBlur={() => setFocusedField(null)}
-                    className={`bg-white/50 dark:bg-gray-800/50 border-gray-300/50 dark:border-gray-600/50 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 transition-all duration-300 ${
-                      focusedField === "greeting" ? "ring-2 ring-purple-400/50 scale-[1.02]" : ""
-                    }`}
-                  />
-                  <p className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-                    Make it personal—we'll remember this for you
-                  </p>
-                </motion.div>
-
                 {/* Submit Button */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.9 }}
+                  transition={{ delay: 0.8 }}
                 >
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-                    disabled={isLoading}
+                    disabled={isLoading || !isConfirmPasswordValid}
                   >
                     <motion.span
                       animate={isLoading ? { scale: [1, 1.05, 1] } : {}}
                       transition={{ duration: 1, repeat: isLoading ? Infinity : 0 }}
                     >
-                      {isLoading ? "Creating your emotional space..." : "Create My Space"}
+                      {isLoading ? "Creating your account..." : "Create My Account"}
                     </motion.span>
                   </Button>
                 </motion.div>
               </form>
 
-              {/* Support Links */}
+              {/* Additional Links */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="mt-6 space-y-4"
+                transition={{ delay: 0.9 }}
+                className="mt-6 text-center"
               >
-                <div className="text-center">
-                  <button className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
-                    <HelpCircle className="h-4 w-4 mr-1" />
-                    Need help?
+                <p className="text-gray-600 dark:text-gray-400">
+                  Already have an account?{" "}
+                  <button
+                    onClick={onToggleMode}
+                    className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors"
+                  >
+                    Sign in here
                   </button>
-                </div>
-                
-                <div className="text-center">
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Already have an account?{" "}
-                    <button
-                      onClick={onToggleMode}
-                      className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors"
-                    >
-                      Welcome back
-                    </button>
-                  </p>
-                </div>
+                </p>
               </motion.div>
             </CardContent>
           </Card>
