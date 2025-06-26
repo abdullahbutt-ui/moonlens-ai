@@ -60,9 +60,9 @@ const EmotionTimeline = ({ entries }: EmotionTimelineProps) => {
   const days = getDaysInMonth(currentMonth);
 
   return (
-    <Card className="bg-gradient-to-br from-slate-50/80 to-gray-50/80 border-slate-200/50 backdrop-blur-sm">
+    <Card className="bg-gradient-to-br from-slate-50/80 to-gray-50/80 dark:from-gray-900/50 dark:to-gray-800/50 border-slate-200/50 dark:border-gray-700/50 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="flex items-center justify-between text-slate-800">
+        <CardTitle className="flex items-center justify-between text-slate-800 dark:text-white">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5" />
             Emotion Timeline
@@ -72,6 +72,7 @@ const EmotionTimeline = ({ entries }: EmotionTimelineProps) => {
               variant="ghost"
               size="sm"
               onClick={() => navigateMonth('prev')}
+              className="hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
@@ -80,6 +81,7 @@ const EmotionTimeline = ({ entries }: EmotionTimelineProps) => {
               variant="ghost"
               size="sm"
               onClick={() => navigateMonth('next')}
+              className="hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <ChevronRight className="w-4 h-4" />
             </Button>
@@ -90,7 +92,7 @@ const EmotionTimeline = ({ entries }: EmotionTimelineProps) => {
       <CardContent>
         <div className="grid grid-cols-7 gap-1 mb-2">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="text-xs text-gray-500 text-center py-2 font-medium">
+            <div key={day} className="text-xs text-gray-500 dark:text-gray-400 text-center py-2 font-medium">
               {day}
             </div>
           ))}
@@ -107,7 +109,7 @@ const EmotionTimeline = ({ entries }: EmotionTimelineProps) => {
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium cursor-pointer transition-all duration-200 hover:scale-110 ${
                     item.entry 
                       ? 'text-white shadow-md' 
-                      : 'text-gray-400 bg-gray-100 hover:bg-gray-200'
+                      : 'text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                   style={item.entry ? { 
                     backgroundColor: emotionColors[item.entry.emotion],
@@ -122,7 +124,7 @@ const EmotionTimeline = ({ entries }: EmotionTimelineProps) => {
           ))}
         </div>
         
-        <div className="mt-4 text-xs text-gray-600 text-center">
+        <div className="mt-4 text-xs text-gray-600 dark:text-gray-400 text-center">
           Tap any day to see your mood and notes
         </div>
       </CardContent>
