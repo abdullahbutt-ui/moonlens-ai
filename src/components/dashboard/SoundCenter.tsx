@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react';
+
+import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Headphones, Play, Pause, Download, Upload, Volume2 } from 'lucide-react';
+import { Headphones, Play, Pause, Download, Upload, Volume2, ArrowLeft } from 'lucide-react';
 import { EmotionType } from '@/types/emotion';
 
 interface SoundCenterProps {
@@ -25,6 +26,8 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
   const [currentTrack, setCurrentTrack] = useState<AudioTrack | null>(null);
   const [volume, setVolume] = useState(0.5);
   const [uploadedFiles, setUploadedFiles] = useState<AudioTrack[]>([]);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,7 +36,7 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: 'forest-rain',
       name: 'Forest Rain',
       category: 'calm',
-      url: 'https://www.soundjay.com/misc/sounds/rain-01.wav',
+      url: '/sounds/rain.mp3',
       duration: 300,
       description: 'Gentle rainfall in a peaceful forest'
     },
@@ -41,7 +44,7 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: 'ocean-waves',
       name: 'Ocean Waves',
       category: 'relax',
-      url: 'https://www.soundjay.com/misc/sounds/ocean-wave-1.wav',
+      url: '/sounds/waves.mp3',
       duration: 240,
       description: 'Soothing ocean waves on the shore'
     },
@@ -49,7 +52,7 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: 'meditation-bells',
       name: 'Tibetan Bells',
       category: 'focus',
-      url: 'https://www.soundjay.com/misc/sounds/bell-1.wav',
+      url: '/sounds/bells.mp3',
       duration: 180,
       description: 'Calming meditation bells'
     },
@@ -57,7 +60,7 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: 'nature-birds',
       name: 'Morning Birds',
       category: 'calm',
-      url: 'https://www.soundjay.com/misc/sounds/bird-1.wav',
+      url: '/sounds/birds.mp3',
       duration: 360,
       description: 'Peaceful morning bird sounds'
     },
@@ -65,7 +68,7 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: 'white-noise',
       name: 'White Noise',
       category: 'sleep',
-      url: 'https://www.soundjay.com/misc/sounds/static-1.wav',
+      url: '/sounds/whitenoise.mp3',
       duration: 600,
       description: 'Gentle white noise for deep sleep'
     },
@@ -73,11 +76,37 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: 'piano-calm',
       name: 'Peaceful Piano',
       category: 'relax',
-      url: 'https://www.soundjay.com/misc/sounds/piano-1.wav',
+      url: '/sounds/piano.mp3',
       duration: 210,
       description: 'Soft piano melodies for relaxation'
     }
   ];
+
+  // Update audio element volume when volume state changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  // Time update handler
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateTime = () => setCurrentTime(audio.currentTime);
+    const updateDuration = () => setDuration(audio.duration);
+    
+    audio.addEventListener('timeupdate', updateTime);
+    audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('ended', () => setIsPlaying(false));
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateTime);
+      audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('ended', () => setIsPlaying(false));
+    };
+  }, [currentTrack]);
 
   const handlePlayPause = (track: AudioTrack) => {
     if (currentTrack?.id === track.id) {
@@ -93,7 +122,10 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       }
       audioRef.current?.setAttribute('src', track.url);
       audioRef.current?.load();
-      audioRef.current?.play();
+      audioRef.current?.play().catch(() => {
+        // Handle autoplay restrictions
+        console.log('Audio play was prevented by browser policy');
+      });
       setCurrentTrack(track);
       setIsPlaying(true);
     }
@@ -102,7 +134,7 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
   const handleDownload = (track: AudioTrack) => {
     const link = document.createElement('a');
     link.href = track.url;
-    link.download = `${track.name.replace(' ', '_')}.wav`;
+    link.download = `${track.name.replace(' ', '_')}.mp3`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -113,7 +145,7 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
     if (files) {
       const newFiles: AudioTrack[] = Array.from(files).map(file => ({
         id: `upload-${Date.now()}-${file.name}`,
-        name: file.name,
+        name: file.name.replace(/\.[^/.]+$/, ""),
         category: 'upload',
         url: URL.createObjectURL(file),
         duration: 0,
@@ -123,6 +155,18 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
     }
   };
 
+  const formatTime = (time: number) => {
+    if (isNaN(time)) return '0:00';
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const allTracks = [...defaultAudioTracks, ...uploadedFiles];
+  const filteredTracks = selectedCategory === 'all' 
+    ? allTracks 
+    : allTracks.filter(track => track.category === selectedCategory);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -131,107 +175,149 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
           <span className="hidden sm:inline">Sounds</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Headphones className="w-5 h-5" />
-            Sound Center
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+              <Headphones className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              Sound Center
+            </DialogTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsOpen(false)}
+              className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Category Filter */}
           <div className="flex flex-wrap gap-2">
-            {['all', 'calm', 'focus', 'relax', 'sleep'].map((cat) => (
+            {['all', 'calm', 'focus', 'relax', 'sleep', 'upload'].map((cat) => (
               <Button
                 key={cat}
                 variant={selectedCategory === cat ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(cat)}
-                className="capitalize"
+                className={`capitalize ${
+                  selectedCategory === cat 
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-600 dark:hover:bg-emerald-700' 
+                    : 'border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+                }`}
               >
-                {cat}
+                {cat} {cat === 'upload' && uploadedFiles.length > 0 && `(${uploadedFiles.length})`}
               </Button>
             ))}
           </div>
 
+          {/* Current Playing Track Info */}
+          {currentTrack && (
+            <div className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-500/30">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-emerald-800 dark:text-emerald-200">Now Playing</h4>
+                <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-800 dark:text-emerald-200">
+                  {isPlaying ? 'Playing' : 'Paused'}
+                </Badge>
+              </div>
+              <p className="text-emerald-700 dark:text-emerald-300 mb-2">{currentTrack.name}</p>
+              <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400">
+                <span>{formatTime(currentTime)}</span>
+                <div className="flex-1 bg-emerald-200 dark:bg-emerald-800 rounded-full h-1.5">
+                  <div 
+                    className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" 
+                    style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                  />
+                </div>
+                <span>{formatTime(duration)}</span>
+              </div>
+            </div>
+          )}
+
           {/* Audio Tracks Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {defaultAudioTracks
-              .filter(track => selectedCategory === 'all' || track.category === selectedCategory)
-              .map((track) => (
-                <div key={track.id} className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 p-4 rounded-lg border border-emerald-200 dark:border-emerald-500/30">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h4 className="font-medium text-emerald-800 dark:text-emerald-200">{track.name}</h4>
-                      <p className="text-sm text-emerald-600 dark:text-emerald-400">{track.description}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="secondary" className="text-xs">{track.category}</Badge>
-                        <span className="text-xs text-gray-500">{Math.floor(track.duration / 60)}:{(track.duration % 60).toString().padStart(2, '0')}</span>
-                      </div>
+            {filteredTracks.map((track) => (
+              <div key={track.id} className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 p-4 rounded-lg border border-emerald-200 dark:border-emerald-500/30 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h4 className="font-medium text-emerald-800 dark:text-emerald-200">{track.name}</h4>
+                    <p className="text-sm text-emerald-600 dark:text-emerald-400 mb-1">{track.description}</p>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-800 dark:text-emerald-200">
+                        {track.category}
+                      </Badge>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {Math.floor(track.duration / 60)}:{(track.duration % 60).toString().padStart(2, '0')}
+                      </span>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() => handlePlayPause(track)}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                    >
-                      {currentTrack?.id === track.id && isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDownload(track)}
-                      className="border-emerald-300 dark:border-emerald-500/30"
-                    >
-                      <Download className="w-4 h-4" />
-                    </Button>
-
-                    <div className="flex-1 flex items-center gap-1">
-                      <Volume2 className="w-3 h-3 text-gray-500" />
-                      <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.1"
-                        value={volume}
-                        onChange={(e) => setVolume(Number(e.target.value))}
-                        className="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Simple Audio Visualizer */}
-                  {currentTrack?.id === track.id && isPlaying && (
-                    <div className="mt-3 flex items-center justify-center gap-1 h-8">
-                      {[...Array(12)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="w-1 bg-emerald-500 rounded-full animate-pulse"
-                          style={{
-                            height: `${Math.random() * 20 + 4}px`,
-                            animationDelay: `${i * 0.1}s`,
-                            animationDuration: `${0.5 + Math.random() * 0.5}s`
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
                 </div>
-              ))}
+
+                <div className="flex items-center gap-2 mb-3">
+                  <Button
+                    size="sm"
+                    onClick={() => handlePlayPause(track)}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-600 dark:hover:bg-emerald-700"
+                  >
+                    {currentTrack?.id === track.id && isPlaying ? 
+                      <Pause className="w-4 h-4" /> : 
+                      <Play className="w-4 h-4" />
+                    }
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDownload(track)}
+                    className="border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300"
+                  >
+                    <Download className="w-4 h-4" />
+                  </Button>
+
+                  <div className="flex-1 flex items-center gap-2">
+                    <Volume2 className="w-3 h-3 text-gray-500 dark:text-gray-400" />
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={volume}
+                      onChange={(e) => setVolume(Number(e.target.value))}
+                      className="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Enhanced Audio Visualizer */}
+                {currentTrack?.id === track.id && isPlaying && (
+                  <div className="mt-3 flex items-center justify-center gap-1 h-8 bg-emerald-100/50 dark:bg-emerald-900/30 rounded-lg p-2">
+                    {[...Array(20)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-1 bg-gradient-to-t from-emerald-500 to-emerald-300 dark:from-emerald-400 dark:to-emerald-200 rounded-full animate-pulse"
+                        style={{
+                          height: `${Math.random() * 24 + 8}px`,
+                          animationDelay: `${i * 0.1}s`,
+                          animationDuration: `${0.4 + Math.random() * 0.6}s`
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
 
           {/* Upload Section */}
-          <div className="border-t pt-4">
-            <h3 className="font-medium mb-3 flex items-center gap-2">
-              <Upload className="w-4 h-4" />
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <h3 className="font-medium mb-3 flex items-center gap-2 text-gray-900 dark:text-white">
+              <Upload className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               Upload Your Own Audio
             </h3>
             <div
-              className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-emerald-400 transition-colors"
+              className="border-2 border-dashed border-emerald-300 dark:border-emerald-500/30 rounded-lg p-6 text-center cursor-pointer hover:border-emerald-400 dark:hover:border-emerald-400 transition-colors bg-emerald-50/50 dark:bg-emerald-900/10"
               onClick={() => fileInputRef.current?.click()}
             >
               <p className="text-gray-600 dark:text-gray-400">
@@ -246,29 +332,11 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
                 className="hidden"
               />
             </div>
-
-            {uploadedFiles.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <h4 className="font-medium">Uploaded Files:</h4>
-                {uploadedFiles.map((file) => (
-                  <div key={file.id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                    <span className="text-sm">{file.name}</span>
-                    <Button
-                      size="sm"
-                      onClick={() => handlePlayPause(file)}
-                    >
-                      {currentTrack?.id === file.id && isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 
         <audio
           ref={audioRef}
-          onEnded={() => setIsPlaying(false)}
           onLoadedMetadata={() => {
             if (audioRef.current) {
               audioRef.current.volume = volume;
