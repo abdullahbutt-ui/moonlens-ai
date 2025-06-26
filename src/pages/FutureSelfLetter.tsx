@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Navbar from "@/components/layout/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Mail, Send, Sparkles, Calendar, Flame } from 'lucide-react';
 import { EmotionType } from '@/types/emotion';
 import DailyCheckIn from '@/components/dashboard/DailyCheckIn';
-
 const FutureSelfLetter = () => {
   const [currentMood, setCurrentMood] = useState<EmotionType>('neutral');
   const [content, setContent] = useState('');
@@ -16,7 +14,6 @@ const FutureSelfLetter = () => {
   const [isSealing, setIsSealing] = useState(false);
   const [checkInStreak, setCheckInStreak] = useState(7);
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
-
   const getMoodPrompt = () => {
     const prompts = {
       happy: "You're feeling wonderful right now! What would you like to remind your future self about this joy?",
@@ -29,39 +26,31 @@ const FutureSelfLetter = () => {
     };
     return prompts[currentMood] || prompts.neutral;
   };
-
   const handleSealLetter = async () => {
     if (!content.trim()) return;
-    
     setIsSealing(true);
-    
+
     // Calculate delivery date
     const deliveryDate = new Date();
     deliveryDate.setDate(deliveryDate.getDate() + parseInt(deliveryPeriod));
-    
+
     // Simulate sealing animation
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
     console.log('📬 Future letter saved:', {
       content,
       deliveryDate: deliveryDate.toISOString(),
       currentMood
     });
-    
     alert('Your letter has been sealed and will be delivered on time! ✨');
-    
     setContent('');
     setIsSealing(false);
   };
-
   const handleDailyCheckIn = (mood: EmotionType) => {
     setCurrentMood(mood);
     setHasCheckedInToday(true);
     setCheckInStreak(prev => prev + 1);
   };
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
+  return <div className="min-h-screen bg-gray-50 dark:bg-black">
       <Navbar />
       
       {/* Streak indicator - top right corner */}
@@ -72,24 +61,16 @@ const FutureSelfLetter = () => {
       
       <main className="max-w-2xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-            Letter to Future Self ✨
-          </h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">Letter to Future Self </h1>
           <p className="text-gray-600 dark:text-gray-300">
             Write a message to your future self and receive it when you need it most
           </p>
         </div>
 
         {/* Daily Check-in - only show if not completed */}
-        {!hasCheckedInToday && (
-          <div className="mb-8">
-            <DailyCheckIn
-              onCheckIn={handleDailyCheckIn}
-              currentStreak={checkInStreak}
-              hasCheckedInToday={hasCheckedInToday}
-            />
-          </div>
-        )}
+        {!hasCheckedInToday && <div className="mb-8">
+            <DailyCheckIn onCheckIn={handleDailyCheckIn} currentStreak={checkInStreak} hasCheckedInToday={hasCheckedInToday} />
+          </div>}
 
         {/* Future Self Letter Form */}
         <Card className="bg-gradient-to-br from-white/80 to-purple-50/50 dark:from-black/50 dark:to-purple-900/20 border-purple-200/50 dark:border-purple-500/20 backdrop-blur-sm">
@@ -104,12 +85,7 @@ const FutureSelfLetter = () => {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <Textarea
-              placeholder="Dear Future Me,&#10;&#10;Today I'm feeling..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="min-h-[200px] bg-white/70 dark:bg-black/30 border-purple-200 dark:border-purple-500/30 focus:border-purple-400 dark:focus:border-purple-400 transition-colors resize-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
-            />
+            <Textarea placeholder="Dear Future Me,&#10;&#10;Today I'm feeling..." value={content} onChange={e => setContent(e.target.value)} className="min-h-[200px] bg-white/70 dark:bg-black/30 border-purple-200 dark:border-purple-500/30 focus:border-purple-400 dark:focus:border-purple-400 transition-colors resize-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400" />
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
@@ -128,23 +104,15 @@ const FutureSelfLetter = () => {
               </Select>
             </div>
             
-            <Button
-              onClick={handleSealLetter}
-              disabled={!content.trim() || isSealing}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white relative overflow-hidden h-12"
-            >
-              {isSealing ? (
-                <>
+            <Button onClick={handleSealLetter} disabled={!content.trim() || isSealing} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white relative overflow-hidden h-12">
+              {isSealing ? <>
                   <Sparkles className="w-4 h-4 mr-2 animate-spin" />
                   Sealing Letter...
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-pulse" />
-                </>
-              ) : (
-                <>
+                </> : <>
                   <Send className="w-4 h-4 mr-2" />
                   Seal & Send to Future
-                </>
-              )}
+                </>}
             </Button>
             
             <p className="text-xs text-purple-500 dark:text-purple-400 text-center">
@@ -153,8 +121,6 @@ const FutureSelfLetter = () => {
           </CardContent>
         </Card>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default FutureSelfLetter;
