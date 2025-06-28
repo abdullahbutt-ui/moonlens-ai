@@ -208,7 +208,7 @@ const LoginForm = ({
                   } : {}} transition={{
                     duration: 1,
                     repeat: isLoading ? Infinity : 0
-                  }}>
+                  }} className="font-normal">
                       {isLoading ? "Signing you in..." : "Log In to MoodLens"}
                     </motion.span>
                   </Button>
