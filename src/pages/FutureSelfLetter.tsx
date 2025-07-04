@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Navbar from "@/components/layout/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,7 +86,7 @@ const FutureSelfLetter = () => {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <Textarea placeholder="Dear Future Me,&#10;&#10;Today I'm feeling..." value={content} onChange={e => setContent(e.target.value)} className="min-h-[200px] bg-white/70 dark:bg-black/30 border-purple-200 dark:border-purple-500/30 focus:border-purple-400 dark:focus:border-purple-400 transition-colors resize-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400" />
+            <Textarea placeholder="Dear Future Me..." value={content} onChange={e => setContent(e.target.value)} className="min-h-[200px] bg-white/70 dark:bg-black/30 border-purple-200 dark:border-purple-500/30 focus:border-purple-400 dark:focus:border-purple-400 transition-colors resize-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400" />
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
