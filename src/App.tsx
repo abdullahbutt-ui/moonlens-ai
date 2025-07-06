@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,39 +20,39 @@ import MoodJournalPage from "./pages/MoodJournalPage";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import NewDashboard from '@/pages/NewDashboard';
+import EnhancedProfile from '@/pages/EnhancedProfile';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
+function App() {
+  return (
+    <BrowserRouter>
       <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <Toaster />
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/landing" element={<Landing />} />
-              <Route path="/mood-splash" element={<MoodSplash />} />
-              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard" element={<NewDashboard />} />
+              <Route path="/old-dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<EnhancedProfile />} />
               <Route path="/live-emotion-detection" element={<LiveEmotionDetection />} />
               <Route path="/mood-journal" element={<MoodJournalPage />} />
               <Route path="/mood-trends" element={<MoodTrends />} />
-              <Route path="/mood-wall" element={<MoodWall />} />
-              <Route path="/daily-challenge" element={<DailyChallenge />} />
               <Route path="/future-self-letter" element={<FutureSelfLetter />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/mood-wall" element={<MoodWall />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/daily-challenge" element={<DailyChallenge />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+          </QueryClientProvider>
+        </AuthProvider>
       </ThemeProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+    </BrowserRouter>
+  );
+}
 
 export default App;
