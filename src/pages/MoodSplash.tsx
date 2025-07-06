@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -44,7 +43,6 @@ const MoodSplash = () => {
       accent: "text-green-600 dark:text-green-400",
       greeting: "Take a deep breath. You're safe and supported. 🌸",
     },
-    // Add missing emotion types
     fearful: {
       background: "bg-gradient-to-br from-gray-200 via-green-200 to-teal-200 dark:from-gray-800 dark:via-green-800 dark:to-teal-800",
       accent: "text-green-600 dark:text-green-400",

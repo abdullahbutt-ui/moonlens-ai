@@ -15,7 +15,10 @@ export type EmotionType =
   | 'surprised' 
   | 'fearful' 
   | 'disgusted' 
-  | 'neutral';
+  | 'neutral'
+  | 'excited'
+  | 'calm'
+  | 'anxious';
 
 export interface EmotionStats {
   emotion: EmotionType;
