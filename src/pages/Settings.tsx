@@ -185,7 +185,7 @@ const Settings = () => {
                         <Button
                           size="sm"
                           variant={item.value ? "secondary" : "default"}
-                          onClick={item.onChange}
+                          onClick={item.onChange as () => void}
                           disabled={item.value}
                           className="ml-4"
                         >
@@ -194,7 +194,7 @@ const Settings = () => {
                       ) : (
                         <Switch
                           checked={item.value}
-                          onCheckedChange={item.onChange}
+                          onCheckedChange={item.onChange as (checked: boolean) => void}
                         />
                       )}
                     </div>

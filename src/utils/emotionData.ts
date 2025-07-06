@@ -8,7 +8,10 @@ export const emotionColors: Record<EmotionType, string> = {
   surprised: '#F59E0B',
   fearful: '#8B5CF6',
   disgusted: '#84CC16',
-  neutral: '#6B7280'
+  neutral: '#6B7280',
+  excited: '#F97316',
+  calm: '#06B6D4',
+  anxious: '#EF4444'
 };
 
 export const emotionEmojis: Record<EmotionType, string> = {
@@ -18,12 +21,15 @@ export const emotionEmojis: Record<EmotionType, string> = {
   surprised: '😲',
   fearful: '😨',
   disgusted: '🤢',
-  neutral: '😐'
+  neutral: '😐',
+  excited: '🤩',
+  calm: '😌',
+  anxious: '😰'
 };
 
 // Mock data generator for development
 export const generateMockEmotionData = (count: number = 50): EmotionData[] => {
-  const emotions: EmotionType[] = ['happy', 'sad', 'angry', 'surprised', 'fearful', 'disgusted', 'neutral'];
+  const emotions: EmotionType[] = ['happy', 'sad', 'angry', 'surprised', 'fearful', 'disgusted', 'neutral', 'excited', 'calm', 'anxious'];
   const sources: ('webcam' | 'microphone' | 'combined')[] = ['webcam', 'microphone', 'combined'];
   
   return Array.from({ length: count }, (_, i) => ({
