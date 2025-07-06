@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Headphones, Play, Pause, Upload, Volume2, ArrowLeft, Music, Waves } from 'lucide-react';
 import { EmotionType } from '@/types/emotion';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 interface SoundCenterProps {
   currentMood: EmotionType;
@@ -29,15 +30,17 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
   const [volume, setVolume] = useState(0.5);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [uploadedFiles, setUploadedFiles] = useState<AudioTrack[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Using placeholder URLs for demo - in production, these would be real audio files
   const defaultAudioTracks: AudioTrack[] = [
     {
       id: 'ocean-waves',
       name: 'Ocean Waves',
       category: 'nature',
-      url: '/sounds/waves.mp3',
+      url: 'https://www.soundjay.com/misc/sounds/wave-1.wav', // Placeholder
       duration: 240,
       description: 'Calming ocean sounds',
       color: 'from-blue-400 to-cyan-500'
@@ -46,7 +49,7 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: 'forest-rain',
       name: 'Forest Rain',
       category: 'nature',
-      url: '/sounds/rain.mp3', 
+      url: 'https://www.soundjay.com/misc/sounds/rain-01.wav', // Placeholder
       duration: 300,
       description: 'Gentle rainfall',
       color: 'from-green-400 to-emerald-500'
@@ -55,7 +58,7 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: 'meditation-bells',
       name: 'Tibetan Bells',
       category: 'meditation',
-      url: '/sounds/bells.mp3',
+      url: 'https://www.soundjay.com/misc/sounds/bell-1.wav', // Placeholder
       duration: 180,
       description: 'Peaceful meditation bells',
       color: 'from-purple-400 to-indigo-500'
@@ -64,7 +67,7 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
       id: 'white-noise',
       name: 'White Noise',
       category: 'sleep',
-      url: '/sounds/whitenoise.mp3',
+      url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUFM2vZ7t2QQAoUX7Pt66hVFApFnt7wvmwfBTaM0PbOciUF', // Simple white noise audio data
       duration: 600,
       description: 'Soothing white noise',
       color: 'from-gray-400 to-slate-500'
@@ -136,27 +139,70 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
     );
   };
 
-  const handlePlayPause = (track: AudioTrack) => {
-    if (currentTrack?.id === track.id) {
-      if (isPlaying) {
-        audioRef.current?.pause();
+  const handlePlayPause = async (track: AudioTrack) => {
+    try {
+      if (currentTrack?.id === track.id) {
+        if (isPlaying) {
+          audioRef.current?.pause();
+          setIsPlaying(false);
+        } else {
+          await audioRef.current?.play();
+          setIsPlaying(true);
+        }
       } else {
-        audioRef.current?.play().catch(() => {
-          console.log('Audio play was prevented by browser policy');
-        });
+        // Stop current track
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
+        
+        // Start new track
+        if (audioRef.current) {
+          audioRef.current.src = track.url;
+          audioRef.current.load();
+          
+          try {
+            await audioRef.current.play();
+            setCurrentTrack(track);
+            setIsPlaying(true);
+          } catch (error) {
+            console.error('Audio play failed:', error);
+            toast.error('Unable to play audio. This might be a demo file or browser restriction.');
+            setIsPlaying(false);
+          }
+        }
       }
-      setIsPlaying(!isPlaying);
-    } else {
-      if (audioRef.current) {
-        audioRef.current.pause();
+    } catch (error) {
+      console.error('Audio control error:', error);
+      toast.error('Audio playback failed. Please try again.');
+      setIsPlaying(false);
+    }
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const newFiles: AudioTrack[] = Array.from(files).map(file => {
+        if (!file.type.startsWith('audio/')) {
+          toast.error(`${file.name} is not an audio file`);
+          return null;
+        }
+        
+        return {
+          id: `upload-${Date.now()}-${file.name}`,
+          name: file.name.replace(/\.[^/.]+$/, ""),
+          category: 'upload',
+          url: URL.createObjectURL(file),
+          duration: 0,
+          description: 'Uploaded audio file',
+          color: 'from-indigo-400 to-purple-500'
+        };
+      }).filter(Boolean) as AudioTrack[];
+      
+      if (newFiles.length > 0) {
+        setUploadedFiles(prev => [...prev, ...newFiles]);
+        toast.success(`${newFiles.length} audio file(s) uploaded successfully!`);
       }
-      audioRef.current?.setAttribute('src', track.url);
-      audioRef.current?.load();
-      audioRef.current?.play().catch(() => {
-        console.log('Audio play was prevented by browser policy');
-      });
-      setCurrentTrack(track);
-      setIsPlaying(true);
     }
   };
 
@@ -166,37 +212,48 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
     if (!audio) return;
 
     const updateTime = () => setCurrentTime(audio.currentTime);
-    const updateDuration = () => setDuration(audio.duration);
-    const handleEnded = () => setIsPlaying(false);
+    const updateDuration = () => setDuration(audio.duration || 0);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+    const handleError = () => {
+      console.error('Audio loading error');
+      setIsPlaying(false);
+      toast.error('Failed to load audio. This might be a demo file.');
+    };
     
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
     audio.volume = volume;
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError);
     };
   }, [currentTrack, volume]);
 
   const formatTime = (time: number) => {
-    if (isNaN(time)) return '0:00';
+    if (isNaN(time) || !isFinite(time)) return '0:00';
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const categories = ['all', 'nature', 'meditation', 'sleep', 'focus'];
+  const categories = ['all', 'nature', 'meditation', 'sleep', 'focus', 'upload'];
+  const allTracks = [...defaultAudioTracks, ...uploadedFiles];
   const filteredTracks = selectedCategory === 'all' 
-    ? defaultAudioTracks 
-    : defaultAudioTracks.filter(track => track.category === selectedCategory);
+    ? allTracks 
+    : allTracks.filter(track => track.category === selectedCategory);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border-emerald-200 dark:border-emerald-500/30 hover:from-emerald-100 hover:to-green-100 dark:hover:from-emerald-800/30 dark:hover:to-green-800/30 text-emerald-700 dark:text-emerald-300">
+        <Button variant="outline" size="sm" className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border-emerald-200 dark:border-emerald-500/30 hover:from-emerald-100 hover:to-green-100 dark:hover:from-emerald-800/30 dark:hover:to-green-800/30 text-emerald-700 dark:text-emerald-300 rounded-2xl px-6 py-3">
           <Headphones className="w-4 h-4 mr-2" />
           <span className="hidden sm:inline">Sounds</span>
         </Button>
@@ -219,7 +276,7 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
           </div>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 p-2">
           {/* Now Playing */}
           {currentTrack && (
             <motion.div 
@@ -235,9 +292,9 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
               <AudioVisualizer />
               <WaveVisualizer />
               
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm">{formatTime(currentTime)}</span>
-                <span className="text-sm">{formatTime(duration)}</span>
+              <div className="flex items-center justify-between mb-4 text-sm">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(duration)}</span>
               </div>
               
               <div className="bg-white/20 rounded-full h-2 mb-4">
@@ -247,7 +304,7 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
                 />
               </div>
               
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-4 mb-4">
                 <Button
                   size="lg"
                   onClick={() => handlePlayPause(currentTrack)}
@@ -260,7 +317,7 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
                 </Button>
               </div>
               
-              <div className="flex items-center gap-2 mt-4">
+              <div className="flex items-center gap-2">
                 <Volume2 className="w-4 h-4 text-white/80" />
                 <input
                   type="range"
@@ -289,7 +346,7 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
                     : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
-                {cat}
+                {cat} {cat === 'upload' && uploadedFiles.length > 0 && `(${uploadedFiles.length})`}
               </Button>
             ))}
           </div>
@@ -315,7 +372,7 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
                     className={`rounded-full w-12 h-12 ${
                       currentTrack?.id === track.id 
                         ? 'bg-white/20 hover:bg-white/30 text-white' 
-                        : 'bg-purple-100 hover:bg-purple-200 text-purple-600'
+                        : 'bg-purple-100 hover:bg-purple-200 text-purple-600 dark:bg-purple-800 dark:hover:bg-purple-700 dark:text-purple-200'
                     }`}
                   >
                     {currentTrack?.id === track.id && isPlaying ? 
@@ -355,11 +412,15 @@ const EnhancedSoundCenter = ({ currentMood }: SoundCenterProps) => {
               accept="audio/*"
               multiple
               className="hidden"
+              onChange={handleFileUpload}
             />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+              Note: Demo tracks may not play due to browser restrictions. Upload your own files for full functionality.
+            </p>
           </div>
         </div>
 
-        <audio ref={audioRef} />
+        <audio ref={audioRef} preload="metadata" />
       </DialogContent>
     </Dialog>
   );

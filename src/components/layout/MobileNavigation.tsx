@@ -2,14 +2,13 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Home, Bot, Headphones, User, MoreHorizontal, Brain, TrendingUp } from 'lucide-react';
+import { Home, Bot, Headphones, User, MoreHorizontal, Brain, TrendingUp, Settings, FileText, Heart, Smile } from 'lucide-react';
 import { motion } from 'framer-motion';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 
 const MobileNavigation = () => {
@@ -19,8 +18,8 @@ const MobileNavigation = () => {
 
   const navItems = [
     { id: 'home', icon: Home, label: 'Home', path: '/dashboard' },
-    { id: 'coach', icon: Bot, label: 'Coach', path: '/ai-coach' },
-    { id: 'sounds', icon: Headphones, label: 'Sounds', path: '/sound-center' },
+    { id: 'coach', icon: Bot, label: 'Coach', path: '/mood-journal' },
+    { id: 'sounds', icon: Headphones, label: 'Sounds', path: '/dashboard' },
     { id: 'profile', icon: User, label: 'Profile', path: '/profile' },
     { id: 'more', icon: MoreHorizontal, label: 'More', path: null },
   ];
@@ -28,10 +27,10 @@ const MobileNavigation = () => {
   const moreItems = [
     { icon: Brain, label: 'Mood Journal', path: '/mood-journal' },
     { icon: TrendingUp, label: 'Trends', path: '/mood-trends' },
-    { label: 'Live Detection', path: '/live-emotion-detection' },
-    { label: 'Future Letter', path: '/future-self-letter' },
-    { label: 'Community', path: '/mood-wall' },
-    { label: 'Settings', path: '/settings' },
+    { icon: Heart, label: 'Live Detection', path: '/live-emotion-detection' },
+    { icon: FileText, label: 'Future Letter', path: '/future-self-letter' },
+    { icon: Smile, label: 'Community', path: '/mood-wall' },
+    { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 
   const handleNavigation = (item: any) => {
@@ -65,7 +64,7 @@ const MobileNavigation = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleNavigation(item)}
-                    className={`flex flex-col items-center gap-1 h-auto py-3 px-2 rounded-2xl transition-all duration-300 ${
+                    className={`flex flex-col items-center gap-1 h-auto py-3 px-2 rounded-2xl transition-all duration-300 w-full ${
                       isItemActive 
                         ? 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-600 dark:text-purple-400' 
                         : 'text-gray-600 dark:text-gray-400 hover:text-purple-500 dark:hover:text-purple-400'
@@ -115,12 +114,10 @@ const MobileNavigation = () => {
                     navigate(item.path);
                     setIsMoreOpen(false);
                   }}
-                  className="w-full h-16 rounded-2xl border-gray-200 dark:border-gray-700 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 transition-all duration-300"
+                  className="w-full h-16 rounded-2xl border-gray-200 dark:border-gray-700 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-900/20 dark:hover:to-pink-900/20 transition-all duration-300 flex flex-col items-center gap-2"
                 >
-                  <div className="flex flex-col items-center gap-1">
-                    {item.icon && <item.icon className="w-5 h-5" />}
-                    <span className="text-sm font-medium">{item.label}</span>
-                  </div>
+                  <item.icon className="w-5 h-5" />
+                  <span className="text-sm font-medium">{item.label}</span>
                 </Button>
               </motion.div>
             ))}

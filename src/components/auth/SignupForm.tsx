@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -29,29 +30,42 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
   const isEmailValid = email.includes("@") && email.includes(".");
   const isPasswordValid = password.length >= 6;
   const isConfirmPasswordValid = confirmPassword === password && password.length > 0;
+  const isFormValid = isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isFormValid) {
+      if (!isNameValid) toast.error("Please enter your name");
+      else if (!isEmailValid) toast.error("Please enter a valid email address");
+      else if (!isPasswordValid) toast.error("Password must be at least 6 characters long");
+      else if (!isConfirmPasswordValid) toast.error("Passwords do not match");
+      return;
+    }
+
     setIsLoading(true);
     
     try {
+      console.log("Attempting signup with:", { email, name });
       const { error } = await signUp(email, password, name);
       
       if (error) {
         console.error("Signup error:", error);
         
-        if (error.message.includes('User already registered')) {
+        if (error.message.includes('User already registered') || error.message.includes('already registered')) {
           toast.error("An account with this email already exists. Try signing in instead.");
         } else if (error.message.includes('Password should be at least 6 characters')) {
           toast.error("Password should be at least 6 characters long.");
+        } else if (error.message.includes('Invalid email')) {
+          toast.error("Please enter a valid email address.");
         } else {
-          toast.error("Unable to create account. Please try again.");
+          toast.error(error.message || "Unable to create account. Please try again.");
         }
       } else {
-        toast.success("Account created! Please check your email to verify your account.");
+        toast.success("Account created successfully! Please check your email to verify your account.");
         setShowEmailVerification(true);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Signup error:", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
@@ -60,16 +74,23 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
   };
 
   const handleResendEmail = async () => {
+    if (!email) {
+      toast.error("Please enter your email address first.");
+      return;
+    }
+    
     setIsLoading(true);
     try {
       const { error } = await resendConfirmation(email);
       
       if (error) {
+        console.error("Resend error:", error);
         toast.error("Failed to resend confirmation email. Please try again.");
       } else {
         toast.success("Confirmation email sent! Please check your inbox.");
       }
     } catch (error) {
+      console.error("Resend error:", error);
       toast.error("Failed to resend confirmation email. Please try again.");
     } finally {
       setIsLoading(false);
@@ -122,7 +143,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                     <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                     <div className="text-sm text-blue-700 dark:text-blue-300">
                       <p className="font-medium mb-1">Almost there!</p>
-                      <p>Click the verification link in your email to complete your account setup and start using MoodLens.</p>
+                      <p>Click the verification link in your email to complete your account setup and start using Moodsify.</p>
                     </div>
                   </div>
                 </div>
@@ -208,7 +229,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
               <Brain className="h-16 w-16 text-purple-600 dark:text-purple-400 mx-auto mb-4" />
             </motion.div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-teal-600 bg-clip-text text-transparent mb-2">
-              MoodLens
+              Moodsify
             </h1>
             <p className="text-purple-600/80 dark:text-purple-300/80">AI-powered emotion tracking</p>
           </motion.div>
@@ -247,7 +268,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                       onBlur={() => setFocusedField(null)}
                       className={`pl-10 bg-white/50 dark:bg-gray-800/50 border-gray-300/50 dark:border-gray-600/50 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 transition-all duration-300 ${
                         focusedField === "name" ? "ring-2 ring-purple-400/50 scale-[1.02]" : ""
-                      }`}
+                      } ${!isNameValid && name.length > 0 ? "border-red-300 dark:border-red-600" : ""}`}
                       required
                       disabled={isLoading}
                     />
@@ -285,7 +306,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                       onBlur={() => setFocusedField(null)}
                       className={`pl-10 bg-white/50 dark:bg-gray-800/50 border-gray-300/50 dark:border-gray-600/50 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 transition-all duration-300 ${
                         focusedField === "email" ? "ring-2 ring-purple-400/50 scale-[1.02]" : ""
-                      }`}
+                      } ${!isEmailValid && email.length > 0 ? "border-red-300 dark:border-red-600" : ""}`}
                       required
                       disabled={isLoading}
                     />
@@ -326,7 +347,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                       onBlur={() => setFocusedField(null)}
                       className={`pl-10 bg-white/50 dark:bg-gray-800/50 border-gray-300/50 dark:border-gray-600/50 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 transition-all duration-300 ${
                         focusedField === "password" ? "ring-2 ring-purple-400/50 scale-[1.02]" : ""
-                      }`}
+                      } ${!isPasswordValid && password.length > 0 ? "border-red-300 dark:border-red-600" : ""}`}
                       required
                       disabled={isLoading}
                     />
@@ -364,7 +385,7 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                       onBlur={() => setFocusedField(null)}
                       className={`pl-10 bg-white/50 dark:bg-gray-800/50 border-gray-300/50 dark:border-gray-600/50 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 transition-all duration-300 ${
                         focusedField === "confirmPassword" ? "ring-2 ring-purple-400/50 scale-[1.02]" : ""
-                      }`}
+                      } ${!isConfirmPasswordValid && confirmPassword.length > 0 ? "border-red-300 dark:border-red-600" : ""}`}
                       required
                       disabled={isLoading}
                     />
@@ -378,6 +399,9 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                       </motion.div>
                     )}
                   </div>
+                  {confirmPassword.length > 0 && !isConfirmPasswordValid && (
+                    <p className="text-xs text-red-500 ml-1">Passwords do not match</p>
+                  )}
                 </motion.div>
 
                 {/* Submit Button */}
@@ -388,8 +412,8 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                 >
                   <Button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-                    disabled={isLoading || !isConfirmPasswordValid}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    disabled={isLoading || !isFormValid}
                   >
                     <motion.span
                       animate={isLoading ? { scale: [1, 1.05, 1] } : {}}
