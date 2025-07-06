@@ -1,248 +1,298 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Navbar from "@/components/layout/Navbar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import Navbar from "@/components/layout/Navbar";
 import { 
-  Settings as SettingsIcon, 
-  ArrowLeft, 
-  Activity, 
-  Camera, 
-  Mic, 
-  Info, 
-  Download, 
-  Trash2,
+  Bell, 
+  Lock, 
+  Palette, 
+  Clock, 
+  Mail, 
+  Phone, 
+  MessageSquare, 
   Shield,
-  Clock
+  Camera,
+  Mic,
+  Info,
+  ExternalLink,
+  Heart,
+  Star
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 const Settings = () => {
-  const navigate = useNavigate();
-  const [permissions, setPermissions] = useState({
-    camera: true,
-    microphone: true
-  });
+  const [notifications, setNotifications] = useState(true);
+  const [dailyReminders, setDailyReminders] = useState(true);
+  const [cameraPermission, setCameraPermission] = useState(false);
+  const [micPermission, setMicPermission] = useState(false);
+  const [dataCollection, setDataCollection] = useState(true);
 
-  const handlePermissionToggle = async (type: 'camera' | 'microphone') => {
+  const handlePermissionRequest = async (type: 'camera' | 'microphone') => {
     try {
       if (type === 'camera') {
-        if (!permissions.camera) {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          stream.getTracks().forEach(track => track.stop());
-          setPermissions(prev => ({ ...prev, camera: true }));
-          toast.success("Camera access enabled");
-        } else {
-          setPermissions(prev => ({ ...prev, camera: false }));
-          toast.info("Camera access disabled");
-        }
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream.getTracks().forEach(track => track.stop());
+        setCameraPermission(true);
+        toast.success("Camera access granted! 📷");
       } else {
-        if (!permissions.microphone) {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          stream.getTracks().forEach(track => track.stop());
-          setPermissions(prev => ({ ...prev, microphone: true }));
-          toast.success("Microphone access enabled");
-        } else {
-          setPermissions(prev => ({ ...prev, microphone: false }));
-          toast.info("Microphone access disabled");
-        }
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+        setMicPermission(true);
+        toast.success("Microphone access granted! 🎤");
       }
     } catch (error) {
-      console.error("Permission error:", error);
-      toast.error(`Failed to access ${type}. Please check browser settings.`);
+      toast.error(`${type === 'camera' ? 'Camera' : 'Microphone'} permission denied`);
     }
   };
 
-  const handleExportData = () => {
-    // Mock export functionality
-    toast.success("Emotion history exported successfully!");
-  };
-
-  const handleDeleteAccount = () => {
-    // Mock delete functionality with confirmation
-    if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      toast.error("Account deletion is not yet implemented. Contact support if needed.");
+  const settingSections = [
+    {
+      title: "Notifications",
+      icon: Bell,
+      items: [
+        {
+          label: "Push Notifications",
+          description: "Get gentle reminders and insights",
+          value: notifications,
+          onChange: setNotifications
+        },
+        {
+          label: "Daily Check-ins",
+          description: "Remind me to log my mood",
+          value: dailyReminders,
+          onChange: setDailyReminders
+        }
+      ]
+    },
+    {
+      title: "Privacy & Permissions",
+      icon: Shield,
+      items: [
+        {
+          label: "Camera Access",
+          description: "For emotion detection features",
+          value: cameraPermission,
+          onChange: () => handlePermissionRequest('camera'),
+          isPermission: true
+        },
+        {
+          label: "Microphone Access", 
+          description: "For voice emotion analysis",
+          value: micPermission,
+          onChange: () => handlePermissionRequest('microphone'),
+          isPermission: true
+        },
+        {
+          label: "Anonymous Analytics",
+          description: "Help improve the app experience",
+          value: dataCollection,
+          onChange: setDataCollection
+        }
+      ]
     }
-  };
+  ];
+
+  const supportItems = [
+    {
+      icon: Info,
+      label: "About Moodsify",
+      description: "Version 1.0.0 • Made with ❤️",
+      action: () => toast.info("Moodsify v1.0.0 - Your mental wellness companion")
+    },
+    {
+      icon: MessageSquare,
+      label: "Send Feedback",
+      description: "Help us improve your experience",
+      action: () => window.open('mailto:feedback@moodsify.app?subject=App Feedback')
+    },
+    {
+      icon: Phone,
+      label: "Contact Support",
+      description: "Get help when you need it",
+      action: () => window.open('mailto:support@moodsify.app?subject=Support Request')
+    },
+    {
+      icon: ExternalLink,
+      label: "Privacy Policy",
+      description: "How we protect your data",
+      action: () => window.open('/privacy-policy', '_blank')
+    },
+    {
+      icon: ExternalLink,
+      label: "Terms of Service",
+      description: "Our terms and conditions",
+      action: () => window.open('/terms-of-service', '_blank')
+    }
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900">
       <Navbar />
       
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/dashboard')}
-            className="mb-4 text-purple-600 hover:text-purple-700"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Button>
-          
-          <div className="flex items-center space-x-3 mb-2">
-            <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl">
-              <SettingsIcon className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Settings
-              </h1>
-              <p className="text-gray-600">Manage your app preferences and data</p>
-            </div>
-          </div>
-        </div>
+      <main className="max-w-2xl mx-auto px-4 py-8 pt-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+            Settings ⚙️
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300">
+            Customize your Moodsify experience
+          </p>
+        </motion.div>
 
         <div className="space-y-6">
-          {/* Activity Summary */}
-          <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Activity className="h-5 w-5 text-purple-600" />
-                <span>Activity Summary</span>
-              </CardTitle>
-              <CardDescription>Your MoodLens usage overview</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl">
-                  <Clock className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-purple-700">2h 34m</p>
-                  <p className="text-sm text-purple-600">Time spent this week</p>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl">
-                  <Activity className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-blue-700">12</p>
-                  <p className="text-sm text-blue-600">Sessions this week</p>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-green-100 to-green-50 rounded-xl">
-                  <span className="text-2xl">😊</span>
-                  <p className="text-2xl font-bold text-green-700 mt-2">Happy</p>
-                  <p className="text-sm text-green-600">Most common mood</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Settings Sections */}
+          {settingSections.map((section, sectionIndex) => (
+            <motion.div
+              key={section.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: sectionIndex * 0.1 }}
+            >
+              <Card className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-purple-200/50 dark:border-purple-500/20 shadow-lg">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-200">
+                    <section.icon className="w-5 h-5" />
+                    {section.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {section.items.map((item, itemIndex) => (
+                    <div key={itemIndex} className="flex items-center justify-between p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium text-gray-900 dark:text-white">
+                            {item.label}
+                          </h3>
+                          {item.isPermission && (
+                            <Badge variant="secondary" className="text-xs">
+                              {item.value ? 'Granted' : 'Required'}
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          {item.description}
+                        </p>
+                      </div>
+                      {item.isPermission ? (
+                        <Button
+                          size="sm"
+                          variant={item.value ? "secondary" : "default"}
+                          onClick={item.onChange}
+                          disabled={item.value}
+                          className="ml-4"
+                        >
+                          {item.value ? 'Granted' : 'Allow'}
+                        </Button>
+                      ) : (
+                        <Switch
+                          checked={item.value}
+                          onCheckedChange={item.onChange}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
 
-          {/* Device Permissions */}
-          <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Shield className="h-5 w-5 text-purple-600" />
-                <span>Device Permissions</span>
-              </CardTitle>
-              <CardDescription>Manage camera and microphone access</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-purple-50 rounded-xl">
-                <div className="flex items-center space-x-3">
-                  <Camera className="h-5 w-5 text-purple-600" />
-                  <div>
-                    <p className="font-medium text-gray-800">Camera Access</p>
-                    <p className="text-sm text-gray-600">Required for emotion detection</p>
+          {/* Time Spent Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-purple-200/50 dark:border-purple-500/20 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-200">
+                  <Clock className="w-5 h-5" />
+                  Your Wellness Time
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">15m</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Today</div>
+                  </div>
+                  <div className="text-center p-4 bg-pink-50 dark:bg-pink-900/20 rounded-xl">
+                    <div className="text-2xl font-bold text-pink-600 dark:text-pink-400">2.5h</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">This week</div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Badge variant={permissions.camera ? "default" : "secondary"}>
-                    {permissions.camera ? "Enabled" : "Disabled"}
-                  </Badge>
-                  <Switch
-                    checked={permissions.camera}
-                    onCheckedChange={() => handlePermissionToggle('camera')}
-                  />
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
-                <div className="flex items-center space-x-3">
-                  <Mic className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-gray-800">Microphone Access</p>
-                    <p className="text-sm text-gray-600">For enhanced emotion analysis</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Badge variant={permissions.microphone ? "default" : "secondary"}>
-                    {permissions.microphone ? "Enabled" : "Disabled"}
-                  </Badge>
-                  <Switch
-                    checked={permissions.microphone}
-                    onCheckedChange={() => handlePermissionToggle('microphone')}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          {/* App Information */}
-          <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Info className="h-5 w-5 text-purple-600" />
-                <span>App Information</span>
-              </CardTitle>
-              <CardDescription>About MoodLens and privacy policies</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-gradient-to-br from-purple-50 to-white rounded-xl">
-                  <h4 className="font-semibold text-gray-800 mb-2">Version</h4>
-                  <p className="text-gray-600">MoodLens v1.0.0</p>
-                </div>
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl">
-                  <h4 className="font-semibold text-gray-800 mb-2">Privacy</h4>
-                  <p className="text-gray-600">All data processed locally</p>
-                </div>
-              </div>
-              
-              <div className="p-4 bg-gradient-to-br from-green-50 to-white rounded-xl">
-                <h4 className="font-semibold text-gray-800 mb-2">About MoodLens</h4>
-                <p className="text-gray-600">
-                  AI-powered emotion tracking that helps you understand and improve your mental wellbeing. 
-                  Your privacy is our priority - all emotion detection happens on your device.
+          {/* Support & Legal */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Card className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-purple-200/50 dark:border-purple-500/20 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-200">
+                  <Heart className="w-5 h-5" />
+                  Support & Legal
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {supportItems.map((item, index) => (
+                  <button
+                    key={index}
+                    onClick={item.action}
+                    className="w-full p-4 text-left bg-white/50 dark:bg-gray-800/50 rounded-xl hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                          {item.label}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          {item.description}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Rate the App */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 dark:from-purple-500/20 dark:to-pink-500/20 border-purple-200/50 dark:border-purple-500/20 shadow-lg">
+              <CardContent className="p-6 text-center">
+                <Star className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900 dark:text-white mb-2">
+                  Loving Moodsify? ✨
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                  Your review helps others discover their wellness journey
                 </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Data Controls */}
-          <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Download className="h-5 w-5 text-purple-600" />
-                <span>Data Controls</span>
-              </CardTitle>
-              <CardDescription>Export your data or manage your account</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-3">
                 <Button
-                  onClick={handleExportData}
-                  variant="outline"
-                  className="flex-1 rounded-xl border-purple-200 hover:bg-purple-50"
+                  onClick={() => toast.success("Thank you! This would redirect to the app store 🌟")}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl"
                 >
-                  <Download className="h-4 w-4 mr-2" />
-                  Export Emotion History
+                  Rate on App Store
                 </Button>
-                
-                <Button
-                  onClick={handleDeleteAccount}
-                  variant="destructive"
-                  className="flex-1 rounded-xl"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Account
-                </Button>
-              </div>
-              
-              <p className="text-xs text-gray-500 text-center">
-                Data exports include your mood history and preferences. Account deletion is permanent and cannot be undone.
-              </p>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </main>
     </div>
