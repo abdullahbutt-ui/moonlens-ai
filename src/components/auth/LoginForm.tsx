@@ -8,10 +8,12 @@ import { Brain, Mail, Lock, Eye, EyeOff, Check } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+
 interface LoginFormProps {
   onToggleMode: () => void;
   onForgotPassword?: () => void;
 }
+
 const LoginForm = ({
   onToggleMode,
   onForgotPassword
@@ -29,6 +31,7 @@ const LoginForm = ({
   // Simple validation states
   const isEmailValid = email.includes("@") && email.includes(".");
   const isPasswordValid = password.length > 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -56,6 +59,7 @@ const LoginForm = ({
       setIsLoading(false);
     }
   };
+
   return <div className="min-h-screen relative overflow-hidden">
       {/* Animated Gradient Background */}
       <div className="absolute inset-0">
@@ -209,7 +213,7 @@ const LoginForm = ({
                     duration: 1,
                     repeat: isLoading ? Infinity : 0
                   }} className="font-normal">
-                      {isLoading ? "Signing you in..." : "Log In to MoodLens"}
+                      {isLoading ? "Signing you in..." : "Log In to Moodsify"}
                     </motion.span>
                   </Button>
                   <p className="text-xs text-center text-gray-500 dark:text-gray-400">
@@ -247,4 +251,5 @@ const LoginForm = ({
       </div>
     </div>;
 };
+
 export default LoginForm;
