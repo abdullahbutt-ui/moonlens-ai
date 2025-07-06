@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +18,7 @@ import DailyChallenge from "./pages/DailyChallenge";
 import FutureSelfLetter from "./pages/FutureSelfLetter";
 import LiveEmotionDetection from "./pages/LiveEmotionDetection";
 import MoodJournalPage from "./pages/MoodJournalPage";
+import SoundCenter from "./pages/SoundCenter";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -32,22 +34,26 @@ function App() {
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
             <Toaster />
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/dashboard" element={<NewDashboard />} />
-              <Route path="/old-dashboard" element={<Dashboard />} />
-              <Route path="/profile" element={<EnhancedProfile />} />
-              <Route path="/live-emotion-detection" element={<LiveEmotionDetection />} />
-              <Route path="/mood-journal" element={<MoodJournalPage />} />
-              <Route path="/mood-trends" element={<MoodTrends />} />
-              <Route path="/future-self-letter" element={<FutureSelfLetter />} />
-              <Route path="/mood-wall" element={<MoodWall />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/daily-challenge" element={<DailyChallenge />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Sonner />
+            <TooltipProvider>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/dashboard" element={<NewDashboard />} />
+                <Route path="/old-dashboard" element={<Dashboard />} />
+                <Route path="/profile" element={<EnhancedProfile />} />
+                <Route path="/live-emotion-detection" element={<LiveEmotionDetection />} />
+                <Route path="/mood-journal" element={<MoodJournalPage />} />
+                <Route path="/mood-trends" element={<MoodTrends />} />
+                <Route path="/future-self-letter" element={<FutureSelfLetter />} />
+                <Route path="/mood-wall" element={<MoodWall />} />
+                <Route path="/sound-center" element={<SoundCenter />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/daily-challenge" element={<DailyChallenge />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </TooltipProvider>
           </QueryClientProvider>
         </AuthProvider>
       </ThemeProvider>

@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   User, 
   Mail, 
@@ -21,11 +22,14 @@ import {
   Heart,
   ArrowLeft,
   Sparkles,
-  Settings
+  Settings,
+  LogOut,
+  Save
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import MobileNavigation from '@/components/layout/MobileNavigation';
+import { toast } from 'sonner';
 
 const EnhancedProfile = () => {
   const { user, profile } = useAuth();
@@ -37,11 +41,13 @@ const EnhancedProfile = () => {
     fullName: profile?.full_name || '',
     email: user?.email || '',
     dateOfBirth: '',
+    bio: profile?.bio || '',
     interests: ['Mindfulness', 'Meditation', 'Self-care'],
     moodSensitivity: [5]
   });
 
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(profile?.avatar_url || null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -54,9 +60,43 @@ const EnhancedProfile = () => {
     }
   };
 
-  const handleSave = () => {
-    // Implementation for saving profile data
-    console.log('Saving profile:', formData);
+  const handleSave = async () => {
+    if (!user) return;
+    
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: formData.fullName,
+          bio: formData.bio,
+          avatar_url: profileImage,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      
+      toast.success("Profile updated successfully! ✨");
+    } catch (error) {
+      console.error('Profile update error:', error);
+      toast.error("Failed to update profile. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast.success("Signed out successfully! 👋");
+      navigate('/login');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      toast.error("Failed to sign out. Please try again.");
+    }
   };
 
   return (
@@ -165,9 +205,19 @@ const EnhancedProfile = () => {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="mt-1 rounded-2xl border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-700/50"
+                    disabled
+                    className="mt-1 rounded-2xl border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 opacity-60"
                     placeholder="your@email.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="bio" className="text-gray-700 dark:text-gray-300">Bio</Label>
+                  <Input
+                    id="bio"
+                    value={formData.bio}
+                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                    className="mt-1 rounded-2xl border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-700/50"
+                    placeholder="Tell us about yourself"
                   />
                 </div>
                 <div>
@@ -188,30 +238,6 @@ const EnhancedProfile = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-          >
-            <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg border-gray-200/50 dark:border-gray-700/50 rounded-3xl">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-gray-800 dark:text-white">
-                  <Sparkles className="w-5 h-5 text-purple-500" />
-                  Interests
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {formData.interests.map((interest, index) => (
-                    <Badge key={index} variant="outline" className="rounded-full border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300">
-                      {interest}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
           >
             <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg border-gray-200/50 dark:border-gray-700/50 rounded-3xl">
               <CardHeader>
@@ -248,7 +274,7 @@ const EnhancedProfile = () => {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.3 }}
           >
             <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg border-gray-200/50 dark:border-gray-700/50 rounded-3xl">
               <CardHeader>
@@ -269,19 +295,38 @@ const EnhancedProfile = () => {
             </Card>
           </motion.div>
 
-          {/* Save Button */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <Button 
-              onClick={handleSave}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 rounded-2xl shadow-lg"
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
             >
-              Save Changes
-            </Button>
-          </motion.div>
+              <Button 
+                onClick={handleSave}
+                disabled={isSaving}
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 rounded-2xl shadow-lg"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Button 
+                onClick={handleSignOut}
+                variant="outline"
+                className="w-full border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 font-semibold py-3 rounded-2xl"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </main>
 

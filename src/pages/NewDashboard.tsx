@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import MobileNavigation from "@/components/layout/MobileNavigation";
 import MobileDashboardCard from "@/components/dashboard/MobileDashboardCard";
 import CurrentMood from "@/components/dashboard/CurrentMood";
+import BreathingExercise from "@/components/dashboard/BreathingExercise";
 import { EmotionType } from "@/types/emotion";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +30,7 @@ const NewDashboard = () => {
       description: "Get personalized emotional support and guidance",
       icon: Bot,
       gradient: "bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600",
-      action: () => navigate('/ai-coach')
+      action: () => navigate('/mood-journal')
     },
     {
       title: "Sound Center",
@@ -39,11 +40,11 @@ const NewDashboard = () => {
       action: () => navigate('/sound-center')
     },
     {
-      title: "Breathing Exercise",
-      description: "Guided breathing for instant calm",
-      icon: Wind,
+      title: "Mood Journal",
+      description: "Track and reflect on your emotional journey",
+      icon: Brain,
       gradient: "bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600",
-      action: () => {} // Will implement breathing modal
+      action: () => navigate('/mood-journal')
     },
     {
       title: "Mood Trends",
@@ -115,6 +116,16 @@ const NewDashboard = () => {
             confidence={0.8} 
             isDetecting={false} 
           />
+        </motion.div>
+
+        {/* Quick Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-8 flex justify-center"
+        >
+          <BreathingExercise />
         </motion.div>
 
         {/* Feature Cards Grid */}

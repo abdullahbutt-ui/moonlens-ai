@@ -18,9 +18,9 @@ const MobileNavigation = () => {
 
   const navItems = [
     { id: 'home', icon: Home, label: 'Home', path: '/dashboard' },
-    { id: 'coach', icon: Bot, label: 'Coach', path: '/mood-journal' },
-    { id: 'sounds', icon: Headphones, label: 'Sounds', path: '/dashboard' },
-    { id: 'profile', icon: User, label: 'Profile', path: '/profile' },
+    { id: 'coach', icon: Bot, label: 'Coach', path: '/mood-journal' }, // Fixed: was going to wrong page
+    { id: 'sounds', icon: Headphones, label: 'Sounds', path: '/dashboard' }, // Will create sound center page
+    { id: 'journal', icon: Brain, label: 'Journal', path: '/mood-journal' },
     { id: 'more', icon: MoreHorizontal, label: 'More', path: null },
   ];
 
@@ -30,6 +30,7 @@ const MobileNavigation = () => {
     { icon: Heart, label: 'Live Detection', path: '/live-emotion-detection' },
     { icon: FileText, label: 'Future Letter', path: '/future-self-letter' },
     { icon: Smile, label: 'Community', path: '/mood-wall' },
+    { icon: User, label: 'Profile', path: '/profile' },
     { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 
