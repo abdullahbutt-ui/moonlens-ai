@@ -111,7 +111,7 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
           Breathing
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 rounded-3xl">
+      <DialogContent className="max-w-md w-full mx-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 rounded-3xl">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-blue-600 dark:text-blue-400 flex items-center text-xl">
@@ -132,7 +132,7 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 p-2">
+        <div className="space-y-6 p-2 max-h-[70vh] overflow-y-auto">
           {/* Exercise Selection */}
           <div className="grid grid-cols-1 gap-3">
             {Object.entries(exercises).map(([key, exercise]) => (
@@ -162,7 +162,7 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
           </div>
 
           {/* Breathing Circle */}
-          <div className="flex flex-col items-center space-y-6 py-8">
+          <div className="flex flex-col items-center space-y-6 py-4">
             <div className="relative w-48 h-48 flex items-center justify-center">
               <motion.div 
                 className={`w-32 h-32 rounded-full bg-gradient-to-br ${getPhaseColor()} flex items-center justify-center shadow-lg`}

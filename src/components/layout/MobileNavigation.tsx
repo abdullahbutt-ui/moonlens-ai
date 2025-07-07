@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Home, Bot, Headphones, User, MoreHorizontal, Brain, TrendingUp, Settings, FileText, Heart, Smile } from 'lucide-react';
 import { motion } from 'framer-motion';
+import AIMoodCoach from '@/components/dashboard/AIMoodCoach';
 import {
   Sheet,
   SheetContent,
@@ -15,28 +16,26 @@ const MobileNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [isAICoachOpen, setIsAICoachOpen] = useState(false);
 
   const navItems = [
     { id: 'home', icon: Home, label: 'Home', path: '/dashboard' },
-    { id: 'coach', icon: Bot, label: 'Coach', path: '/mood-journal' }, // Fixed: was going to wrong page
-    { id: 'sounds', icon: Headphones, label: 'Sounds', path: '/dashboard' }, // Will create sound center page
+    { id: 'coach', icon: Bot, label: 'Coach', path: '/mood-journal', isAICoach: true },
+    { id: 'sounds', icon: Headphones, label: 'Sounds', path: '/sound-center' },
     { id: 'journal', icon: Brain, label: 'Journal', path: '/mood-journal' },
     { id: 'more', icon: MoreHorizontal, label: 'More', path: null },
   ];
 
   const moreItems = [
-    { icon: Brain, label: 'Mood Journal', path: '/mood-journal' },
-    { icon: TrendingUp, label: 'Trends', path: '/mood-trends' },
-    { icon: Heart, label: 'Live Detection', path: '/live-emotion-detection' },
     { icon: FileText, label: 'Future Letter', path: '/future-self-letter' },
     { icon: Smile, label: 'Community', path: '/mood-wall' },
-    { icon: User, label: 'Profile', path: '/profile' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 
   const handleNavigation = (item: any) => {
     if (item.id === 'more') {
       setIsMoreOpen(true);
+    } else if (item.isAICoach) {
+      setIsAICoachOpen(true);
     } else if (item.path) {
       navigate(item.path);
     }
@@ -122,6 +121,15 @@ const MobileNavigation = () => {
                 </Button>
               </motion.div>
             ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* AI Coach Modal */}
+      <Sheet open={isAICoachOpen} onOpenChange={setIsAICoachOpen}>
+        <SheetContent className="w-96 bg-white dark:bg-gray-900 border-gray-200 dark:border-purple-500/20">
+          <div onClick={(e) => e.stopPropagation()}>
+            <AIMoodCoach currentMood="neutral" recentMoods={["neutral"]} />
           </div>
         </SheetContent>
       </Sheet>

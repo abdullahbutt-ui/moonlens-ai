@@ -35,7 +35,7 @@ const Landing = () => {
     setTimeout(() => setShowMoodFeedback(false), 3000);
   };
   const handleGetStarted = () => {
-    navigate('/mood-splash');
+    navigate('/onboarding');
   };
   const handleLogin = () => {
     navigate('/login');

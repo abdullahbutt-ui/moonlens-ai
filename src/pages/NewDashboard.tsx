@@ -8,6 +8,8 @@ import BreathingExercise from "@/components/dashboard/BreathingExercise";
 import { EmotionType } from "@/types/emotion";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "@/contexts/ThemeContext";
 import { 
   Bot, 
   Headphones, 
@@ -17,35 +19,19 @@ import {
   Zap,
   Users,
   Mail,
-  Sparkles
+  Sparkles,
+  User,
+  Settings,
+  Moon,
+  Sun
 } from "lucide-react";
 
 const NewDashboard = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>('neutral');
 
   const features = [
-    {
-      title: "AI Mood Coach",
-      description: "Get personalized emotional support and guidance",
-      icon: Bot,
-      gradient: "bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600",
-      action: () => navigate('/mood-journal')
-    },
-    {
-      title: "Sound Center",
-      description: "Relaxing sounds and music for mindfulness",
-      icon: Headphones,
-      gradient: "bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600",
-      action: () => navigate('/sound-center')
-    },
-    {
-      title: "Mood Journal",
-      description: "Track and reflect on your emotional journey",
-      icon: Brain,
-      gradient: "bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600",
-      action: () => navigate('/mood-journal')
-    },
     {
       title: "Mood Trends",
       description: "Track your emotional patterns over time",
@@ -61,11 +47,11 @@ const NewDashboard = () => {
       action: () => navigate('/live-emotion-detection')
     },
     {
-      title: "Community",
-      description: "Connect with others on similar journeys",
-      icon: Users,
-      gradient: "bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600",
-      action: () => navigate('/mood-wall')
+      title: "Future Letter",
+      description: "Write a message to your future self",
+      icon: Mail,
+      gradient: "bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-600",
+      action: () => navigate('/future-self-letter')
     }
   ];
 
@@ -82,15 +68,45 @@ const NewDashboard = () => {
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center"
+            className="flex items-center justify-between"
           >
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 bg-clip-text text-transparent flex items-center justify-center gap-2">
-              <Sparkles className="w-6 h-6 text-purple-500" />
-              Moodsify
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-              Your mindful companion ✨
-            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className="p-2"
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </Button>
+            
+            <div className="text-center">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 bg-clip-text text-transparent flex items-center justify-center gap-2">
+                <Sparkles className="w-6 h-6 text-purple-500" />
+                Moodsify
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                Your mindful companion ✨
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/settings')}
+                className="p-2"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/profile')}
+                className="p-2"
+              >
+                <User className="w-5 h-5" />
+              </Button>
+            </div>
           </motion.div>
         </div>
       </div>

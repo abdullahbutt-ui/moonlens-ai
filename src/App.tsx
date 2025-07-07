@@ -38,6 +38,7 @@ function App() {
             <TooltipProvider>
               <Routes>
                 <Route path="/" element={<Landing />} />
+                <Route path="/mood-splash" element={<MoodSplash />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/dashboard" element={<NewDashboard />} />
