@@ -145,7 +145,7 @@ const Dashboard = () => {
             {/* Daily Check-in - only show if not completed */}
             {!hasCheckedInToday && <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
                 <div className="lg:col-span-1">
-                  <DailyCheckIn onCheckIn={handleDailyCheckIn} currentStreak={checkInStreak} hasCheckedInToday={hasCheckedInToday} />
+                  <DailyCheckIn onCheckIn={handleDailyCheckIn} />
                 </div>
                 <div className="lg:col-span-2">
                   <CurrentMood emotion={currentEmotion} confidence={0.8} isDetecting={false} />

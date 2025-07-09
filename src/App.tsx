@@ -24,6 +24,9 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import NewDashboard from '@/pages/NewDashboard';
 import EnhancedProfile from '@/pages/EnhancedProfile';
+import PrivacyPolicy from '@/pages/PrivacyPolicy';
+import TermsOfService from '@/pages/TermsOfService';
+import ContactSupport from '@/pages/ContactSupport';
 
 const queryClient = new QueryClient();
 
@@ -52,6 +55,9 @@ function App() {
                 <Route path="/sound-center" element={<SoundCenter />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/daily-challenge" element={<DailyChallenge />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/contact-support" element={<ContactSupport />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </TooltipProvider>

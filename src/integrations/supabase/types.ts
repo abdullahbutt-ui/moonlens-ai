@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_checkins: {
+        Row: {
+          check_in_date: string
+          created_at: string
+          id: string
+          mood: Database["public"]["Enums"]["emotiontype"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          check_in_date?: string
+          created_at?: string
+          id?: string
+          mood: Database["public"]["Enums"]["emotiontype"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          check_in_date?: string
+          created_at?: string
+          id?: string
+          mood?: Database["public"]["Enums"]["emotiontype"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -49,10 +76,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_user_streak: {
+        Args: { user_uuid: string }
+        Returns: number
+      }
     }
     Enums: {
-      [_ in never]: never
+      emotiontype:
+        | "happy"
+        | "sad"
+        | "angry"
+        | "surprised"
+        | "fearful"
+        | "disgusted"
+        | "neutral"
+        | "excited"
+        | "calm"
+        | "anxious"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -179,6 +219,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      emotiontype: [
+        "happy",
+        "sad",
+        "angry",
+        "surprised",
+        "fearful",
+        "disgusted",
+        "neutral",
+        "excited",
+        "calm",
+        "anxious",
+      ],
+    },
   },
 } as const

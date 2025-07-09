@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,6 +26,17 @@ const SoundCenter = () => {
   const navigate = useNavigate();
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [volume, setVolume] = useState([75]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Sample audio URLs - replace with your actual audio files
+  const audioUrls = {
+    rain: '/sounds/rain.mp3',
+    ocean: '/sounds/ocean.mp3',
+    wind: '/sounds/wind.mp3',
+    tibetan: '/sounds/tibetan.mp3',
+    piano: '/sounds/piano.mp3',
+    ambient: '/sounds/ambient.mp3'
+  };
 
   const soundCategories = [
     {
@@ -48,10 +59,64 @@ const SoundCenter = () => {
     }
   ];
 
+  useEffect(() => {
+    // Initialize audio element
+    audioRef.current = new Audio();
+    audioRef.current.loop = true;
+    
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume[0] / 100;
+    }
+  }, [volume]);
+
   const handlePlayPause = (soundId: string) => {
+    if (!audioRef.current) return;
+
     if (currentlyPlaying === soundId) {
+      audioRef.current.pause();
       setCurrentlyPlaying(null);
     } else {
+      // For demo purposes, we'll generate a tone or use a placeholder
+      // In a real app, you'd load actual audio files
+      audioRef.current.src = audioUrls[soundId as keyof typeof audioUrls] || '';
+      audioRef.current.play().catch(() => {
+        // Fallback: create a simple tone for demo
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Different frequencies for different sounds
+        const frequencies: { [key: string]: number } = {
+          rain: 200,
+          ocean: 100,
+          wind: 150,
+          tibetan: 256,
+          piano: 440,
+          ambient: 80
+        };
+        
+        oscillator.frequency.value = frequencies[soundId] || 200;
+        oscillator.type = 'sine';
+        gainNode.gain.value = 0.1;
+        
+        oscillator.start();
+        
+        // Store reference to stop it later
+        (audioRef.current as any).fallbackOscillator = oscillator;
+      });
+      
       setCurrentlyPlaying(soundId);
     }
   };

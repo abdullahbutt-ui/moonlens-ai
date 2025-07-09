@@ -132,7 +132,7 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 p-2 max-h-[70vh] overflow-y-auto">
+        <div className="space-y-6 p-2 max-h-[70vh] overflow-y-auto flex flex-col items-center">
           {/* Exercise Selection */}
           <div className="grid grid-cols-1 gap-3">
             {Object.entries(exercises).map(([key, exercise]) => (
@@ -162,8 +162,8 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
           </div>
 
           {/* Breathing Circle */}
-          <div className="flex flex-col items-center space-y-6 py-4">
-            <div className="relative w-48 h-48 flex items-center justify-center">
+          <div className="flex flex-col items-center space-y-6 py-4 w-full">
+            <div className="relative w-48 h-48 flex items-center justify-center mx-auto">
               <motion.div 
                 className={`w-32 h-32 rounded-full bg-gradient-to-br ${getPhaseColor()} flex items-center justify-center shadow-lg`}
                 animate={{ 
@@ -203,7 +203,7 @@ const BreathingExercise = ({ onComplete }: BreathingExerciseProps) => {
             </div>
 
             {/* Controls */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 justify-center w-full">
               <Button 
                 onClick={startExercise} 
                 disabled={isActive}

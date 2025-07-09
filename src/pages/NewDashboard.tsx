@@ -5,6 +5,7 @@ import MobileNavigation from "@/components/layout/MobileNavigation";
 import MobileDashboardCard from "@/components/dashboard/MobileDashboardCard";
 import CurrentMood from "@/components/dashboard/CurrentMood";
 import BreathingExercise from "@/components/dashboard/BreathingExercise";
+import DailyCheckIn from "@/components/dashboard/DailyCheckIn";
 import { EmotionType } from "@/types/emotion";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -112,26 +113,14 @@ const NewDashboard = () => {
       </div>
 
       <main className="max-w-md mx-auto px-4 py-6 pb-24 md:max-w-7xl md:px-8">
-        {/* Current Mood Section */}
+        {/* Daily Check-In Section */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <div className="text-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
-              How are you feeling?
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
-              Let's check in with your emotions
-            </p>
-          </div>
-          <CurrentMood 
-            emotion={currentEmotion} 
-            confidence={0.8} 
-            isDetecting={false} 
-          />
+          <DailyCheckIn onCheckIn={setCurrentEmotion} />
         </motion.div>
 
         {/* Quick Actions */}
@@ -159,26 +148,32 @@ const NewDashboard = () => {
           ))}
         </div>
 
-        {/* Quick Stats - Mobile Optimized */}
+        {/* Footer Links */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="mt-8 bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg rounded-3xl p-6 border border-gray-200/50 dark:border-gray-700/50"
+          className="mt-8 text-center space-y-4"
         >
-          <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-purple-500" />
-            Today's Summary
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-2xl">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">7</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Day Streak</div>
-            </div>
-            <div className="text-center p-4 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-2xl">
-              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">3</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Check-ins</div>
-            </div>
+          <div className="flex justify-center space-x-6 text-sm">
+            <button 
+              onClick={() => navigate('/privacy-policy')}
+              className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+            >
+              Privacy Policy
+            </button>
+            <button 
+              onClick={() => navigate('/terms-of-service')}
+              className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+            >
+              Terms of Service
+            </button>
+            <button 
+              onClick={() => navigate('/contact-support')}
+              className="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+            >
+              Support
+            </button>
           </div>
         </motion.div>
       </main>

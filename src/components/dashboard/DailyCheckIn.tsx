@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,26 +5,109 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Flame, Award } from 'lucide-react';
 import { EmotionType } from '@/types/emotion';
 import { emotionEmojis, emotionColors } from '@/utils/emotionData';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 interface DailyCheckInProps {
-  onCheckIn: (mood: EmotionType) => void;
-  currentStreak: number;
-  hasCheckedInToday: boolean;
+  onCheckIn?: (mood: EmotionType) => void;
 }
 
-const DailyCheckIn = ({ onCheckIn, currentStreak, hasCheckedInToday }: DailyCheckInProps) => {
+const DailyCheckIn = ({ onCheckIn }: DailyCheckInProps) => {
+  const { user } = useAuth();
   const [selectedMood, setSelectedMood] = useState<EmotionType | null>(null);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
   const [showReward, setShowReward] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const moods: EmotionType[] = ['happy', 'sad', 'angry', 'surprised', 'fearful', 'disgusted', 'neutral'];
 
-  const handleCheckIn = () => {
-    if (selectedMood) {
-      onCheckIn(selectedMood);
-      if (currentStreak > 0 && currentStreak % 7 === 0) {
+  useEffect(() => {
+    if (user) {
+      checkTodayStatus();
+      fetchStreak();
+    }
+  }, [user]);
+
+  const checkTodayStatus = async () => {
+    if (!user) return;
+    
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from('daily_checkins')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('check_in_date', today)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking today status:', error);
+        return;
+      }
+
+      setHasCheckedInToday(!!data);
+    } catch (error) {
+      console.error('Error checking today status:', error);
+    }
+  };
+
+  const fetchStreak = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('calculate_user_streak', { user_uuid: user.id });
+
+      if (error) {
+        console.error('Error fetching streak:', error);
+        return;
+      }
+
+      setCurrentStreak(data || 0);
+    } catch (error) {
+      console.error('Error fetching streak:', error);
+    }
+  };
+
+  const handleCheckIn = async () => {
+    if (!selectedMood || !user || loading) return;
+    
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase
+        .from('daily_checkins')
+        .insert({
+          user_id: user.id,
+          mood: selectedMood,
+          check_in_date: new Date().toISOString().split('T')[0]
+        });
+
+      if (error) {
+        console.error('Error checking in:', error);
+        toast.error('Failed to check in. Please try again.');
+        return;
+      }
+
+      setHasCheckedInToday(true);
+      onCheckIn?.(selectedMood);
+      toast.success('Daily check-in completed! 🎉');
+      
+      // Fetch updated streak
+      await fetchStreak();
+      
+      // Show reward animation for streaks
+      if (currentStreak > 0 && (currentStreak + 1) % 7 === 0) {
         setShowReward(true);
         setTimeout(() => setShowReward(false), 3000);
       }
+    } catch (error) {
+      console.error('Error checking in:', error);
+      toast.error('Failed to check in. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,10 +169,10 @@ const DailyCheckIn = ({ onCheckIn, currentStreak, hasCheckedInToday }: DailyChec
 
             <Button
               onClick={handleCheckIn}
-              disabled={!selectedMood}
+              disabled={!selectedMood || loading}
               className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-sm sm:text-base py-2 sm:py-3"
             >
-              Complete Check-In
+              {loading ? 'Checking in...' : 'Complete Check-In'}
             </Button>
           </>
         ) : (
