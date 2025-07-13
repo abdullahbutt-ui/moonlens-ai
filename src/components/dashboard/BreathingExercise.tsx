@@ -183,7 +183,7 @@ const BreathingExercise = ({
               
               {/* Progress indicator */}
               <div className="absolute -bottom-6 text-center text-gray-600 dark:text-gray-400">
-                <div className="text-sm font-medium">Cycle {cycle + 1} of 4</div>
+                <div className="text-sm font-medium rounded-sm">Cycle {cycle + 1} of 4</div>
               </div>
             </div>
 
