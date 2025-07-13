@@ -113,22 +113,60 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
       if (isPlaying) {
         audioRef.current?.pause();
       } else {
-        audioRef.current?.play();
+        audioRef.current?.play().catch(() => {
+          // Generate fallback tone if audio fails
+          generateFallbackTone();
+        });
       }
       setIsPlaying(!isPlaying);
     } else {
       if (audioRef.current) {
         audioRef.current.pause();
       }
-      audioRef.current?.setAttribute('src', track.url);
-      audioRef.current?.load();
-      audioRef.current?.play().catch(() => {
-        // Handle autoplay restrictions
-        console.log('Audio play was prevented by browser policy');
-      });
+      
+      // Try to play the actual audio file
+      if (audioRef.current) {
+        audioRef.current.src = track.url;
+        audioRef.current.load();
+        audioRef.current.play().catch(() => {
+          // Generate fallback tone if audio fails to load
+          generateFallbackTone();
+          console.log('Audio file failed to load, using fallback tone');
+        });
+      }
       setCurrentTrack(track);
       setIsPlaying(true);
     }
+  };
+
+  // Generate fallback audio tone using Web Audio API
+  const generateFallbackTone = () => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Create a calming tone based on track category
+    const frequencies: { [key: string]: number } = {
+      calm: 200,
+      relax: 174,
+      focus: 256,
+      sleep: 110,
+      upload: 220
+    };
+    
+    const frequency = frequencies[currentTrack?.category || 'calm'] || 200;
+    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(volume * 0.1, audioContext.currentTime + 0.5);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 10);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 10);
   };
 
   const handleDownload = (track: AudioTrack) => {

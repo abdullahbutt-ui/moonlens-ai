@@ -111,7 +111,7 @@ const BreathingExercise = ({
           Breathing
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md w-full mx-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 rounded-3xl px-0 py-0 my-[2px]">
+      <DialogContent className="max-w-md w-full mx-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 rounded-3xl px-4 py-6">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-blue-600 dark:text-blue-400 flex items-center text-xl">
@@ -127,7 +127,7 @@ const BreathingExercise = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 p-2 max-h-[70vh] overflow-y-auto flex flex-col items-center">
+        <div className="space-y-6 max-h-[70vh] overflow-y-auto flex flex-col items-center w-full">
           {/* Exercise Selection */}
           <div className="grid grid-cols-1 gap-3">
             {Object.entries(exercises).map(([key, exercise]) => <Card key={key} className={`cursor-pointer transition-all duration-300 ${selectedExercise === key ? 'bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 border-blue-300 dark:border-blue-500 shadow-md' : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm'}`} onClick={() => {

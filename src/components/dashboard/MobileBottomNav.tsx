@@ -60,9 +60,9 @@ const MobileBottomNav = ({ currentMood }: MobileBottomNavProps) => {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/live-emotion-detection')}
-            className="flex flex-col items-center gap-1 h-auto py-2 px-3 text-xs"
+            className="flex flex-col items-center gap-1 h-auto py-1 px-2 text-xs"
           >
-            <Zap className="w-5 h-5" />
+            <Zap className="w-4 h-4" />
             <span>Detection</span>
           </Button>
           
@@ -70,9 +70,9 @@ const MobileBottomNav = ({ currentMood }: MobileBottomNavProps) => {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/mood-journal')}
-            className="flex flex-col items-center gap-1 h-auto py-2 px-3 text-xs"
+            className="flex flex-col items-center gap-1 h-auto py-1 px-2 text-xs"
           >
-            <Brain className="w-5 h-5" />
+            <Brain className="w-4 h-4" />
             <span>Journal</span>
           </Button>
           
@@ -80,9 +80,9 @@ const MobileBottomNav = ({ currentMood }: MobileBottomNavProps) => {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/mood-trends')}
-            className="flex flex-col items-center gap-1 h-auto py-2 px-3 text-xs"
+            className="flex flex-col items-center gap-1 h-auto py-1 px-2 text-xs"
           >
-            <TrendingUp className="w-5 h-5" />
+            <TrendingUp className="w-4 h-4" />
             <span>Trends</span>
           </Button>
           
@@ -90,10 +90,20 @@ const MobileBottomNav = ({ currentMood }: MobileBottomNavProps) => {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/mood-wall')}
-            className="flex flex-col items-center gap-1 h-auto py-2 px-3 text-xs"
+            className="flex flex-col items-center gap-1 h-auto py-1 px-2 text-xs"
           >
-            <Users className="w-5 h-5" />
+            <Users className="w-4 h-4" />
             <span>Community</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/profile')}
+            className="flex flex-col items-center gap-1 h-auto py-1 px-2 text-xs"
+          >
+            <User className="w-4 h-4" />
+            <span>Profile</span>
           </Button>
         </div>
 
@@ -101,26 +111,26 @@ const MobileBottomNav = ({ currentMood }: MobileBottomNavProps) => {
         <div className="flex items-center justify-around">
           <div className="flex flex-col items-center">
             <AIMoodCoach currentMood={currentMood} recentMoods={[currentMood]} />
-            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1">AI Coach</span>
+            <span className="text-xs text-gray-600 dark:text-gray-400">AI</span>
           </div>
           
           <div className="flex flex-col items-center">
             <SoundCenter currentMood={currentMood} />
-            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1">Sounds</span>
+            <span className="text-xs text-gray-600 dark:text-gray-400">Sounds</span>
           </div>
           
           <div className="flex flex-col items-center">
             <BreathingExercise />
-            <span className="text-xs text-gray-600 dark:text-gray-400 mt-1">Breathe</span>
+            <span className="text-xs text-gray-600 dark:text-gray-400">Breathe</span>
           </div>
           
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate('/future-self-letter')}
-            className="flex flex-col items-center gap-1 h-auto py-2 px-3 text-xs"
+            className="flex flex-col items-center gap-1 h-auto py-1 px-2 text-xs"
           >
-            <Mail className="w-5 h-5" />
+            <Mail className="w-4 h-4" />
             <span>Letter</span>
           </Button>
           
@@ -128,9 +138,9 @@ const MobileBottomNav = ({ currentMood }: MobileBottomNavProps) => {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/settings')}
-            className="flex flex-col items-center gap-1 h-auto py-2 px-3 text-xs"
+            className="flex flex-col items-center gap-1 h-auto py-1 px-2 text-xs"
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-4 h-4" />
             <span>Settings</span>
           </Button>
         </div>

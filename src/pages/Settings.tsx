@@ -4,10 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/layout/Navbar";
-import { Bell, Lock, Palette, Clock, Mail, Phone, MessageSquare, Shield, Camera, Mic, Info, ExternalLink, Heart, Star } from "lucide-react";
+import { Bell, Lock, Palette, Clock, Mail, Phone, MessageSquare, Shield, Camera, Mic, Info, ExternalLink, Heart, Star, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 const Settings = () => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState(true);
   const [dailyReminders, setDailyReminders] = useState(true);
   const [cameraPermission, setCameraPermission] = useState(false);
@@ -96,6 +100,11 @@ const Settings = () => {
     description: "Our terms and conditions",
     action: () => window.open('/terms-of-service', '_blank')
   }];
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/login');
+  };
   return <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900">
       <Navbar />
       
@@ -221,7 +230,7 @@ const Settings = () => {
             </Card>
           </motion.div>
 
-          {/* Rate the App */}
+          {/* Sign Out Section */}
           <motion.div initial={{
           opacity: 0,
           y: 20
@@ -230,6 +239,30 @@ const Settings = () => {
           y: 0
         }} transition={{
           delay: 0.5
+        }}>
+            <Card className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-red-200/50 dark:border-red-500/20 shadow-lg">
+              <CardContent className="p-6">
+                <Button 
+                  onClick={handleSignOut}
+                  variant="destructive"
+                  className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Rate the App */}
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.6
         }}>
             <Card className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 dark:from-purple-500/20 dark:to-pink-500/20 border-purple-200/50 dark:border-purple-500/20 shadow-lg">
               <CardContent className="p-6 text-center">
