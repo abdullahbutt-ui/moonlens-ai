@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Navbar from "@/components/layout/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +9,6 @@ import { EmotionType } from '@/types/emotion';
 import DailyCheckIn from '@/components/dashboard/DailyCheckIn';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-
 const FutureSelfLetter = () => {
   const [currentMood, setCurrentMood] = useState<EmotionType>('neutral');
   const [content, setContent] = useState('');
@@ -19,7 +17,6 @@ const FutureSelfLetter = () => {
   const [checkInStreak, setCheckInStreak] = useState(7);
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState('notification');
-
   const getMoodPrompt = () => {
     const prompts = {
       happy: "You're radiating joy right now! ✨ What would you like to remind your future self about this beautiful moment?",
@@ -32,13 +29,11 @@ const FutureSelfLetter = () => {
     };
     return prompts[currentMood] || prompts.neutral;
   };
-
   const handleSealLetter = async () => {
     if (!content.trim()) {
       toast.error("Your letter needs some words first! ✍️");
       return;
     }
-    
     setIsSealing(true);
 
     // Calculate delivery date
@@ -47,14 +42,13 @@ const FutureSelfLetter = () => {
 
     // Simulate sealing animation
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
     console.log('📬 Future letter saved:', {
       content,
       deliveryDate: deliveryDate.toISOString(),
       currentMood,
       deliveryMethod
     });
-    
+
     // Store in localStorage for demo purposes
     const existingLetters = JSON.parse(localStorage.getItem('futureLetters') || '[]');
     existingLetters.push({
@@ -66,42 +60,40 @@ const FutureSelfLetter = () => {
       createdAt: new Date().toISOString()
     });
     localStorage.setItem('futureLetters', JSON.stringify(existingLetters));
-    
     toast.success(`Your letter is sealed! 💌 You'll receive it on ${deliveryDate.toLocaleDateString()}`);
     setContent('');
     setIsSealing(false);
   };
-
   const handleDailyCheckIn = (mood: EmotionType) => {
     setCurrentMood(mood);
     setHasCheckedInToday(true);
     setCheckInStreak(prev => prev + 1);
     toast.success("Daily check-in complete! 🌟");
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900">
+  return <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900">
       <Navbar />
       
       {/* Streak indicator - top right corner */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="fixed top-20 right-4 z-40 flex items-center gap-1 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-purple-200 dark:border-purple-700"
-      >
+      <motion.div initial={{
+      opacity: 0,
+      scale: 0.8
+    }} animate={{
+      opacity: 1,
+      scale: 1
+    }} className="fixed top-20 right-4 z-40 flex items-center gap-1 bg-white/80 dark:bg-black/80 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-purple-200 dark:border-purple-700">
         <Flame className="w-4 h-4 text-orange-500" />
         <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{checkInStreak}</span>
       </motion.div>
       
       <main className="max-w-2xl mx-auto px-4 py-8 pt-24">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8 text-center"
-        >
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 bg-clip-text text-transparent mb-3">
-            Letter to Future You 💌
-          </h1>
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} className="mb-8 text-center">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 bg-clip-text text-transparent mb-3">Letter to Future You </h1>
           <p className="text-gray-600 dark:text-gray-300 text-lg">
             Write a message to your future self and receive it when you need it most
           </p>
@@ -109,23 +101,26 @@ const FutureSelfLetter = () => {
 
 
         {/* Future Self Letter Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        delay: 0.4
+      }}>
           <Card className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-purple-200/50 dark:border-purple-500/20 shadow-xl">
             <CardHeader className="text-center pb-4">
               <CardTitle className="flex items-center justify-center gap-2 text-purple-800 dark:text-purple-200 text-xl">
                 <Heart className="w-6 h-6" />
                 Your Letter
               </CardTitle>
-              <motion.p 
-                key={currentMood}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-sm text-purple-600 dark:text-purple-300 mt-2"
-              >
+              <motion.p key={currentMood} initial={{
+              opacity: 0
+            }} animate={{
+              opacity: 1
+            }} className="text-sm text-purple-600 dark:text-purple-300 mt-2">
                 {getMoodPrompt()}
               </motion.p>
             </CardHeader>
@@ -133,12 +128,7 @@ const FutureSelfLetter = () => {
             <CardContent className="space-y-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Your message</label>
-                <Textarea 
-                  placeholder="Hey future me! Right now I'm feeling..."
-                  value={content} 
-                  onChange={(e) => setContent(e.target.value)} 
-                  className="min-h-[200px] bg-white/70 dark:bg-black/30 border-purple-200 dark:border-purple-500/30 focus:border-purple-400 dark:focus:border-purple-400 transition-colors resize-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 rounded-xl" 
-                />
+                <Textarea placeholder="Hey future me! Right now I'm feeling..." value={content} onChange={e => setContent(e.target.value)} className="min-h-[200px] bg-white/70 dark:bg-black/30 border-purple-200 dark:border-purple-500/30 focus:border-purple-400 dark:focus:border-purple-400 transition-colors resize-none text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 rounded-xl" />
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {content.length}/1000 characters
                 </p>
@@ -181,23 +171,15 @@ const FutureSelfLetter = () => {
                 </div>
               </div>
               
-              <Button 
-                onClick={handleSealLetter} 
-                disabled={!content.trim() || isSealing}
-                className="w-full bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 hover:from-purple-700 hover:via-pink-600 hover:to-indigo-700 text-white relative overflow-hidden h-14 rounded-xl text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                {isSealing ? (
-                  <>
+              <Button onClick={handleSealLetter} disabled={!content.trim() || isSealing} className="w-full bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 hover:from-purple-700 hover:via-pink-600 hover:to-indigo-700 text-white relative overflow-hidden h-14 rounded-xl text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+                {isSealing ? <>
                     <Sparkles className="w-5 h-5 mr-2 animate-spin" />
                     Sealing your letter...
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-pulse" />
-                  </>
-                ) : (
-                  <>
+                  </> : <>
                     <Send className="w-5 h-5 mr-2" />
                     Seal & Send to Future Me
-                  </>
-                )}
+                  </>}
               </Button>
               
               <p className="text-xs text-purple-500 dark:text-purple-400 text-center">
@@ -207,8 +189,6 @@ const FutureSelfLetter = () => {
           </Card>
         </motion.div>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default FutureSelfLetter;
