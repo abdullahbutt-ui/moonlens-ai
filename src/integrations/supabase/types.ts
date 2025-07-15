@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_journal_entries: {
+        Row: {
+          ai_prompt: string | null
+          content: string
+          created_at: string
+          emotion_tags: string[] | null
+          id: string
+          mood_at_entry: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_prompt?: string | null
+          content: string
+          created_at?: string
+          emotion_tags?: string[] | null
+          id?: string
+          mood_at_entry?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_prompt?: string | null
+          content?: string
+          created_at?: string
+          emotion_tags?: string[] | null
+          id?: string
+          mood_at_entry?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_challenges: {
+        Row: {
+          assigned_date: string
+          challenge_type: string
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          difficulty_level: string | null
+          estimated_minutes: number | null
+          id: string
+          mood_context: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          assigned_date?: string
+          challenge_type: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          mood_context?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          assigned_date?: string
+          challenge_type?: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          mood_context?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_checkins: {
         Row: {
           check_in_date: string
@@ -36,6 +114,45 @@ export type Database = {
           created_at?: string
           id?: string
           mood?: Database["public"]["Enums"]["emotiontype"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mood_analytics: {
+        Row: {
+          burnout_score: number | null
+          completed_challenges: number | null
+          created_at: string
+          date: string
+          id: string
+          journal_entries_count: number | null
+          mood_scores: Json | null
+          primary_mood: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          burnout_score?: number | null
+          completed_challenges?: number | null
+          created_at?: string
+          date: string
+          id?: string
+          journal_entries_count?: number | null
+          mood_scores?: Json | null
+          primary_mood?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          burnout_score?: number | null
+          completed_challenges?: number | null
+          created_at?: string
+          date?: string
+          id?: string
+          journal_entries_count?: number | null
+          mood_scores?: Json | null
+          primary_mood?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -71,14 +188,89 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_name: string
+          achievement_type: string
+          description: string | null
+          earned_at: string
+          id: string
+          streak_count: number | null
+          user_id: string
+        }
+        Insert: {
+          achievement_name: string
+          achievement_type: string
+          description?: string | null
+          earned_at?: string
+          id?: string
+          streak_count?: number | null
+          user_id: string
+        }
+        Update: {
+          achievement_name?: string
+          achievement_type?: string
+          description?: string | null
+          earned_at?: string
+          id?: string
+          streak_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          is_premium: boolean | null
+          notification_preferences: Json | null
+          pin_code: string | null
+          private_mode_enabled: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_premium?: boolean | null
+          notification_preferences?: Json | null
+          pin_code?: string | null
+          private_mode_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_premium?: boolean | null
+          notification_preferences?: Json | null
+          pin_code?: string | null
+          private_mode_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      calculate_journal_streak: {
+        Args: { user_uuid: string }
+        Returns: number
+      }
       calculate_user_streak: {
         Args: { user_uuid: string }
         Returns: number
+      }
+      update_mood_analytics: {
+        Args: {
+          user_uuid: string
+          mood_type: string
+          challenge_completed?: boolean
+        }
+        Returns: undefined
       }
     }
     Enums: {
