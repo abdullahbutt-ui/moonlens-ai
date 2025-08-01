@@ -97,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/dashboard`;
+      const redirectUrl = `${window.location.origin}/email-confirmed`;
       
       const { error } = await supabase.auth.signUp({
         email,
@@ -118,10 +118,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+
+      // Check if email is verified
+      if (!error && data.user && !data.user.email_confirmed_at) {
+        // Sign out the user immediately if email is not verified
+        await supabase.auth.signOut();
+        return { 
+          error: { 
+            message: 'Email not confirmed',
+            email: email
+          }
+        };
+      }
 
       return { error };
     } catch (error) {
@@ -150,7 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type: 'signup',
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`
+          emailRedirectTo: `${window.location.origin}/email-confirmed`
         }
       });
 

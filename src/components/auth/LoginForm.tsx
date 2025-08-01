@@ -36,15 +36,14 @@ const LoginForm = ({
     e.preventDefault();
     setIsLoading(true);
     try {
-      const {
-        error
-      } = await signIn(email, password);
+      const { error } = await signIn(email, password);
       if (error) {
         console.error("Login error:", error);
         if (error.message.includes('Invalid login credentials')) {
           toast.error("Invalid email or password. Please try again.");
         } else if (error.message.includes('Email not confirmed')) {
-          toast.error("Please verify your email before signing in. Check your inbox for a confirmation link.");
+          toast.error("Please verify your email before signing in.");
+          navigate(`/verify?email=${encodeURIComponent(error.email || email)}`);
         } else {
           toast.error("Unable to sign in. Please try again.");
         }

@@ -53,7 +53,10 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
         console.error("Signup error:", error);
         
         if (error.message.includes('User already registered') || error.message.includes('already registered')) {
-          toast.error("An account with this email already exists. Try signing in instead.");
+          toast.error("This email is already taken. Please try signing in instead.");
+          setTimeout(() => {
+            onToggleMode(); // Switch to login form
+          }, 2000);
         } else if (error.message.includes('Password should be at least 6 characters')) {
           toast.error("Password should be at least 6 characters long.");
         } else if (error.message.includes('Invalid email')) {

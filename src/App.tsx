@@ -27,6 +27,8 @@ import EnhancedProfile from '@/pages/EnhancedProfile';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import TermsOfService from '@/pages/TermsOfService';
 import ContactSupport from '@/pages/ContactSupport';
+import EmailVerify from '@/pages/EmailVerify';
+import EmailConfirmed from '@/pages/EmailConfirmed';
 
 const queryClient = new QueryClient();
 
@@ -43,6 +45,8 @@ function App() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/mood-splash" element={<MoodSplash />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/verify" element={<EmailVerify />} />
+                <Route path="/email-confirmed" element={<EmailConfirmed />} />
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/dashboard" element={<NewDashboard />} />
                 <Route path="/old-dashboard" element={<Dashboard />} />
