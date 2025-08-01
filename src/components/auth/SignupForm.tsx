@@ -65,8 +65,8 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
           toast.error(error.message || "Unable to create account. Please try again.");
         }
       } else {
-        toast.success("Account created successfully! Please check your email to verify your account.");
-        setShowEmailVerification(true);
+        toast.success("Check your inbox for a verification email.");
+        navigate(`/verify?email=${encodeURIComponent(email)}`);
       }
     } catch (error: any) {
       console.error("Signup error:", error);

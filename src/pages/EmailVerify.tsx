@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,9 +11,16 @@ const EmailVerify = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { resendConfirmation } = useAuth();
+  const { resendConfirmation, user } = useAuth();
   
   const email = searchParams.get('email') || '';
+
+  // Check if user is already verified and redirect to dashboard
+  useEffect(() => {
+    if (user && user.email_confirmed_at) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleResendEmail = async () => {
     if (!email) {
@@ -80,7 +87,7 @@ const EmailVerify = () => {
             <CardContent className="space-y-6">
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                 <div className="text-sm text-blue-700 dark:text-blue-300">
-                  <p className="font-medium mb-1">Check your inbox</p>
+                  <p className="font-medium mb-1">Please confirm your email</p>
                   <p>
                     We've sent a verification link to {email ? <strong>{email}</strong> : 'your email address'}. 
                     Click the link to verify your account and start using Moodsify.

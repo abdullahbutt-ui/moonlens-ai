@@ -29,6 +29,7 @@ import TermsOfService from '@/pages/TermsOfService';
 import ContactSupport from '@/pages/ContactSupport';
 import EmailVerify from '@/pages/EmailVerify';
 import EmailConfirmed from '@/pages/EmailConfirmed';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 const queryClient = new QueryClient();
 
@@ -47,18 +48,18 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/verify" element={<EmailVerify />} />
                 <Route path="/email-confirmed" element={<EmailConfirmed />} />
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/dashboard" element={<NewDashboard />} />
-                <Route path="/old-dashboard" element={<Dashboard />} />
-                <Route path="/profile" element={<EnhancedProfile />} />
-                <Route path="/live-emotion-detection" element={<LiveEmotionDetection />} />
-                <Route path="/mood-journal" element={<MoodJournalPage />} />
-                <Route path="/mood-trends" element={<MoodTrends />} />
-                <Route path="/future-self-letter" element={<FutureSelfLetter />} />
-                <Route path="/mood-wall" element={<MoodWall />} />
-                <Route path="/sound-center" element={<SoundCenter />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/daily-challenge" element={<DailyChallenge />} />
+                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute><NewDashboard /></ProtectedRoute>} />
+                <Route path="/old-dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><EnhancedProfile /></ProtectedRoute>} />
+                <Route path="/live-emotion-detection" element={<ProtectedRoute><LiveEmotionDetection /></ProtectedRoute>} />
+                <Route path="/mood-journal" element={<ProtectedRoute><MoodJournalPage /></ProtectedRoute>} />
+                <Route path="/mood-trends" element={<ProtectedRoute><MoodTrends /></ProtectedRoute>} />
+                <Route path="/future-self-letter" element={<ProtectedRoute><FutureSelfLetter /></ProtectedRoute>} />
+                <Route path="/mood-wall" element={<ProtectedRoute><MoodWall /></ProtectedRoute>} />
+                <Route path="/sound-center" element={<ProtectedRoute><SoundCenter /></ProtectedRoute>} />
+                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                <Route path="/daily-challenge" element={<ProtectedRoute><DailyChallenge /></ProtectedRoute>} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
                 <Route path="/contact-support" element={<ContactSupport />} />
