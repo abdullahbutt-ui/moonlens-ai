@@ -12,7 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
-import MoodTrends from "./pages/MoodTrends";
+import MoodTrendsEnhanced from "./pages/MoodTrendsEnhanced";
 import MoodWall from "./pages/MoodWall";
 import DailyChallenge from "./pages/DailyChallenge";
 import FutureSelfLetter from "./pages/FutureSelfLetter";
@@ -54,7 +54,7 @@ function App() {
                 <Route path="/profile" element={<ProtectedRoute><EnhancedProfile /></ProtectedRoute>} />
                 <Route path="/live-emotion-detection" element={<ProtectedRoute><LiveEmotionDetection /></ProtectedRoute>} />
                 <Route path="/mood-journal" element={<ProtectedRoute><MoodJournalPage /></ProtectedRoute>} />
-                <Route path="/mood-trends" element={<ProtectedRoute><MoodTrends /></ProtectedRoute>} />
+                <Route path="/mood-trends" element={<ProtectedRoute><MoodTrendsEnhanced /></ProtectedRoute>} />
                 <Route path="/future-self-letter" element={<ProtectedRoute><FutureSelfLetter /></ProtectedRoute>} />
                 <Route path="/mood-wall" element={<ProtectedRoute><MoodWall /></ProtectedRoute>} />
                 <Route path="/sound-center" element={<ProtectedRoute><SoundCenter /></ProtectedRoute>} />

@@ -65,7 +65,8 @@ const EnhancedProfile = () => {
     
     setIsSaving(true);
     try {
-      const { error } = await supabase
+      // First try to update existing profile
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({
           full_name: formData.fullName,
@@ -75,9 +76,30 @@ const EnhancedProfile = () => {
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      // If update fails because profile doesn't exist, create it
+      if (updateError && updateError.code === 'PGRST116') {
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            full_name: formData.fullName,
+            email: user.email,
+            bio: formData.bio,
+            avatar_url: profileImage,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+        
+        if (insertError) throw insertError;
+      } else if (updateError) {
+        throw updateError;
+      }
       
       toast.success("Profile updated successfully! ✨");
+      
+      // Trigger a refresh of the auth context if needed
+      window.location.reload();
+      
     } catch (error) {
       console.error('Profile update error:', error);
       toast.error("Failed to update profile. Please try again.");

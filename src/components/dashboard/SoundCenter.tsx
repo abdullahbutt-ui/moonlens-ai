@@ -109,22 +109,24 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
   }, [currentTrack]);
 
   const handlePlayPause = (track: AudioTrack) => {
-    if (currentTrack?.id === track.id) {
-      if (isPlaying) {
-        audioRef.current?.pause();
-      } else {
-        audioRef.current?.play().catch(() => {
-          // Generate fallback tone if audio fails
-          generateFallbackTone();
-        });
-      }
-      setIsPlaying(!isPlaying);
-    } else {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
+    // Stop any currently playing track first
+    if (currentTrack && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
       
-      // Try to play the actual audio file
+      // Stop any fallback oscillator
+      if ((audioRef.current as any).fallbackOscillator) {
+        (audioRef.current as any).fallbackOscillator.stop();
+        (audioRef.current as any).fallbackOscillator = null;
+      }
+    }
+
+    if (currentTrack?.id === track.id && isPlaying) {
+      // Stop current track
+      setIsPlaying(false);
+      setCurrentTrack(null);
+    } else {
+      // Start new track
       if (audioRef.current) {
         audioRef.current.src = track.url;
         audioRef.current.load();
@@ -167,6 +169,11 @@ const SoundCenter = ({ currentMood }: SoundCenterProps) => {
     
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 10);
+    
+    // Store reference to stop it later
+    if (audioRef.current) {
+      (audioRef.current as any).fallbackOscillator = oscillator;
+    }
   };
 
   const handleDownload = (track: AudioTrack) => {

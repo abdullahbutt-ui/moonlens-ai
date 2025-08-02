@@ -81,12 +81,22 @@ const SoundCenter = () => {
   const handlePlayPause = (soundId: string) => {
     if (!audioRef.current) return;
 
-    if (currentlyPlaying === soundId) {
+    // Stop any currently playing sounds first
+    if (currentlyPlaying && audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      
+      // Stop fallback oscillator if it exists
+      if ((audioRef.current as any).fallbackOscillator) {
+        (audioRef.current as any).fallbackOscillator.stop();
+        (audioRef.current as any).fallbackOscillator = null;
+      }
+    }
+
+    if (currentlyPlaying === soundId) {
       setCurrentlyPlaying(null);
     } else {
-      // For demo purposes, we'll generate a tone or use a placeholder
-      // In a real app, you'd load actual audio files
+      // Start new sound
       audioRef.current.src = audioUrls[soundId as keyof typeof audioUrls] || '';
       audioRef.current.play().catch(() => {
         // Fallback: create a simple tone for demo
