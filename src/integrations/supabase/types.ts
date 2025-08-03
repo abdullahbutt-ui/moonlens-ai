@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
@@ -158,6 +158,48 @@ export type Database = {
         }
         Relationships: []
       }
+      mood_summary_cards: {
+        Row: {
+          card_image_url: string | null
+          challenges_completed: number | null
+          created_at: string
+          dominant_mood: string
+          id: string
+          is_shared: boolean | null
+          mood_distribution: Json
+          streak_count: number | null
+          user_id: string
+          week_end_date: string
+          week_start_date: string
+        }
+        Insert: {
+          card_image_url?: string | null
+          challenges_completed?: number | null
+          created_at?: string
+          dominant_mood: string
+          id?: string
+          is_shared?: boolean | null
+          mood_distribution: Json
+          streak_count?: number | null
+          user_id: string
+          week_end_date: string
+          week_start_date: string
+        }
+        Update: {
+          card_image_url?: string | null
+          challenges_completed?: number | null
+          created_at?: string
+          dominant_mood?: string
+          id?: string
+          is_shared?: boolean | null
+          mood_distribution?: Json
+          streak_count?: number | null
+          user_id?: string
+          week_end_date?: string
+          week_start_date?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -220,32 +262,47 @@ export type Database = {
       }
       user_preferences: {
         Row: {
+          achievements: Json | null
           created_at: string
           id: string
           is_premium: boolean | null
+          last_check_in_date: string | null
           notification_preferences: Json | null
           pin_code: string | null
           private_mode_enabled: boolean | null
+          streak_count: number | null
+          subscription_end_date: string | null
+          subscription_status: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          achievements?: Json | null
           created_at?: string
           id?: string
           is_premium?: boolean | null
+          last_check_in_date?: string | null
           notification_preferences?: Json | null
           pin_code?: string | null
           private_mode_enabled?: boolean | null
+          streak_count?: number | null
+          subscription_end_date?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          achievements?: Json | null
           created_at?: string
           id?: string
           is_premium?: boolean | null
+          last_check_in_date?: string | null
           notification_preferences?: Json | null
           pin_code?: string | null
           private_mode_enabled?: boolean | null
+          streak_count?: number | null
+          subscription_end_date?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id?: string
         }
