@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import CurrentMood from '@/components/dashboard/CurrentMood';
 import DailyCheckIn from '@/components/dashboard/DailyCheckIn';
-import EnhancedAICoach from '@/components/dashboard/EnhancedAICoach';
+import AIMoodAssistant from '@/components/dashboard/AIMoodAssistant';
 import EnhancedDailyChallenge from '@/components/dashboard/EnhancedDailyChallenge';
 import AchievementsPanel from '@/components/achievements/AchievementsPanel';
 import MoodSummaryCard from '@/components/mood/MoodSummaryCard';
@@ -251,7 +251,7 @@ const EnhancedDashboard = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <EnhancedAICoach 
+                <AIMoodAssistant 
                   currentMood={currentEmotion}
                   isPremium={isPremium}
                   onUpgradeClick={() => setShowPremiumModal(true)}

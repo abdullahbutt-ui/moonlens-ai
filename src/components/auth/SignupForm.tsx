@@ -25,12 +25,24 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
   const navigate = useNavigate();
   const { signUp, resendConfirmation } = useAuth();
 
+  // Enhanced password validation
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,16}$/;
+  
   // Validation states
   const isNameValid = name.length > 0;
   const isEmailValid = email.includes("@") && email.includes(".");
-  const isPasswordValid = password.length >= 6;
+  const isPasswordValid = passwordRegex.test(password);
   const isConfirmPasswordValid = confirmPassword === password && password.length > 0;
   const isFormValid = isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid;
+
+  // Password validation details
+  const passwordChecks = {
+    length: password.length >= 6 && password.length <= 16,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /\d/.test(password),
+    special: /[@$!%*?&]/.test(password)
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,13 +64,13 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
       if (error) {
         console.error("Signup error:", error);
         
-        if (error.message.includes('User already registered') || error.message.includes('already registered')) {
-          toast.error("This email is already taken. Please try signing in instead.");
+        if (error.message.includes('User already registered') || error.message.includes('already registered') || error.message.includes('already been registered')) {
+          toast.error("Email already in use. Please try signing in instead.");
           setTimeout(() => {
             onToggleMode(); // Switch to login form
           }, 2000);
         } else if (error.message.includes('Password should be at least 6 characters')) {
-          toast.error("Password should be at least 6 characters long.");
+          toast.error("Password must meet the requirements below.");
         } else if (error.message.includes('Invalid email')) {
           toast.error("Please enter a valid email address.");
         } else {
@@ -364,6 +376,39 @@ const SignupForm = ({ onToggleMode }: SignupFormProps) => {
                       </motion.div>
                     )}
                   </div>
+                  
+                  {/* Password Requirements */}
+                  {password.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="text-xs space-y-1 ml-1"
+                    >
+                      <p className="text-gray-600 dark:text-gray-400 font-medium">Password requirements:</p>
+                      <div className="grid grid-cols-1 gap-1">
+                        <div className={`flex items-center gap-1 ${passwordChecks.length ? 'text-green-600' : 'text-red-500'}`}>
+                          <div className={`w-1.5 h-1.5 rounded-full ${passwordChecks.length ? 'bg-green-500' : 'bg-red-500'}`} />
+                          6-16 characters long
+                        </div>
+                        <div className={`flex items-center gap-1 ${passwordChecks.uppercase ? 'text-green-600' : 'text-red-500'}`}>
+                          <div className={`w-1.5 h-1.5 rounded-full ${passwordChecks.uppercase ? 'bg-green-500' : 'bg-red-500'}`} />
+                          At least one uppercase letter
+                        </div>
+                        <div className={`flex items-center gap-1 ${passwordChecks.lowercase ? 'text-green-600' : 'text-red-500'}`}>
+                          <div className={`w-1.5 h-1.5 rounded-full ${passwordChecks.lowercase ? 'bg-green-500' : 'bg-red-500'}`} />
+                          At least one lowercase letter
+                        </div>
+                        <div className={`flex items-center gap-1 ${passwordChecks.number ? 'text-green-600' : 'text-red-500'}`}>
+                          <div className={`w-1.5 h-1.5 rounded-full ${passwordChecks.number ? 'bg-green-500' : 'bg-red-500'}`} />
+                          At least one number
+                        </div>
+                        <div className={`flex items-center gap-1 ${passwordChecks.special ? 'text-green-600' : 'text-red-500'}`}>
+                          <div className={`w-1.5 h-1.5 rounded-full ${passwordChecks.special ? 'bg-green-500' : 'bg-red-500'}`} />
+                          At least one special character (@$!%*?&)
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
                 </motion.div>
 
                 {/* Confirm Password Field */}
