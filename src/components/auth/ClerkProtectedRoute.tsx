@@ -1,25 +1,14 @@
-
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
+import { Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Brain } from "lucide-react";
 
-const Index = () => {
-  const navigate = useNavigate();
-  const { isSignedIn, isLoaded } = useAuth();
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
 
-  useEffect(() => {
-    if (isLoaded) {
-      if (isSignedIn) {
-        console.log("User authenticated, redirecting to dashboard");
-        navigate('/dashboard');
-      } else {
-        console.log("No user found, redirecting to landing");
-        navigate('/');
-      }
-    }
-  }, [isSignedIn, isLoaded, navigate]);
+const ClerkProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { isSignedIn, isLoaded } = useAuth();
 
   if (!isLoaded) {
     return (
@@ -52,7 +41,11 @@ const Index = () => {
     );
   }
 
-  return null;
+  if (!isSignedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
 };
 
-export default Index;
+export default ClerkProtectedRoute;

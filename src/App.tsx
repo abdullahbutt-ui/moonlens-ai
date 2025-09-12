@@ -21,15 +21,13 @@ import MoodJournalPage from "./pages/MoodJournalPage";
 import SoundCenter from "./pages/SoundCenter";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { AuthProvider } from "./contexts/AuthContext";
 import NewDashboard from '@/pages/NewDashboard';
 import EnhancedProfile from '@/pages/EnhancedProfile';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import TermsOfService from '@/pages/TermsOfService';
 import ContactSupport from '@/pages/ContactSupport';
-import EmailVerify from '@/pages/EmailVerify';
-import EmailConfirmed from '@/pages/EmailConfirmed';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import ClerkProtectedRoute from '@/components/auth/ClerkProtectedRoute';
+import ClerkLoginForm from '@/components/auth/ClerkLoginForm';
 
 const queryClient = new QueryClient();
 
@@ -37,37 +35,33 @@ function App() {
   return (
     <BrowserRouter>
       <ThemeProvider>
-        <AuthProvider>
-          <QueryClientProvider client={queryClient}>
-            <Toaster />
-            <Sonner />
-            <TooltipProvider>
+        <QueryClientProvider client={queryClient}>
+          <Toaster />
+          <Sonner />
+          <TooltipProvider>
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/mood-splash" element={<MoodSplash />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/verify" element={<EmailVerify />} />
-                <Route path="/email-confirmed" element={<EmailConfirmed />} />
-                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><NewDashboard /></ProtectedRoute>} />
-                <Route path="/old-dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/profile" element={<ProtectedRoute><EnhancedProfile /></ProtectedRoute>} />
-                <Route path="/live-emotion-detection" element={<ProtectedRoute><LiveEmotionDetection /></ProtectedRoute>} />
-                <Route path="/mood-journal" element={<ProtectedRoute><MoodJournalPage /></ProtectedRoute>} />
-                <Route path="/mood-trends" element={<ProtectedRoute><MoodTrendsEnhanced /></ProtectedRoute>} />
-                <Route path="/future-self-letter" element={<ProtectedRoute><FutureSelfLetter /></ProtectedRoute>} />
-                <Route path="/mood-wall" element={<ProtectedRoute><MoodWall /></ProtectedRoute>} />
-                <Route path="/sound-center" element={<ProtectedRoute><SoundCenter /></ProtectedRoute>} />
-                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                <Route path="/daily-challenge" element={<ProtectedRoute><DailyChallenge /></ProtectedRoute>} />
+                <Route path="/login" element={<ClerkLoginForm />} />
+                <Route path="/onboarding" element={<ClerkProtectedRoute><Onboarding /></ClerkProtectedRoute>} />
+                <Route path="/dashboard" element={<ClerkProtectedRoute><NewDashboard /></ClerkProtectedRoute>} />
+                <Route path="/old-dashboard" element={<ClerkProtectedRoute><Dashboard /></ClerkProtectedRoute>} />
+                <Route path="/profile" element={<ClerkProtectedRoute><EnhancedProfile /></ClerkProtectedRoute>} />
+                <Route path="/live-emotion-detection" element={<ClerkProtectedRoute><LiveEmotionDetection /></ClerkProtectedRoute>} />
+                <Route path="/mood-journal" element={<ClerkProtectedRoute><MoodJournalPage /></ClerkProtectedRoute>} />
+                <Route path="/mood-trends" element={<ClerkProtectedRoute><MoodTrendsEnhanced /></ClerkProtectedRoute>} />
+                <Route path="/future-self-letter" element={<ClerkProtectedRoute><FutureSelfLetter /></ClerkProtectedRoute>} />
+                <Route path="/mood-wall" element={<ClerkProtectedRoute><MoodWall /></ClerkProtectedRoute>} />
+                <Route path="/sound-center" element={<ClerkProtectedRoute><SoundCenter /></ClerkProtectedRoute>} />
+                <Route path="/settings" element={<ClerkProtectedRoute><Settings /></ClerkProtectedRoute>} />
+                <Route path="/daily-challenge" element={<ClerkProtectedRoute><DailyChallenge /></ClerkProtectedRoute>} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
                 <Route path="/contact-support" element={<ContactSupport />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </TooltipProvider>
-          </QueryClientProvider>
-        </AuthProvider>
+        </QueryClientProvider>
       </ThemeProvider>
     </BrowserRouter>
   );

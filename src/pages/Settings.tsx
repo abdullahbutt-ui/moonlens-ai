@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/layout/Navbar";
 import { Bell, Lock, Palette, Clock, Mail, Phone, MessageSquare, Shield, Camera, Mic, Info, ExternalLink, Heart, Star, LogOut } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "sonner";

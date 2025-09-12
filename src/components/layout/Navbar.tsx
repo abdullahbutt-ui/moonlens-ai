@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { Sun, Moon, User, Settings, LogOut, ArrowLeft, Home, Brain } from "lucide-react";
 const Navbar = () => {
   const navigate = useNavigate();
@@ -13,11 +13,8 @@ const Navbar = () => {
     theme,
     toggleTheme
   } = useTheme();
-  const {
-    user,
-    profile,
-    signOut
-  } = useAuth();
+  const { signOut } = useAuth();
+  const { user } = useUser();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const handleSignOut = async () => {
     setIsLoggingOut(true);
@@ -66,9 +63,9 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
                     <Avatar className="h-10 w-10 border-2 border-purple-200 dark:border-purple-500/30">
-                      <AvatarImage src={profile?.avatar_url || undefined} />
+                      <AvatarImage src={user?.imageUrl || undefined} />
                       <AvatarFallback className="bg-gradient-to-r from-purple-500 to-blue-500 text-white text-sm">
-                        {profile?.full_name ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase() : user.email?.charAt(0).toUpperCase() || 'U'}
+                        {user?.fullName ? user.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : user?.primaryEmailAddress?.emailAddress?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -76,11 +73,11 @@ const Navbar = () => {
                 <DropdownMenuContent className="w-56 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700" align="end" forceMount>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
-                      {profile?.full_name && <p className="font-medium text-gray-900 dark:text-white">
-                          {profile.full_name}
+                      {user?.fullName && <p className="font-medium text-gray-900 dark:text-white">
+                          {user.fullName}
                         </p>}
                       <p className="w-[200px] truncate text-sm text-gray-500 dark:text-gray-400">
-                        {user.email}
+                        {user?.primaryEmailAddress?.emailAddress}
                       </p>
                     </div>
                   </div>
