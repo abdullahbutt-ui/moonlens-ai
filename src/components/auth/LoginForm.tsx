@@ -40,7 +40,7 @@ const LoginForm = ({
       if (error) {
         console.error("Login error:", error);
         if (error.message.includes('Invalid login credentials')) {
-          toast.error("Invalid email or password. Please try again.");
+          toast.error("The email or password you entered is incorrect. Please check your credentials or use 'Forgot password?' to reset it.");
         } else if (error.message.includes('Email not confirmed')) {
           toast.error("Please verify your email before signing in.");
           navigate(`/verify?email=${encodeURIComponent(error.email || email)}`);
