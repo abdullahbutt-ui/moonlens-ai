@@ -16,7 +16,7 @@ const Index = () => {
         navigate('/dashboard');
       } else {
         console.log("No user found, redirecting to landing");
-        navigate('/');
+        navigate('/landing');
       }
     }
   }, [isSignedIn, isLoaded, navigate]);

@@ -40,10 +40,11 @@ function App() {
           <Sonner />
           <TooltipProvider>
               <Routes>
-                <Route path="/" element={<Landing />} />
+                <Route path="/" element={<Index />} />
+                <Route path="/landing" element={<Landing />} />
                 <Route path="/mood-splash" element={<MoodSplash />} />
                 <Route path="/login" element={<ClerkLoginForm />} />
-                <Route path="/onboarding" element={<ClerkProtectedRoute><Onboarding /></ClerkProtectedRoute>} />
+                <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/dashboard" element={<ClerkProtectedRoute><NewDashboard /></ClerkProtectedRoute>} />
                 <Route path="/old-dashboard" element={<ClerkProtectedRoute><Dashboard /></ClerkProtectedRoute>} />
                 <Route path="/profile" element={<ClerkProtectedRoute><EnhancedProfile /></ClerkProtectedRoute>} />
