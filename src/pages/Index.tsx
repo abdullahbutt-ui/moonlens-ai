@@ -1,25 +1,35 @@
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { motion } from "framer-motion";
 import { Brain } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
   const { isSignedIn, isLoaded } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     if (isLoaded) {
-      if (isSignedIn) {
-        console.log("User authenticated, redirecting to dashboard");
-        navigate('/dashboard');
+      if (isSignedIn && user) {
+        // Check if user needs to complete profile setup
+        const userMetadata = user.unsafeMetadata as { profileCompleted?: boolean };
+        const hasCompletedProfile = userMetadata?.profileCompleted || user.firstName || user.lastName;
+        
+        if (!hasCompletedProfile) {
+          console.log("New user, redirecting to profile setup");
+          navigate('/profile-setup');
+        } else {
+          console.log("Returning user, redirecting to dashboard");
+          navigate('/dashboard');
+        }
       } else {
         console.log("No user found, redirecting to landing");
         navigate('/landing');
       }
     }
-  }, [isSignedIn, isLoaded, navigate]);
+  }, [isSignedIn, isLoaded, user, navigate]);
 
   if (!isLoaded) {
     return (

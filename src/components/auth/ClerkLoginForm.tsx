@@ -55,7 +55,8 @@ const ClerkLoginForm = () => {
                 footerActionLink: 'text-purple-600 hover:text-purple-700',
               }
             }}
-            redirectUrl="/dashboard"
+            signUpUrl="/login"
+            forceRedirectUrl="/"
           />
         </div>
       </motion.div>

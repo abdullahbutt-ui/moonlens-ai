@@ -1,7 +1,6 @@
-
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +10,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { supabase } from '@/integrations/supabase/client';
 import { 
   User, 
   Mail, 
@@ -32,21 +30,28 @@ import MobileNavigation from '@/components/layout/MobileNavigation';
 import { toast } from 'sonner';
 
 const EnhancedProfile = () => {
-  const { user, profile } = useAuth();
+  const { signOut } = useAuth();
+  const { user } = useUser();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const userMetadata = user?.unsafeMetadata as { 
+    interests?: string[], 
+    moodSensitivity?: number,
+    goals?: string[]
+  } || {};
+
   const [formData, setFormData] = useState({
-    fullName: profile?.full_name || '',
-    email: user?.email || '',
+    fullName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim(),
+    email: user?.primaryEmailAddress?.emailAddress || '',
     dateOfBirth: '',
-    bio: profile?.bio || '',
-    interests: ['Mindfulness', 'Meditation', 'Self-care'],
-    moodSensitivity: [5]
+    bio: '',
+    interests: userMetadata.interests || ['Mindfulness', 'Meditation', 'Self-care'],
+    moodSensitivity: [userMetadata.moodSensitivity || 5]
   });
 
-  const [profileImage, setProfileImage] = useState<string | null>(profile?.avatar_url || null);
+  const [profileImage, setProfileImage] = useState<string | null>(user?.imageUrl || null);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,40 +70,29 @@ const EnhancedProfile = () => {
     
     setIsSaving(true);
     try {
-      // First try to update existing profile
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({
-          full_name: formData.fullName,
-          bio: formData.bio,
-          avatar_url: profileImage,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+      // Parse the full name
+      const nameParts = formData.fullName.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
 
-      // If update fails because profile doesn't exist, create it
-      if (updateError && updateError.code === 'PGRST116') {
-        const { error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: user.id,
-            full_name: formData.fullName,
-            email: user.email,
-            bio: formData.bio,
-            avatar_url: profileImage,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-        
-        if (insertError) throw insertError;
-      } else if (updateError) {
-        throw updateError;
-      }
+      // Update user profile with Clerk
+      await user.update({
+        firstName,
+        lastName,
+      });
+
+      // Update metadata
+      await user.update({
+        unsafeMetadata: {
+          ...userMetadata,
+          interests: formData.interests,
+          moodSensitivity: formData.moodSensitivity[0],
+          bio: formData.bio,
+          profileUpdatedAt: new Date().toISOString()
+        }
+      });
       
       toast.success("Profile updated successfully! ✨");
-      
-      // Trigger a refresh of the auth context if needed
-      window.location.reload();
       
     } catch (error) {
       console.error('Profile update error:', error);
@@ -110,9 +104,7 @@ const EnhancedProfile = () => {
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
+      await signOut();
       toast.success("Signed out successfully! 👋");
       navigate('/login');
     } catch (error) {
@@ -165,9 +157,9 @@ const EnhancedProfile = () => {
         >
           <div className="relative inline-block">
             <Avatar className="w-24 h-24 mx-auto mb-4 border-4 border-white shadow-lg">
-              <AvatarImage src={profileImage || profile?.avatar_url || undefined} />
+              <AvatarImage src={profileImage || user?.imageUrl || undefined} />
               <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-2xl">
-                {profile?.full_name ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                {user?.firstName ? `${user.firstName[0]}${user.lastName?.[0] || ''}`.toUpperCase() : 'U'}
               </AvatarFallback>
             </Avatar>
             <Button
