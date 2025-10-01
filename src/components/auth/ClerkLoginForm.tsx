@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 const ClerkLoginForm = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-blue-50 to-teal-100 dark:from-purple-900 dark:via-blue-900 dark:to-teal-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-blue-50 to-teal-100 dark:from-purple-900 dark:via-blue-900 dark:to-teal-900 p-4 sm:p-6 md:p-8">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob dark:bg-purple-700"></div>
         <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000 dark:bg-blue-700"></div>
@@ -15,7 +15,7 @@ const ClerkLoginForm = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative z-10 w-full max-w-md"
+        className="relative z-10 w-full max-w-md mx-auto"
       >
         <div className="text-center mb-8">
           <motion.h1 
@@ -36,15 +36,15 @@ const ClerkLoginForm = () => {
           </motion.p>
         </div>
 
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-8">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
           <SignIn 
             appearance={{
               elements: {
                 formButtonPrimary: 
                   'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-sm normal-case',
                 card: 'bg-transparent shadow-none',
-                headerTitle: 'text-2xl font-bold text-gray-900 dark:text-white',
-                headerSubtitle: 'text-gray-600 dark:text-gray-400',
+                headerTitle: 'text-xl sm:text-2xl font-bold text-gray-900 dark:text-white',
+                headerSubtitle: 'text-sm sm:text-base text-gray-600 dark:text-gray-400',
                 socialButtonsBlockButton: 
                   'border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700',
                 formFieldInput: 
@@ -56,7 +56,8 @@ const ClerkLoginForm = () => {
               }
             }}
             signUpUrl="/login"
-            forceRedirectUrl="/"
+            forceRedirectUrl="/dashboard"
+            fallbackRedirectUrl="/dashboard"
           />
         </div>
       </motion.div>
