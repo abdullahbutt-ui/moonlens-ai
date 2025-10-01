@@ -62,12 +62,14 @@ const DailyCheckIn = ({ onCheckIn }: DailyCheckInProps) => {
 
       if (error) {
         console.error('Error fetching streak:', error);
+        setCurrentStreak(0);
         return;
       }
 
       setCurrentStreak(data || 0);
     } catch (error) {
       console.error('Error fetching streak:', error);
+      setCurrentStreak(0);
     }
   };
 
