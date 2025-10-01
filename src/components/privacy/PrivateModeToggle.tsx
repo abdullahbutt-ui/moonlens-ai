@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Shield, Lock, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useUser } from '@clerk/clerk-react';
 import { toast } from 'sonner';
 
 interface PrivateModeToggleProps {
@@ -13,7 +13,7 @@ interface PrivateModeToggleProps {
 }
 
 const PrivateModeToggle = ({ className }: PrivateModeToggleProps) => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [isPrivateMode, setIsPrivateMode] = useState(false);
   const [pinCode, setPinCode] = useState('');
   const [showPinSetup, setShowPinSetup] = useState(false);

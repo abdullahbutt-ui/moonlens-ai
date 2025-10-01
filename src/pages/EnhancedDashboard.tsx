@@ -14,13 +14,13 @@ import { SparklesCore } from '@/components/ui/sparkles';
 import { Button } from '@/components/ui/button';
 import { Crown, TrendingUp, Settings } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useUser } from '@clerk/clerk-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
 const EnhancedDashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useUser();
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>('neutral');
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
   const [isPremium, setIsPremium] = useState(false);

@@ -9,7 +9,6 @@ import Landing from "./pages/Landing";
 import MoodSplash from "./pages/MoodSplash";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import MoodTrendsEnhanced from "./pages/MoodTrendsEnhanced";

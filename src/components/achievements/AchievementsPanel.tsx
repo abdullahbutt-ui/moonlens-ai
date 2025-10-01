@@ -6,7 +6,7 @@ import AchievementBadge from './AchievementBadge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useUser } from '@clerk/clerk-react';
 
 interface Achievement {
   id: string;
@@ -26,7 +26,7 @@ interface AchievementsPanelProps {
 }
 
 const AchievementsPanel = ({ streakCount = 0, totalChallenges = 0, className }: AchievementsPanelProps) => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [newAchievement, setNewAchievement] = useState<Achievement | null>(null);
 

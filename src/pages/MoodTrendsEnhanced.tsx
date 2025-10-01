@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useUser } from "@clerk/clerk-react";
 import Navbar from "@/components/layout/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Brain, Calendar, Heart, Zap } from "lucide-react";
@@ -34,7 +34,7 @@ interface MoodSummary {
 }
 
 const MoodTrendsEnhanced = () => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [moodData, setMoodData] = useState<MoodEntry[]>([]);
   const [moodSummary, setMoodSummary] = useState<MoodSummary[]>([]);
   const [weeklyInsights, setWeeklyInsights] = useState<string[]>([]);
