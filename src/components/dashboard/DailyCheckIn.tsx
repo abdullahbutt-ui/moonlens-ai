@@ -6,7 +6,7 @@ import { Calendar, Flame, Award } from 'lucide-react';
 import { EmotionType } from '@/types/emotion';
 import { emotionEmojis, emotionColors } from '@/utils/emotionData';
 import { supabase } from '@/integrations/supabase/client';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 interface DailyCheckInProps {
@@ -14,7 +14,7 @@ interface DailyCheckInProps {
 }
 
 const DailyCheckIn = ({ onCheckIn }: DailyCheckInProps) => {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [selectedMood, setSelectedMood] = useState<EmotionType | null>(null);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);

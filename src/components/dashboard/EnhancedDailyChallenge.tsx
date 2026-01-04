@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Target, CheckCircle, Sparkles, Calendar, Flame, Lock } from 'lucide-react';
 import { EmotionType } from '@/types/emotion';
 import { supabase } from '@/integrations/supabase/client';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -22,7 +22,7 @@ const EnhancedDailyChallenge = ({
   onUpgradeClick,
   onChallengeComplete 
 }: EnhancedDailyChallengeProps) => {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [todaysChallenge, setTodaysChallenge] = useState<string>('');
   const [response, setResponse] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
