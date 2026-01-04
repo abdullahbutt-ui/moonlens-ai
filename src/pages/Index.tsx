@@ -1,37 +1,24 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth, useUser } from "@clerk/clerk-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import { Brain } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { isSignedIn, isLoaded } = useAuth();
-  const { user } = useUser();
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (isLoaded) {
-      if (isSignedIn && user) {
-        // Check if user needs to complete profile setup
-        const userMetadata = user.unsafeMetadata as { profileCompleted?: boolean };
-        const hasCompletedProfile = userMetadata?.profileCompleted || user.firstName || user.lastName;
-        
-        if (!hasCompletedProfile) {
-          console.log("New user, redirecting to profile setup");
-          navigate('/profile-setup');
-        } else {
-          console.log("Returning user, redirecting to dashboard");
-          navigate('/dashboard');
-        }
+    if (!isLoading) {
+      if (user) {
+        navigate('/dashboard');
       } else {
-        console.log("No user found, redirecting to landing");
         navigate('/landing');
       }
     }
-  }, [isSignedIn, isLoaded, user, navigate]);
+  }, [user, isLoading, navigate]);
 
-  if (!isLoaded) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-blue-50 to-teal-100 dark:from-purple-900 dark:via-blue-900 dark:to-teal-900">
         <div className="text-center">

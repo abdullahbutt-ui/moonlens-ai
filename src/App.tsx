@@ -25,8 +25,8 @@ import EnhancedProfile from '@/pages/EnhancedProfile';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import TermsOfService from '@/pages/TermsOfService';
 import ContactSupport from '@/pages/ContactSupport';
-import ClerkProtectedRoute from '@/components/auth/ClerkProtectedRoute';
-import ClerkLoginForm from '@/components/auth/ClerkLoginForm';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import Auth from '@/pages/Auth';
 import ProfileSetup from '@/pages/ProfileSetup';
 
 const queryClient = new QueryClient();
@@ -42,20 +42,21 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="/landing" element={<Landing />} />
               <Route path="/mood-splash" element={<MoodSplash />} />
-              <Route path="/login" element={<ClerkLoginForm />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/login" element={<Auth />} />
               <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/profile-setup" element={<ClerkProtectedRoute><ProfileSetup /></ClerkProtectedRoute>} />
-              <Route path="/dashboard" element={<ClerkProtectedRoute><NewDashboard /></ClerkProtectedRoute>} />
-              <Route path="/old-dashboard" element={<ClerkProtectedRoute><Dashboard /></ClerkProtectedRoute>} />
-              <Route path="/profile" element={<ClerkProtectedRoute><EnhancedProfile /></ClerkProtectedRoute>} />
-              <Route path="/live-emotion-detection" element={<ClerkProtectedRoute><LiveEmotionDetection /></ClerkProtectedRoute>} />
-              <Route path="/mood-journal" element={<ClerkProtectedRoute><MoodJournalPage /></ClerkProtectedRoute>} />
-              <Route path="/mood-trends" element={<ClerkProtectedRoute><MoodTrendsEnhanced /></ClerkProtectedRoute>} />
-              <Route path="/future-self-letter" element={<ClerkProtectedRoute><FutureSelfLetter /></ClerkProtectedRoute>} />
-              <Route path="/mood-wall" element={<ClerkProtectedRoute><MoodWall /></ClerkProtectedRoute>} />
-              <Route path="/sound-center" element={<ClerkProtectedRoute><SoundCenter /></ClerkProtectedRoute>} />
-              <Route path="/settings" element={<ClerkProtectedRoute><Settings /></ClerkProtectedRoute>} />
-              <Route path="/daily-challenge" element={<ClerkProtectedRoute><DailyChallenge /></ClerkProtectedRoute>} />
+              <Route path="/profile-setup" element={<ProtectedRoute><ProfileSetup /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><NewDashboard /></ProtectedRoute>} />
+              <Route path="/old-dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><EnhancedProfile /></ProtectedRoute>} />
+              <Route path="/live-emotion-detection" element={<ProtectedRoute><LiveEmotionDetection /></ProtectedRoute>} />
+              <Route path="/mood-journal" element={<ProtectedRoute><MoodJournalPage /></ProtectedRoute>} />
+              <Route path="/mood-trends" element={<ProtectedRoute><MoodTrendsEnhanced /></ProtectedRoute>} />
+              <Route path="/future-self-letter" element={<ProtectedRoute><FutureSelfLetter /></ProtectedRoute>} />
+              <Route path="/mood-wall" element={<ProtectedRoute><MoodWall /></ProtectedRoute>} />
+              <Route path="/sound-center" element={<ProtectedRoute><SoundCenter /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/daily-challenge" element={<ProtectedRoute><DailyChallenge /></ProtectedRoute>} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/contact-support" element={<ContactSupport />} />

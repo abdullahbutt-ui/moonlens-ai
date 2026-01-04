@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   User, 
   Heart,
@@ -18,12 +19,12 @@ import {
 import { toast } from 'sonner';
 
 const ProfileSetup = () => {
-  const { user } = useUser();
+  const { user } = useAuth();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
+    firstName: '',
+    lastName: '',
     interests: [] as string[],
     moodSensitivity: [5],
     goals: [] as string[]
@@ -56,20 +57,17 @@ const ProfileSetup = () => {
     
     setIsCompleting(true);
     try {
-      // Update user metadata to mark profile as completed
-      await user.update({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-      });
-
-      // Update public metadata to store additional info
-      await user.update({
-        unsafeMetadata: {
-          profileCompleted: true,
+      // Update user metadata in Supabase auth
+      await supabase.auth.updateUser({
+        data: {
+          full_name: `${formData.firstName} ${formData.lastName}`,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          profile_completed: true,
           interests: formData.interests,
-          moodSensitivity: formData.moodSensitivity[0],
+          mood_sensitivity: formData.moodSensitivity[0],
           goals: formData.goals,
-          setupCompletedAt: new Date().toISOString()
+          setup_completed_at: new Date().toISOString()
         }
       });
 

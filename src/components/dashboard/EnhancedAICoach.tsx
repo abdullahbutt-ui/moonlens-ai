@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Bot, RefreshCw, Send, Sparkles, Lock } from 'lucide-react';
 import { EmotionType } from '@/types/emotion';
 import { supabase } from '@/integrations/supabase/client';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -16,7 +16,7 @@ interface EnhancedAICoachProps {
 }
 
 const EnhancedAICoach = ({ currentMood, isPremium = false, onUpgradeClick }: EnhancedAICoachProps) => {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);

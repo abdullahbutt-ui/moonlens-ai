@@ -1,27 +1,27 @@
-import { useAuth } from "@clerk/clerk-react";
-import { Navigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Brain } from "lucide-react";
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { motion } from 'framer-motion';
+import { Brain } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-const ClerkProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isSignedIn, isLoaded } = useAuth();
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { user, isLoading } = useAuth();
 
-  if (!isLoaded) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-blue-50 to-teal-100 dark:from-purple-900 dark:via-blue-900 dark:to-teal-900">
         <div className="text-center">
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
             className="inline-block"
           >
             <Brain className="h-16 w-16 text-purple-600 dark:text-purple-400 mx-auto mb-4" />
           </motion.div>
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2"
@@ -34,18 +34,18 @@ const ClerkProtectedRoute = ({ children }: ProtectedRouteProps) => {
             transition={{ delay: 0.3 }}
             className="text-gray-600 dark:text-gray-400"
           >
-            Preparing your emotional journey...
+            Loading your wellness journey...
           </motion.p>
         </div>
       </div>
     );
   }
 
-  if (!isSignedIn) {
-    return <Navigate to="/login" replace />;
+  if (!user) {
+    return <Navigate to="/auth" replace />;
   }
 
   return <>{children}</>;
 };
 
-export default ClerkProtectedRoute;
+export default ProtectedRoute;

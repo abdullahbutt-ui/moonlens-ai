@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth, useUser } from '@clerk/clerk-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   User, 
   Mail, 
@@ -30,28 +31,23 @@ import MobileNavigation from '@/components/layout/MobileNavigation';
 import { toast } from 'sonner';
 
 const EnhancedProfile = () => {
-  const { signOut } = useAuth();
-  const { user } = useUser();
+  const { user, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const userMetadata = user?.unsafeMetadata as { 
-    interests?: string[], 
-    moodSensitivity?: number,
-    goals?: string[]
-  } || {};
+  const userMetadata = user?.user_metadata || {};
 
   const [formData, setFormData] = useState({
-    fullName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim(),
-    email: user?.primaryEmailAddress?.emailAddress || '',
-    dateOfBirth: '',
-    bio: '',
+    fullName: userMetadata.full_name || '',
+    email: user?.email || '',
+    dateOfBirth: userMetadata.dob || '',
+    bio: userMetadata.bio || '',
     interests: userMetadata.interests || ['Mindfulness', 'Meditation', 'Self-care'],
-    moodSensitivity: [userMetadata.moodSensitivity || 5]
+    moodSensitivity: [userMetadata.mood_sensitivity || 5]
   });
 
-  const [profileImage, setProfileImage] = useState<string | null>(user?.imageUrl || null);
+  const [profileImage, setProfileImage] = useState<string | null>(userMetadata.avatar_url || null);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,27 +66,19 @@ const EnhancedProfile = () => {
     
     setIsSaving(true);
     try {
-      // Parse the full name
-      const nameParts = formData.fullName.trim().split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
-
-      // Update user profile with Clerk
-      await user.update({
-        firstName,
-        lastName,
-      });
-
-      // Update metadata
-      await user.update({
-        unsafeMetadata: {
-          ...userMetadata,
-          interests: formData.interests,
-          moodSensitivity: formData.moodSensitivity[0],
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          full_name: formData.fullName,
+          dob: formData.dateOfBirth,
           bio: formData.bio,
-          profileUpdatedAt: new Date().toISOString()
+          interests: formData.interests,
+          mood_sensitivity: formData.moodSensitivity[0],
+          avatar_url: profileImage,
+          profile_updated_at: new Date().toISOString()
         }
       });
+
+      if (error) throw error;
       
       toast.success("Profile updated successfully! ✨");
       
@@ -106,11 +94,21 @@ const EnhancedProfile = () => {
     try {
       await signOut();
       toast.success("Signed out successfully! 👋");
-      navigate('/login');
+      navigate('/auth');
     } catch (error) {
       console.error('Sign out error:', error);
       toast.error("Failed to sign out. Please try again.");
     }
+  };
+
+  const getUserInitials = () => {
+    if (formData.fullName) {
+      return formData.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+    return 'U';
   };
 
   return (
@@ -157,9 +155,9 @@ const EnhancedProfile = () => {
         >
           <div className="relative inline-block">
             <Avatar className="w-24 h-24 mx-auto mb-4 border-4 border-white shadow-lg">
-              <AvatarImage src={profileImage || user?.imageUrl || undefined} />
+              <AvatarImage src={profileImage || undefined} />
               <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-2xl">
-                {user?.firstName ? `${user.firstName[0]}${user.lastName?.[0] || ''}`.toUpperCase() : 'U'}
+                {getUserInitials()}
               </AvatarFallback>
             </Avatar>
             <Button
@@ -180,6 +178,7 @@ const EnhancedProfile = () => {
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
             {formData.fullName || 'Your Name'}
           </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-2">{user?.email}</p>
           <div className="flex justify-center gap-2">
             <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
               <Heart className="w-3 h-3 mr-1" />
