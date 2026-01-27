@@ -12,7 +12,11 @@
   },
   "engines": {
   "node": ">=18"
+  
 }
+  
+  "date-fns": "^3.6.0"
+
 
   "dependencies": {
     "@clerk/clerk-react": "^5.46.2",
