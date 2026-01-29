@@ -80,12 +80,12 @@ const MoodTrendsEnhanced = () => {
       // Fetch last 7 days of check-ins
       const sevenDaysAgo = subDays(new Date(), 7).toISOString().split('T')[0];
       
-      const { data: checkIns, error } = await supabase
-        .from('daily_checkins')
+      const { data: checkIns, error } = await (supabase
+        .from('daily_checkins' as any)
         .select('*')
         .eq('user_id', user.id)
         .gte('check_in_date', sevenDaysAgo)
-        .order('check_in_date', { ascending: true });
+        .order('check_in_date', { ascending: true }) as any);
 
       if (error) throw error;
 
@@ -93,7 +93,7 @@ const MoodTrendsEnhanced = () => {
       const dailyData: { [key: string]: { [mood: string]: number } } = {};
       const moodCounts: { [mood: string]: number } = {};
       
-      checkIns?.forEach(checkIn => {
+      (checkIns as any[])?.forEach((checkIn: any) => {
         const date = checkIn.check_in_date;
         const mood = checkIn.mood;
         

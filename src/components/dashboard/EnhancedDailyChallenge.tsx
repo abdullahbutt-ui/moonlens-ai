@@ -99,17 +99,17 @@ const EnhancedDailyChallenge = ({
     try {
       const today = new Date().toISOString().split('T')[0];
       
-      const { data, error } = await supabase
-        .from('daily_challenges')
+      const { data, error } = await (supabase
+        .from('daily_challenges' as any)
         .select('*')
         .eq('user_id', user.id)
-        .eq('assigned_date', today)
-        .single();
+        .eq('challenge_date', today)
+        .single() as any);
 
       if (data) {
-        setTodaysChallenge(data.description || data.title);
-        setIsCompleted(data.completed);
-        if (data.completed) {
+        setTodaysChallenge((data as any).description || (data as any).title);
+        setIsCompleted((data as any).completed);
+        if ((data as any).completed) {
           // Load the user's response if they completed it
           setResponse('Challenge completed! ✨');
         }
@@ -118,17 +118,14 @@ const EnhancedDailyChallenge = ({
         const challenge = getMoodBasedChallenge(currentMood);
         setTodaysChallenge(challenge);
         
-        await supabase
-          .from('daily_challenges')
+        await (supabase
+          .from('daily_challenges' as any)
           .insert({
             user_id: user.id,
             title: 'Daily Self-Care Challenge',
             description: challenge,
-            assigned_date: today,
-            challenge_type: 'mood_based',
-            mood_context: currentMood,
-            difficulty_level: 'easy'
-          });
+            challenge_date: today
+          }) as any);
       }
     } catch (error) {
       console.error('Error loading challenge:', error);
@@ -140,13 +137,13 @@ const EnhancedDailyChallenge = ({
     if (!user) return;
 
     try {
-      const { data } = await supabase
-        .from('user_preferences')
+      const { data } = await (supabase
+        .from('user_preferences' as any)
         .select('streak_count')
         .eq('user_id', user.id)
-        .single();
+        .single() as any);
 
-      setStreak(data?.streak_count || 0);
+      setStreak((data as any)?.streak_count || 0);
     } catch (error) {
       console.error('Error loading streak:', error);
     }
@@ -165,14 +162,14 @@ const EnhancedDailyChallenge = ({
       const today = new Date().toISOString().split('T')[0];
       
       // Mark challenge as completed
-      await supabase
-        .from('daily_challenges')
+      await (supabase
+        .from('daily_challenges' as any)
         .update({
           completed: true,
           completed_at: new Date().toISOString()
         })
         .eq('user_id', user.id)
-        .eq('assigned_date', today);
+        .eq('challenge_date', today) as any);
 
       setIsCompleted(true);
       

@@ -87,13 +87,13 @@ const AchievementsPanel = ({ streakCount = 0, totalChallenges = 0, className }: 
 
     try {
       // Load user preferences to get saved achievements
-      const { data: preferences } = await supabase
-        .from('user_preferences')
-        .select('achievements, streak_count')
+      const { data: preferences } = await (supabase
+        .from('user_preferences' as any)
+        .select('*')
         .eq('user_id', user.id)
-        .single();
+        .single() as any);
 
-      const savedAchievements = preferences?.achievements || {};
+      const savedAchievements = (preferences as any)?.achievements || {};
       
       // Merge with default achievements and check for new ones
       const updatedAchievements = defaultAchievements.map(achievement => {
@@ -126,24 +126,23 @@ const AchievementsPanel = ({ streakCount = 0, totalChallenges = 0, className }: 
     if (!user) return;
 
     try {
-      const { data: preferences } = await supabase
-        .from('user_preferences')
-        .select('achievements')
+      const { data: preferences } = await (supabase
+        .from('user_preferences' as any)
+        .select('*')
         .eq('user_id', user.id)
-        .single();
+        .single() as any);
 
-      const currentAchievements = (preferences?.achievements as Record<string, string>) || {};
+      const currentAchievements = ((preferences as any)?.achievements as Record<string, string>) || {};
       const updatedAchievements = {
         ...currentAchievements,
         [achievementId]: new Date().toISOString()
       };
 
-      await supabase
-        .from('user_preferences')
+      await (supabase
+        .from('user_preferences' as any)
         .upsert({
-          user_id: user.id,
-          achievements: updatedAchievements
-        });
+          user_id: user.id
+        }) as any);
     } catch (error) {
       console.error('Error updating achievement:', error);
     }

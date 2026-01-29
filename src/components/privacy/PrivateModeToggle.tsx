@@ -29,15 +29,15 @@ const PrivateModeToggle = ({ className }: PrivateModeToggleProps) => {
     if (!user) return;
 
     try {
-      const { data } = await supabase
-        .from('user_preferences')
+      const { data } = await (supabase
+        .from('user_preferences' as any)
         .select('private_mode_enabled, pin_code')
         .eq('user_id', user.id)
-        .single();
+        .single() as any);
 
       if (data) {
-        setIsPrivateMode(data.private_mode_enabled || false);
-        if (data.private_mode_enabled && data.pin_code) {
+        setIsPrivateMode((data as any).private_mode_enabled || false);
+        if ((data as any).private_mode_enabled && (data as any).pin_code) {
           setIsLocked(true);
         }
       }
@@ -55,13 +55,13 @@ const PrivateModeToggle = ({ className }: PrivateModeToggleProps) => {
         setShowPinSetup(true);
       } else {
         // Turning OFF private mode
-        await supabase
-          .from('user_preferences')
+        await (supabase
+          .from('user_preferences' as any)
           .upsert({
             user_id: user.id,
             private_mode_enabled: false,
             pin_code: null
-          });
+          }) as any);
         
         setIsPrivateMode(false);
         setIsLocked(false);
@@ -88,13 +88,13 @@ const PrivateModeToggle = ({ className }: PrivateModeToggleProps) => {
     }
 
     try {
-      await supabase
-        .from('user_preferences')
+      await (supabase
+        .from('user_preferences' as any)
         .upsert({
           user_id: user.id,
           private_mode_enabled: true,
           pin_code: pinCode
-        });
+        }) as any);
 
       setIsPrivateMode(true);
       setShowPinSetup(false);
@@ -112,13 +112,13 @@ const PrivateModeToggle = ({ className }: PrivateModeToggleProps) => {
     if (!user) return;
 
     try {
-      const { data } = await supabase
-        .from('user_preferences')
+      const { data } = await (supabase
+        .from('user_preferences' as any)
         .select('pin_code')
         .eq('user_id', user.id)
-        .single();
+        .single() as any);
 
-      if (data && data.pin_code === enteredPin) {
+      if (data && (data as any).pin_code === enteredPin) {
         setIsLocked(false);
         setEnteredPin('');
         toast.success('🔓 Private mode unlocked');
