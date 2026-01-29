@@ -90,7 +90,8 @@ const Auth = () => {
         return;
       }
       
-      toast.success('Account created! Check your email for confirmation.');
+      toast.success('Welcome to Moodsify!');
+      navigate('/dashboard');
     } catch (error) {
       toast.error('An unexpected error occurred');
     } finally {
