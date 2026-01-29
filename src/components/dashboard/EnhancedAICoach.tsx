@@ -65,15 +65,14 @@ const EnhancedAICoach = ({ currentMood, isPremium = false, onUpgradeClick }: Enh
     if (!response.trim() || !user) return;
 
     try {
-      const { error } = await supabase
-        .from('ai_journal_entries')
+      const { error } = await (supabase
+        .from('ai_journal_entries' as any)
         .insert({
           user_id: user.id,
-          content: response,
-          ai_prompt: prompt,
-          mood_at_entry: currentMood,
-          emotion_tags: [currentMood]
-        });
+          entry_text: response,
+          ai_response: prompt,
+          mood_detected: currentMood
+        }) as any);
 
       if (error) throw error;
       

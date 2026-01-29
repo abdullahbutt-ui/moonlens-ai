@@ -46,15 +46,15 @@ const EnhancedDashboard = () => {
     if (!user) return;
     
     try {
-      const { data } = await supabase
-        .from('user_preferences')
+      const { data } = await (supabase
+        .from('user_preferences' as any)
         .select('subscription_status, subscription_end_date')
         .eq('user_id', user.id)
-        .single();
+        .single() as any);
 
       if (data) {
-        const isActive = data.subscription_status === 'premium' && 
-          (!data.subscription_end_date || new Date(data.subscription_end_date) > new Date());
+        const isActive = (data as any).subscription_status === 'premium' && 
+          (!(data as any).subscription_end_date || new Date((data as any).subscription_end_date) > new Date());
         setIsPremium(isActive);
       }
     } catch (error) {
@@ -67,33 +67,33 @@ const EnhancedDashboard = () => {
 
     try {
       // Load streak and challenge count
-      const { data: preferences } = await supabase
-        .from('user_preferences')
+      const { data: preferences } = await (supabase
+        .from('user_preferences' as any)
         .select('streak_count')
         .eq('user_id', user.id)
-        .single();
+        .single() as any);
 
       if (preferences) {
-        setStreakCount(preferences.streak_count || 0);
+        setStreakCount((preferences as any).streak_count || 0);
       }
 
       // Load total completed challenges
-      const { data: challenges } = await supabase
-        .from('daily_challenges')
+      const { data: challenges } = await (supabase
+        .from('daily_challenges' as any)
         .select('id')
         .eq('user_id', user.id)
-        .eq('completed', true);
+        .eq('completed', true) as any);
 
       setTotalChallenges(challenges?.length || 0);
 
       // Check if user has checked in today
       const today = new Date().toISOString().split('T')[0];
-      const { data: todayCheckIn } = await supabase
-        .from('daily_checkins')
+      const { data: todayCheckIn } = await (supabase
+        .from('daily_checkins' as any)
         .select('id')
         .eq('user_id', user.id)
         .eq('check_in_date', today)
-        .single();
+        .single() as any);
 
       setHasCheckedInToday(!!todayCheckIn);
     } catch (error) {
@@ -108,19 +108,19 @@ const EnhancedDashboard = () => {
     if (user) {
       try {
         const today = new Date().toISOString().split('T')[0];
-        await supabase
-          .from('daily_checkins')
+        await (supabase
+          .from('daily_checkins' as any)
           .upsert({
             user_id: user.id,
             mood: mood,
             check_in_date: today
-          });
+          }) as any);
         
         // Update mood analytics
         await supabase
-          .rpc('update_mood_analytics', {
-            user_uuid: user.id,
-            mood_type: mood
+          .rpc('update_mood_analytics' as any, {
+            p_user_id: user.id,
+            p_mood: mood
           });
 
         toast.success('Daily check-in completed! 🌟');

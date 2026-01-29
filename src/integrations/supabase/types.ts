@@ -14,13 +14,142 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_journal_entries: {
+        Row: {
+          ai_response: string | null
+          created_at: string
+          entry_text: string
+          id: string
+          mood_detected: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_response?: string | null
+          created_at?: string
+          entry_text: string
+          id?: string
+          mood_detected?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_response?: string | null
+          created_at?: string
+          entry_text?: string
+          id?: string
+          mood_detected?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_challenges: {
+        Row: {
+          challenge_date: string
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string
+          description: string
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          challenge_date?: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          challenge_date?: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_checkins: {
+        Row: {
+          check_in_date: string
+          created_at: string
+          energy_level: number | null
+          id: string
+          mood: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          check_in_date?: string
+          created_at?: string
+          energy_level?: number | null
+          id?: string
+          mood: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          check_in_date?: string
+          created_at?: string
+          energy_level?: number | null
+          id?: string
+          mood?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          pin_code: string | null
+          private_mode_enabled: boolean | null
+          streak_count: number | null
+          subscription_end_date: string | null
+          subscription_status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          pin_code?: string | null
+          private_mode_enabled?: boolean | null
+          streak_count?: number | null
+          subscription_end_date?: string | null
+          subscription_status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          pin_code?: string | null
+          private_mode_enabled?: boolean | null
+          streak_count?: number | null
+          subscription_end_date?: string | null
+          subscription_status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_user_streak: { Args: { p_user_id: string }; Returns: number }
+      update_mood_analytics: {
+        Args: { p_mood: string; p_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

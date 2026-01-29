@@ -35,12 +35,12 @@ const DailyCheckIn = ({ onCheckIn }: DailyCheckInProps) => {
     
     try {
       const today = new Date().toISOString().split('T')[0];
-      const { data, error } = await supabase
-        .from('daily_checkins')
+      const { data, error } = await (supabase
+        .from('daily_checkins' as any)
         .select('*')
         .eq('user_id', user.id)
         .eq('check_in_date', today)
-        .single();
+        .single() as any);
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error checking today status:', error);
@@ -58,7 +58,7 @@ const DailyCheckIn = ({ onCheckIn }: DailyCheckInProps) => {
     
     try {
       const { data, error } = await supabase
-        .rpc('calculate_user_streak', { user_uuid: user.id });
+        .rpc('calculate_user_streak' as any, { p_user_id: user.id });
 
       if (error) {
         console.error('Error fetching streak:', error);
@@ -79,13 +79,13 @@ const DailyCheckIn = ({ onCheckIn }: DailyCheckInProps) => {
     setLoading(true);
     
     try {
-      const { error } = await supabase
-        .from('daily_checkins')
+      const { error } = await (supabase
+        .from('daily_checkins' as any)
         .insert({
           user_id: user.id,
           mood: selectedMood,
           check_in_date: new Date().toISOString().split('T')[0]
-        });
+        }) as any);
 
       if (error) {
         console.error('Error checking in:', error);
